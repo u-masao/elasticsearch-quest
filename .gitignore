@@ -1,3 +1,4 @@
 /.env
 *.sw[po]
 /certs/
+__pycache__
