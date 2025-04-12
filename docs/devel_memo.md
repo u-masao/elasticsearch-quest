@@ -47,3 +47,19 @@ Gemini 2.5 pro Gems
 
  データはアプリとして固定しましょう。友達と教えあいやすくなります 
 
+
+## サンプルデータの生成
+
+fixtures/sample_books.json
+
+```
+日本のデータサイエンティストが好きそうな書籍を20冊列挙して。
+JSON 形式で記載して。わからないものは適当なもので埋めて。
+
+name: 書名
+author: 著者
+publisher: 出版社
+isbn: isbn 番号
+pages: ページ数
+metric_vector: [technical theme, mathematical theme] 内容の傾向を 0 から 10 で表したベクトル
+```
