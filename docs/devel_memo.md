@@ -63,3 +63,27 @@ isbn: isbn 番号
 pages: ページ数
 metric_vector: [technical theme, mathematical theme] 内容の傾向を 0 から 10 で表したベクトル
 ```
+
+
+## スキーマ作成
+
+```
+クエスト定義:
+フェーズ1で扱う基本的なElasticsearchクエリ（match, term, range, bool等）に対応するクエストを5〜10個程度具体化する。
+各クエストの問題文、期待される結果（ヒット件数、特定ドキュメント等）、基本的な評価基準、ヒントの素案を定義する。
+定義したクエスト情報をSQLiteデータベース等に格納する形式を決定し、実装する。
+
+このタスクを進めます。ｓｑｌｉｔｅのスキーマを考えて。
+```
+
+## サンプルクエスト作成
+
+
+```
+サンプルデータに合わせて　Quest を作って。
+
+- ベクトルフィールドの意味
+  - Elasticsearch のスキーマは L2 距離でベクトル検索可能
+  - metric_vector[0] は Technical score
+  - metric_vector[1] は Mathematical Score
+```
