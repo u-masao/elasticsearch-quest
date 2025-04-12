@@ -33,3 +33,11 @@ setup_es_index:
     sample_books \
     fixtures/sample_books.json 2>&1 \
     | tee logs/setup_sample_books_index.log
+
+# sqlite のスキーマ定義
+DB_FILEPATH=.db.sqlite3
+setup_backend_db:
+	echo 'drop table if exists quests' | sqlite3 $(DB_FILEPATH)
+	cat fixtures/create_quests_table.sql | sqlite3 $(DB_FILEPATH)
+	cat fixtures/insert_quests.sql | sqlite3 $(DB_FILEPATH)
+	echo 'select * from quests' | sqlite3 $(DB_FILEPATH)
