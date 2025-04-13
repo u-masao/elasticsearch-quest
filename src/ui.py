@@ -180,9 +180,6 @@ def load_quest(quest_id):
     if quest is None:
         return gr.Markdown("")
     question = f"""
-        quest_id={quest_id} name フィールドに 
-        "Deep Learning" で部分一致するクエリを書いて
-
         ## {quest.title}
 
         {quest.description}
