@@ -1,9 +1,13 @@
 # src/cli.py
-import os
+import asyncio
 import json
-from pathlib import Path
+import os
 import sys
+from pathlib import Path
+
 import click
+from agents import Agent, Runner, gen_trace_id, trace
+from agents.mcp import MCPServer, MCPServerStdio
 from elasticsearch import TransportError
 
 # --- 設定 (Config) ---
@@ -14,13 +18,13 @@ sys.path.insert(0, str(project_root))
 
 # --- データアクセス層 (Model/Repository) & コアロジック ---
 try:
-    from src.db.quest_repository import QuestRepository, Quest  # Questもインポート
-    from src.elasticsearch_client import get_es_client
     from src.core_logic import (
-        execute_query,
         evaluate_result,
+        execute_query,
         get_feedback,
     )
+    from src.db.quest_repository import Quest, QuestRepository  # Questもインポート
+    from src.elasticsearch_client import get_es_client
 except ImportError as e:
     print(f"必要なモジュールのインポートに失敗しました: {e}", file=sys.stderr)
     print(
@@ -35,6 +39,30 @@ INDEX_NAME_DEFAULT = "sample_books"
 FIXTURES_DIR_DEFAULT = project_root / "fixtures"
 SCHEMA_FILE_DEFAULT = FIXTURES_DIR_DEFAULT / "create_quests_table.sql"
 DATA_FILE_DEFAULT = FIXTURES_DIR_DEFAULT / "insert_quests.sql"
+
+# --- エージェント ---
+
+
+def generate_elasticsearch_mcp_server():
+    return MCPServerStdio(
+        name="MCP Elasticsearch",
+        params={
+            "command": "uv",  # MCP Server の実行コマンド (ここでは uv を使用)
+            "args": [
+                "--directory",
+                "mcp/elasticsearch-mcp-server",  # MCP Server のディレクトリ
+                "run",
+                "elasticsearch-mcp-server",  # MCP Server の実行ファイル/モジュール名
+            ],
+            # MCP Server に渡す環境変数 ( .env から読み込んだ Elasticsearch 接続情報)
+            "env": {
+                "ELASTICSEARCH_HOST": os.getenv("ELASTICSEARCH_URL"),
+                "ELASTICSEARCH_USERNAME": os.getenv("ELASTICSEARCH_USERNAME"),
+                "ELASTICSEARCH_PASSWORD": os.getenv("ELASTICSEARCH_PASSWORD"),
+                "ELASTICSEARCH_CA_CERT": os.getenv("ELASTICSEARCH_CA_CERT"),
+            },
+        },
+    )
 
 
 # --- ビュー層 (View) ---
@@ -285,15 +313,85 @@ class QuestController:
 
         return is_correct, eval_message, feedback
 
-    def run_quest(self, quest_id: int, query_str: str | None, query_file: str | None):
+    async def _run_elasticsearch_mcp_agent(
+        self,
+        mcp_server: MCPServer,
+        quest: Quest,
+        user_query_str: str,
+        eval_message:str,
+    ):
+        """エージェントの定義と実行"""
+        elasticsearch_agent = Agent(
+            name="elasticsearch_agent",
+            # エージェントへの指示 (自然言語)
+            instructions=f"""
+                ユーザーのリクエストにしたがってElasticsearch を操作し、
+                結果を表示して。
+                クエリを発行した場合は、発行した具体的なクエリとURLを表示して。
+
+                <format>
+                ### 結果
+                {{Elasticsearchを操作した結果}}
+
+                ### 対象Index名
+                {self.index_name}
+
+                ### エージェントが作ったクエリ
+                {{Elasticsearchを操作したクエリ JSON}}
+
+                ### API
+                {{Elasticsearchを操作したエンドポイントURL}}
+
+                ### コメント
+                {{このタスクに関するコメント}}
+
+                </format>
+            """,
+            # 連携する MCP Server を指定
+            mcp_servers=[mcp_server],
+        )
+
+        message = f"""
+        Elasticsearch の問題に対して回答を作りました。正誤を判定して。
+        注意深く問題を読んで問題がある場合は指摘して。
+        例えば「Deep Learning」を検索するべきなのに「Learning」だけで
+        たまたま件数が一致するものは問題があります。
+
+        <question>
+        {quest}
+        </question>
+
+        <user_answer>
+        {user_query_str}
+        </user_answer>
+
+        <rule_base_evaluation>
+        {eval_message}
+        </rule_base_evaluation>
+
+        """
+        print(f"命令: {message}")
+        result = await Runner.run(starting_agent=elasticsearch_agent, input=message)
+        print(f"回答: {result.final_output}")
+        return result.final_output
+
+    async def run_quest(
+        self, quest_id: int, query_str: str | None, query_file: str | None
+    ):
         """クエスト実行のメインフロー"""
+        # 依存インスタンスを初期化
         self._initialize_dependencies()
 
+        # クエストをロード
         quest = self._get_quest(quest_id)
+
+        # クエストを表示
         self.view.display_quest_details(quest)
 
+        # ユーザーの回答を取得
         user_query = self._get_user_query(query_str, query_file)
 
+        # ユーザーの回答をルールベースで評価
         is_correct, eval_message, feedback = self._execute_and_evaluate(
             quest, user_query
         )
@@ -302,12 +400,29 @@ class QuestController:
         if eval_message != "不正解... クエリの実行中にエラーが発生しました。":
             self.view.display_evaluation(eval_message, is_correct)
 
+        # フィードバックを表示
         self.view.display_feedback(feedback)
 
+        # 正解または不正解のメッセージを表示
         if is_correct:
             self.view.display_clear_message()
         else:
             self.view.display_retry_message()
+
+        # ユーザーの回答を LLM が評価
+        # MCPServerStdio を使って Elasticsearch MCP Server をサブプロセスとして起動・連携
+        async with generate_elasticsearch_mcp_server() as server:
+            trace_id = gen_trace_id()
+            # OpenAI Platform でトレースを確認するための設定
+            with trace(workflow_name="MCP Elasticsearch", trace_id=trace_id):
+                print(
+                    "トレース情報: https://platform.openai.com/traces/trace"
+                    f"?trace_id={trace_id}\n"
+                )
+                agent_feedback = await self._run_elasticsearch_mcp_agent(
+                    server, quest, user_query, eval_message,
+                )
+                self.view.display_feedback(agent_feedback)
 
 
 # --- CLIエントリーポイント ---
@@ -391,11 +506,13 @@ def cli(
         schema_file=schema_file,
         data_file=data_file,
     )
-    controller.run_quest(
-        quest_id=quest_id,
-        query_str=query,
-        # click.Path(path_type=Path) を使っているので、query_file は Path オブジェクト
-        query_file=str(query_file) if query_file else None,
+    asyncio.run(
+        controller.run_quest(
+            quest_id=quest_id,
+            query_str=query,
+            # click.Path(path_type=Path) を使っているので、query_file は Path オブジェクト
+            query_file=str(query_file) if query_file else None,
+        )
     )
 
 
