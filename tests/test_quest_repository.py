@@ -83,11 +83,7 @@ def test_quest_data_details(quest_repository: QuestRepository):
     assert quest6.evaluation_type == "doc_ids_in_order"
     # evaluation_data はJSONリストとしてパースされるはず
     assert isinstance(quest6.evaluation_data, list)
-    assert quest6.evaluation_data == [
-        "978-4802613353",
-        "978-4297131883",
-        "978-4297130350",
-    ]
+    assert quest6.evaluation_data == ["10", "11", "18"]
     assert isinstance(quest6.hints, list)
     assert len(quest6.hints) == 3
 
@@ -100,7 +96,7 @@ def test_evaluation_data_parsing(quest_repository: QuestRepository):
 
     q6 = quest_repository.get_quest_by_id(6)  # doc_ids_in_order -> list
     assert isinstance(q6.evaluation_data, list)
-    assert q6.evaluation_data == ["978-4802613353", "978-4297131883", "978-4297130350"]
+    assert q6.evaluation_data == ["10", "11", "18"]
 
     # evaluation_dataが不正なJSONの場合のテストも追加可能 (今回はサンプルデータが正しい前提)
 
