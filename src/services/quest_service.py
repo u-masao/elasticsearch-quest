@@ -61,11 +61,14 @@ class QuestService:
             user_query_str: ユーザーが入力したJSON形式のクエリ文字列.
 
         Returns:
-            tuple: (正解かどうか, 評価メッセージ, ルールベースフィードバック, Elasticsearchレスポンス or None)
+            tuple: (正解かどうか, 評価メッセージ, ルールベースフィードバック,
+            Elasticsearchレスポンス or None)
 
         Raises:
-            ElasticsearchError: クエリ実行中にElasticsearch関連のエラーが発生した場合.
-            InvalidQueryError: クエリ文字列のパースに失敗した場合 (通常は呼び出し元でチェック済み).
+            ElasticsearchError: クエリ実行中にElasticsearch関連のエラー
+            が発生した場合.
+            InvalidQueryError: クエリ文字列のパースに失敗した場合
+            (通常は呼び出し元でチェック済み).
             QuestCliError: その他の予期せぬエラー.
         """
         attempt_count = 1  # 将来的に試行回数を記録・利用する場合は変更
@@ -77,7 +80,8 @@ class QuestService:
 
         try:
             # execute_query は core_logic にある想定
-            # TransportError, ValueError (JSONDecodeError含む), ElasticsearchException を捕捉
+            # TransportError, ValueError (JSONDecodeError含む),
+            # ElasticsearchException を捕捉
             es_response = execute_query(self.es_client, self.index_name, user_query_str)
 
             # 実行成功後、ルールベース評価

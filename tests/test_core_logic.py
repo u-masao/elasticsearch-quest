@@ -39,7 +39,8 @@ def create_edge_case_quest(**kwargs) -> Quest:
 # --- evaluate_result のテスト ---
 
 # テストパラメータを pytest.param で分かりやすく定義
-# 各 param の引数: quest_id, es_response (dict), expected_correct (bool), expected_message_contains (str)
+# 各 param の引数: quest_id, es_response (dict),
+# expected_correct (bool), expected_message_contains (str)
 #                評価タイプは quest_id から取得される前提
 
 evaluate_params = [
@@ -134,7 +135,8 @@ def test_evaluate_result_from_db(
 
     assert is_correct == expected_correct
     assert expected_message_contains in message, (
-        f"期待するメッセージ '{expected_message_contains}' が実際のメッセージ '{message}' に含まれていません"
+        f"期待するメッセージ '{expected_message_contains}' が"
+        f"実際のメッセージ '{message}' に含まれていません"
     )
 
 
@@ -237,7 +239,8 @@ def test_get_feedback_from_db(
         assert not feedback.strip() or "もう一度試してみましょう" not in feedback
     else:
         assert expected_feedback_contains in feedback, (
-            f"期待するフィードバック '{expected_feedback_contains}' が実際のフィードバック '{feedback}' に含まれていません"
+            f"期待するフィードバック '{expected_feedback_contains}' が"
+            "実際のフィードバック '{feedback}' に含まれていません"
         )
 
 

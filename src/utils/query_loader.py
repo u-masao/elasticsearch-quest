@@ -52,7 +52,8 @@ def load_query_from_source(
     else:
         # どのソースも指定されていない場合
         raise InvalidQueryError(
-            "クエリのソースが指定されていません (--query または --query-file を使用するか、対話モードで入力してください)。"
+            "クエリのソースが指定されていません (--query または "
+            "--query-file を使用するか、対話モードで入力してください)。"
         )
 
     if not user_query_str or not user_query_str.strip():

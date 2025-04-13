@@ -110,14 +110,16 @@ class QuestView:
         """対話的にクエリ入力を求める"""
         click.echo(
             click.style(
-                "\nElasticsearchクエリをJSON形式で入力してください (Ctrl+D or Ctrl+Z+Enter で終了):",
+                "\nElasticsearchクエリをJSON形式で入力してください "
+                "(Ctrl+D or Ctrl+Z+Enter で終了):",
                 fg="blue",
             )
         )
         lines = []
         while True:
             try:
-                # 標準入力がリダイレクトされている場合なども考慮すると、click.get_text_stream('stdin') を使う方が堅牢
+                # 標準入力がリダイレクトされている場合なども考慮すると、
+                # click.get_text_stream('stdin') を使う方が堅牢
                 line = input()
                 lines.append(line)
             except EOFError:

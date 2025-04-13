@@ -13,8 +13,6 @@ from src.config import (  # デフォルト値表示用
 )
 from src.exceptions import QuestCliError  # キャッチするベース例外
 from src.services.agent_service import AgentService
-
-# または個別にインポート: from .bootstrap import initialize_database, initialize_elasticsearch
 from src.services.quest_service import QuestService
 from src.utils.query_loader import load_query_from_source
 from src.view import QuestView
@@ -203,7 +201,7 @@ def submit_answer(quest_id, query, history):
     ```
     でした。
 
-    正解おめでとうございます🤖 
+    正解おめでとうございます🤖
     """
     history.append({"role": "assistant", "content": response})
     return history

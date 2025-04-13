@@ -141,8 +141,10 @@ class AgentService:
 
                     # Runner.run に渡す input は agent_instructions 自体か、
                     # あるいはさらに具体的なタスク指示か、Agentライブラリの仕様による
-                    # ここでは instructions に全て含めたので、input はシンプルにするか空にする
-                    agent_input = "上記の指示に従って、ユーザーの回答を評価しフィードバックを生成してください。"
+                    # ここでは instructions に全て含めたので、input
+                    # はシンプルにするか空にする
+                    agent_input = "上記の指示に従って、ユーザーの回答を評価し"
+                    "フィードバックを生成してください。"
 
                     result = await Runner.run(
                         starting_agent=evaluation_agent, input=agent_input
@@ -157,7 +159,8 @@ class AgentService:
 
         except ConnectionRefusedError as e:
             raise AgentError(
-                f"MCP Serverへの接続に失敗しました。プロセスが起動しているか確認してください。詳細: {e}"
+                "MCP Serverへの接続に失敗しました。プロセスが起動しているか"
+                f"確認してください。詳細: {e}"
             ) from e
         except Exception as e:
             # Agentライブラリ固有のエラーや予期せぬエラー

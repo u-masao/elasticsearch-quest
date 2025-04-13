@@ -30,7 +30,8 @@ def initialize_database(config: AppConfig, view: QuestView) -> QuestRepository:
         # ここではファイルサイズで空かどうかをチェック
         if not config.db_path.exists() or config.db_path.stat().st_size == 0:
             view.display_info(
-                f"データベースファイル '{config.db_path}' が存在しないか空のため初期化します..."
+                f"データベースファイル '{config.db_path}' が存在しないか"
+                "空のため初期化します..."
             )
             repo.initialize_schema(str(config.schema_file))
             repo.load_data(str(config.data_file))
@@ -61,7 +62,8 @@ def initialize_elasticsearch(config: AppConfig, view: QuestView) -> Elasticsearc
         # 環境変数に関する警告 (接続情報がない場合)
         if not config.elasticsearch_url and not config.elastic_cloud_id:
             view.display_warning(
-                "環境変数 ELASTICSEARCH_URL または ELASTIC_CLOUD_ID が設定されていません。\n"
+                "環境変数 ELASTICSEARCH_URL または ELASTIC_CLOUD_ID "
+                "が設定されていません。\n"
                 "デフォルトの http://localhost:9200 への接続を試みます。"
             )
 
@@ -70,19 +72,22 @@ def initialize_elasticsearch(config: AppConfig, view: QuestView) -> Elasticsearc
         view.display_info("Elasticsearchに接続中...")
         if not es_client.ping():
             raise ElasticsearchError(
-                "Elasticsearch に接続できません。設定とサーバーの状態を確認してください。"
+                "Elasticsearch に接続できません。"
+                "設定とサーバーの状態を確認してください。"
             )
         view.display_info("Elasticsearchに接続しました。")
         return es_client
     except Exception as e:
         # get_es_client 内のエラーや ping() のエラーを含む
         raise ElasticsearchError(
-            f"Elasticsearchクライアントの初期化または接続確認中にエラーが発生しました: {e}"
+            "Elasticsearchクライアントの初期化または接続確認中"
+            f"にエラーが発生しました: {e}"
         ) from e
 
 
 # --- 依存関係コンテナ (オプション) ---
-# より複雑な依存関係管理が必要な場合、DIコンテナライブラリ (例: dependency-injector) の導入も検討
+# より複雑な依存関係管理が必要な場合、DIコンテナライブラリ
+# (例: dependency-injector) の導入も検討
 class AppContainer:
     """依存関係を保持するコンテナ (シンプルな例)"""
 

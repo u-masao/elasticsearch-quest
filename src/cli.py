@@ -17,8 +17,6 @@ from .config import (  # デフォルト値表示用
 )
 from .exceptions import QuestCliError  # キャッチするベース例外
 from .services.agent_service import AgentService
-
-# または個別にインポート: from .bootstrap import initialize_database, initialize_elasticsearch
 from .services.quest_service import QuestService
 from .utils.query_loader import load_query_from_source
 from .view import QuestView
@@ -52,7 +50,8 @@ def handle_exception(view: QuestView, e: Exception):
     "--query",
     "-q",
     type=str,
-    help="実行するElasticsearchクエリ (JSON文字列)。ファイルと両方指定された場合はこちらが優先。",
+    help="実行するElasticsearchクエリ (JSON文字列)。"
+    "ファイルと両方指定された場合はこちらが優先。",
 )
 @click.option(
     "--query_file",
@@ -92,7 +91,8 @@ def handle_exception(view: QuestView, e: Exception):
     default=False,
     help="LLMエージェントによる評価をスキップする。",
 )
-# @click.option("--show_solution", is_flag=True, help="指定したクエストの解答例を表示する") # TODO
+# @click.option("--show_solution", is_flag=True, help="指定したクエスト
+# の解答例を表示する") # TODO
 
 def cli(
     quest_id: int,

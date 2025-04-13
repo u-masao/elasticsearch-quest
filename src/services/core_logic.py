@@ -83,7 +83,8 @@ def evaluate_result(quest: Quest, es_response: Dict[str, Any]) -> Tuple[bool, st
         print(error_message)  # ログ等にも出力推奨
         return False, error_message  # ユーザーフレンドリーなメッセージに加工しても良い
     except AttributeError as e:
-        # Quest オブジェクトに必要な属性 (evaluation_type, evaluation_data) がない場合など
+        # Quest オブジェクトに必要な属性 (evaluation_type, evaluation_data)
+        # がない場合など
         error_message = f"[System Error] Questオブジェクトの形式が不正です: {e}"
         print(error_message)
         return False, error_message
@@ -109,7 +110,8 @@ def get_feedback(quest: Quest, is_correct: bool, attempt_count: int) -> str:
         feedback += "もう一度試してみましょう。\n"
         try:
             # Questモデルが hints をリスト (List[str]) として返すことを前提とします。
-            # もしJSON文字列などで格納されている場合は、Questモデル側かここでパースします。
+            # もしJSON文字列などで格納されている場合は、Questモデル側かここでパース
+            # します。
             hints = quest.hints
             if hints and isinstance(hints, list):
                 # 試行回数に応じてヒントを選択 (1-based index で扱う)
@@ -120,7 +122,8 @@ def get_feedback(quest: Quest, is_correct: bool, attempt_count: int) -> str:
                     feedback += (
                         f"ヒント {len(hints)}: {hints[-1]} (これが最後のヒントです)"
                     )
-                # else: attempt_count が 0 以下などの異常ケース (最初のヒントを出すなど検討)
+                # else: attempt_count が 0 以下などの異常ケース
+                # (最初のヒントを出すなど検討)
             else:
                 feedback += "この問題には利用可能なヒントがありません。"
         except AttributeError:
