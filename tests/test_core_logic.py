@@ -4,10 +4,11 @@ from typing import Any, Dict
 
 import pytest
 
-# テスト対象のモジュールとクラスをインポート
-from src.core_logic import evaluate_result, get_feedback
 from src.db.quest_repository import QuestRepository  # conftestから渡される型ヒント用
 from src.models.quest import Quest
+
+# テスト対象のモジュールとクラスをインポート
+from src.services.core_logic import evaluate_result, get_feedback
 
 # --- テスト用ヘルパー (エッジケース Quest 生成用) ---
 

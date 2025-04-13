@@ -3,15 +3,15 @@ import json
 
 from elasticsearch import ApiError, Elasticsearch, TransportError
 
-# core_logic を利用する場合
-from ..core_logic import evaluate_result, execute_query, get_feedback
-
 # 依存モジュール
 from ..db.quest_repository import Quest, QuestRepository
 from ..exceptions import (
     QuestCliError,
     QuestNotFoundError,
 )
+
+# core_logic を利用する場合
+from .core_logic import evaluate_result, execute_query, get_feedback
 
 # または、評価ロジックなども Service 内に実装する
 
