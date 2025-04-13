@@ -55,7 +55,7 @@ def handle_exception(view: QuestView, e: Exception):
     help="実行するElasticsearchクエリ (JSON文字列)。ファイルと両方指定された場合はこちらが優先。",
 )
 @click.option(
-    "--query-file",
+    "--query_file",
     "-f",
     type=click.Path(exists=True, dir_okay=False, readable=True, path_type=Path),
     help="実行するElasticsearchクエリが書かれたJSONファイルパス。",
@@ -63,36 +63,36 @@ def handle_exception(view: QuestView, e: Exception):
 # --- 設定オプション (config.py のデフォルト値を上書き) ---
 # show_default=True にするとヘルプ表示が長くなるため、デフォルト値は help 文字列内に記述
 @click.option(
-    "--db-path",
+    "--db_path",
     type=click.Path(dir_okay=False, writable=True, resolve_path=True, path_type=Path),
     help=f"クエストDBファイルのパス (デフォルト: {DEFAULT_DB_FILE_PATH})",
 )
 @click.option(
-    "--index-name",
+    "--index_name",
     type=str,
     help=f"Elasticsearchインデックス名 (デフォルト: {DEFAULT_INDEX_NAME})",
 )
 @click.option(
-    "--schema-file",
+    "--schema_file",
     type=click.Path(
         exists=True, dir_okay=False, readable=True, resolve_path=True, path_type=Path
     ),
     help=f"DBスキーマSQLファイルパス (デフォルト: {DEFAULT_SCHEMA_FILE})",
 )
 @click.option(
-    "--data-file",
+    "--data_file",
     type=click.Path(
         exists=True, dir_okay=False, readable=True, resolve_path=True, path_type=Path
     ),
     help=f"DB初期データSQLファイルパス (デフォルト: {DEFAULT_DATA_FILE})",
 )
 @click.option(
-    "--skip-agent",
+    "--skip_agent",
     is_flag=True,
     default=False,
     help="LLMエージェントによる評価をスキップする。",
 )
-# @click.option("--show-solution", is_flag=True, help="指定したクエストの解答例を表示する") # TODO
+# @click.option("--show_solution", is_flag=True, help="指定したクエストの解答例を表示する") # TODO
 
 def cli(
     quest_id: int,
