@@ -34,7 +34,7 @@ setup:
 
 # Elasticsearch にサンプルデータを投入
 setup_es_index:
-	uv run python -m src.setup_es_index \
+	uv run python -m src.misc.setup_es_index \
     sample_books \
     fixtures/sample_books.json 2>&1 \
     | tee logs/setup_sample_books_index.log
