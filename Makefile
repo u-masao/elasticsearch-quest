@@ -14,7 +14,7 @@ run:
 
 # run gui version
 ui:
-	uv run gradio src/ui.py
+	PYTHONPATH=. uv run gradio src/ui.py
 
 # run test
 test:
