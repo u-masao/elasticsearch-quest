@@ -65,8 +65,12 @@ def evaluate_result(quest: Quest, es_response: Dict[str, Any]) -> Tuple[bool, st
     Returns:
         Tuple[bool, str]: (正解かどうか, 評価メッセージ)
     """
-    eval_type = quest.evaluation_type
-    expected_data = quest.evaluation_data  # パース済みの期待データ
+
+    try:
+        eval_type = quest.evaluation_type
+        expected_data = quest.evaluation_data  # パース済みの期待データ
+    except ValueError as e:
+        return False, f"Quest のパース失敗: {e}"
 
     try:
         hits_info = es_response.get("hits", {})
@@ -77,7 +81,7 @@ def evaluate_result(quest: Quest, es_response: Dict[str, Any]) -> Tuple[bool, st
             if not isinstance(expected_data, int):
                 return (
                     False,
-                    f"[System Error] Invalid expected data type for result_count: {type(expected_data)}",
+                    f"[System Error] 評価用の正解データが不正です:  result_count: {type(expected_data)}",
                 )
             is_correct = total_hits == expected_data
             message = (
@@ -91,7 +95,7 @@ def evaluate_result(quest: Quest, es_response: Dict[str, Any]) -> Tuple[bool, st
             if not isinstance(expected_data, list):
                 return (
                     False,
-                    f"[System Error] Invalid expected data type for doc_ids_include: {type(expected_data)}",
+                    f"[System Error] 評価用の正解データが不正です:  doc_ids_include: {type(expected_data)}",
                 )
             actual_ids = {hit["_id"] for hit in actual_hits}
             missing_ids = [
@@ -108,7 +112,7 @@ def evaluate_result(quest: Quest, es_response: Dict[str, Any]) -> Tuple[bool, st
             if not isinstance(expected_data, list):
                 return (
                     False,
-                    f"[System Error] Invalid expected data type for doc_ids_in_order: {type(expected_data)}",
+                    f"[System Error] 評価用の正解データが不正です:  doc_ids_in_order: {type(expected_data)}",
                 )
             # 上位N件のみ比較 (期待するIDリストの長さで比較)
             num_expected = len(expected_data)
@@ -127,7 +131,7 @@ def evaluate_result(quest: Quest, es_response: Dict[str, Any]) -> Tuple[bool, st
             if not isinstance(expected_data, dict):
                 return (
                     False,
-                    f"[System Error] Invalid expected data type for aggregation_result: {type(expected_data)}",
+                    f"[System Error] 評価用の正解データが不正です:  aggregation_result: {type(expected_data)}",
                 )
 
             aggregations = es_response.get("aggregations")
