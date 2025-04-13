@@ -14,6 +14,7 @@ class QuestView:
     def custom_echo(self, message: str, fg: str = None, bold: bool = False, err: bool = False):
         """共通の出力関数"""
         click.echo(click.style(message, fg=fg, bold=bold), err=err)
+    def display_quest_details(self, quest: Quest):
         """クエストの詳細情報を表示する"""
         title_line = f"--- クエスト {quest.quest_id}: {quest.title} ---"
         self.custom_echo(title_line, fg="cyan", bold=True)
