@@ -5,6 +5,10 @@ es_chatbot:
 	uv run python -m src.es_chatbot
 
 # run cli version
+cli:
+	uv run python -m src.cli 1
+
+# run cli version
 run:
 	uv run python -m src.main
 
@@ -18,7 +22,7 @@ test:
 
 # run formatter and linter
 lint:
-	uv run ruff check src tests
+	uv run ruff check --fix src tests
 	uv run ruff format src tests
 
 # バックエンドの elasticsearch を起動

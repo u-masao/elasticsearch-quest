@@ -21,4 +21,11 @@ dev = [
 line-length = 88
 
 [tool.ruff.lint]
-ignore = ["E402"]
+extend-select = ["I"]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-first-party = ["musubi_restapi"]
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+split-on-trailing-comma = true
+
