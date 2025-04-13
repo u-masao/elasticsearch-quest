@@ -2,7 +2,7 @@ include .env
 
 # run es chatbot
 es_chatbot:
-	uv run python -m src.es_chatbot
+	uv run python -m src.misc.es_chatbot
 
 # run cli version
 cli:
