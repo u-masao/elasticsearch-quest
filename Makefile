@@ -47,9 +47,16 @@ setup_backend_db:
 INDEX_NAME=sample_books
 dump_index:
 	curl --cacert ./certs/http_ca.crt \
-    -u $(ELASTICSEARCH_USERNAME):$(ELASTICSEARCH_PASSWORD) \
-    -d '{"size": 1000}' \
-    -H 'Content-Type: application/json' \
-    https://127.0.0.1:9200/$(INDEX_NAME)/_search/ \
-    | jq .hits.hits > fixtures/sample_books_dump.json
+        -u $(ELASTICSEARCH_USERNAME):$(ELASTICSEARCH_PASSWORD) \
+        -d '{"size": 1000}' \
+        -H 'Content-Type: application/json' https://127.0.0.1:9200/$(INDEX_NAME)/_search/ \
+        | jq .hits.hits > fixtures/sample_books_dump.json
+
+# sample query
+sample_query:
+	curl --cacert ./certs/http_ca.crt \
+        -u $(ELASTICSEARCH_USERNAME):$(ELASTICSEARCH_PASSWORD) \
+        -d '{"size": 1000, "query": {"match": {"name":"統計"}}}' \
+        -H 'Content-Type: application/json' https://127.0.0.1:9200/$(INDEX_NAME)/_search/ \
+        | jq .hits.hits
 
