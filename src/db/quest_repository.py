@@ -4,7 +4,6 @@ import os
 from typing import List, Optional
 from contextlib import contextmanager
 
-# Questデータクラスをインポート (上記で定義)
 from src.models.quest import Quest
 
 
@@ -16,12 +15,11 @@ class QuestRepository:
         リポジトリを初期化し、データベースパスを設定します。
 
         Args:
-            db_path: SQLiteデータベースファイルのパス。':memory:'も可。
+            db_path: SQLiteデータベースファイルのパス。
         """
         if not db_path:
-            raise ValueError("Database path cannot be empty.")
+            raise ValueError("db_path が空です。ファイル名を指定してください。")
         self.db_path = db_path
-        # 接続はメソッドごとに行うか、必要に応じて永続的な接続を持つことも可能
 
     @contextmanager
     def _get_connection(self):
@@ -50,12 +48,6 @@ class QuestRepository:
             schema_sql = f.read()
         try:
             with self._get_connection() as conn:
-                # テーブル存在確認 (より堅牢にするなら)
-                # cursor = conn.cursor()
-                # cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='quests';")
-                # if cursor.fetchone() is None:
-                #     conn.executescript(schema_sql)
-                # 初回実行前提なら以下でOK
                 conn.executescript(schema_sql)
                 conn.commit()
         except sqlite3.Error as e:
@@ -73,19 +65,17 @@ class QuestRepository:
             data_sql = f.read()
         try:
             with self._get_connection() as conn:
-                # executemany や個別のINSERT文実行の方がエラーハンドリングしやすい場合も
                 conn.executescript(data_sql)
                 conn.commit()
         except sqlite3.Error as e:
             print(f"Failed to load data from {data_file}: {e}")
-            # データロード失敗時のロールバックなどを検討
             raise
 
     def _row_to_quest(self, row: sqlite3.Row) -> Optional[Quest]:
         """sqlite3.RowをQuestオブジェクトに変換"""
         if not row:
             return None
-        return Quest(
+        quest = Quest(
             quest_id=row["quest_id"],
             title=row["title"],
             description=row["description"],
@@ -97,6 +87,8 @@ class QuestRepository:
             created_at=row["created_at"],
             updated_at=row["updated_at"],
         )
+        _ = quest.as_dict()  # 強制的にパースを走らせる。
+        return quest
 
     def get_quest_by_id(self, quest_id: int) -> Optional[Quest]:
         """
@@ -115,6 +107,9 @@ class QuestRepository:
                 row = cursor.fetchone()
                 return self._row_to_quest(row)
         except sqlite3.Error as e:
+            print(f"Error fetching quest with id {quest_id}: {e}")
+            return None  # エラー時はNoneを返す
+        except ValueError as e:
             print(f"Error fetching quest with id {quest_id}: {e}")
             return None  # エラー時はNoneを返す
 

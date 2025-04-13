@@ -73,7 +73,3 @@ def get_es_client() -> Elasticsearch:
     except Exception as e:
         print(f"Error connecting to Elasticsearch: {e}")
         raise
-
-
-# グローバルクライアント (シングルトン的に使う場合)
-# es_client = get_es_client()

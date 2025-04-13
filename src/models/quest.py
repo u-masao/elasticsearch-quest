@@ -1,7 +1,7 @@
 # src/models/quest.py
 import json
 from dataclasses import dataclass
-from typing import List, Optional, Any, Dict
+from typing import List, Optional, Any, Dict, Literal
 
 
 @dataclass
@@ -13,7 +13,9 @@ class Quest:
     description: str
     difficulty: int
     query_type_hint: Optional[str]
-    evaluation_type: str
+    evaluation_type: Literal[
+        "result_count", "doc_ids_include", "doc_ids_in_order", "aggregation_result"
+    ]
     evaluation_data_raw: str  # DBから取得した生の評価データ(JSON文字列など)
     hints_raw: Optional[str]  # DBから取得した生のヒント(JSON文字列など)
     created_at: str  # ISOフォーマット想定
