@@ -23,14 +23,14 @@ class AppConfig(BaseSettings):
     """アプリケーション設定"""
 
     project_root: Path = Field(default=PROJECT_ROOT)
-    db_path: Path = Field(default=DEFAULT_DATA_DIR / "quests.db")
+    db_path: Path = Field(default=DEFAULT_DB_FILE_PATH)
     index_name: str = Field(
-        default="sample_books", alias="ES_INDEX_NAME"
+        default=DEFAULT_INDEX_NAME , alias="ES_INDEX_NAME"
     )  # 環境変数名を指定
     schema_file: FilePath = Field(
-        default=DEFAULT_FIXTURES_DIR / "create_quests_table.sql"
+        default=DEFAULT_SCHEMA_FILE
     )
-    data_file: FilePath = Field(default=DEFAULT_FIXTURES_DIR / "insert_quests.sql")
+    data_file: FilePath = Field(default=DEFAULT_DATA_FILE )
 
     # Elasticsearch接続情報
     elasticsearch_url: AnyHttpUrl | None = Field(
