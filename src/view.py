@@ -1,6 +1,5 @@
 # src/view.py
 import json
-import click
 
 import click
 
