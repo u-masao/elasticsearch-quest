@@ -2,7 +2,7 @@ include .env
 
 # run es chatbot
 es_chatbot:
-	uv run python -m src.es_chatbot
+	uv run python -m src.misc.es_chatbot
 
 # run cli version
 cli:
@@ -34,7 +34,7 @@ setup:
 
 # Elasticsearch にサンプルデータを投入
 setup_es_index:
-	uv run python -m src.setup_es_index \
+	uv run python -m src.misc.setup_es_index \
     sample_books \
     fixtures/sample_books.json 2>&1 \
     | tee logs/setup_sample_books_index.log

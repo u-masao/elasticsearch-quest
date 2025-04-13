@@ -4,10 +4,11 @@ from typing import Any, Dict
 
 import pytest
 
-# テスト対象のモジュールとクラスをインポート
-from src.core_logic import evaluate_result, get_feedback
 from src.db.quest_repository import QuestRepository  # conftestから渡される型ヒント用
 from src.models.quest import Quest
+
+# テスト対象のモジュールとクラスをインポート
+from src.services.core_logic import evaluate_result, get_feedback
 
 # --- テスト用ヘルパー (エッジケース Quest 生成用) ---
 
@@ -180,7 +181,10 @@ def test_evaluate_result_aggregation_edge_cases():
         quest_agg, es_response_no_aggs_key
     )
     assert not is_correct_no_key
-    assert "不正解... 集計結果が含まれていません" in message_no_key
+    assert (
+        "不正解... レスポンスに集計結果 (`aggregations`) が含まれていません。"
+        in message_no_key
+    )
 
 
 def test_evaluate_result_unknown_type():
