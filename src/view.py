@@ -14,7 +14,7 @@ class QuestView:
         """Initialize with a custom echo function if provided."""
         self.custom_echo = echo_function or self.default_echo
 
-    def default_echo
+    def default_echo(
         self, message: str, fg: str = None, bold: bool = False, err: bool = False
     ):
         """Default echo function using click."""
