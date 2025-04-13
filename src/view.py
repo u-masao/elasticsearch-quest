@@ -10,7 +10,13 @@ from .exceptions import InvalidQueryError
 class QuestView:
     """CLIへの出力を担当するクラス"""
 
-    def custom_echo(self, message: str, fg: str = None, bold: bool = False, err: bool = False):
+    def custom_echo(
+        self, 
+        message: str, 
+        fg: str = None, 
+        bold: bool = False, 
+        err: bool = False
+    ):
         """共通の出力関数"""
         click.echo(click.style(message, fg=fg, bold=bold), err=err)
     def display_quest_details(self, quest: Quest):
