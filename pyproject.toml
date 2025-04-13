@@ -21,11 +21,11 @@ dev = [
 line-length = 88
 
 [tool.ruff.lint]
-extend-select = ["I"]
+extend-select = ["E", "W", "F", "I"]
+ignore = []
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
-known-first-party = ["musubi_restapi"]
+known-first-party = []
 section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
 split-on-trailing-comma = true
-
