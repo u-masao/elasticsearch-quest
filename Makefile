@@ -1,3 +1,4 @@
+include .env
 
 # run es chatbot
 es_chatbot:
@@ -41,3 +42,14 @@ setup_backend_db:
 	cat fixtures/create_quests_table.sql | sqlite3 $(DB_FILEPATH)
 	cat fixtures/insert_quests.sql | sqlite3 $(DB_FILEPATH)
 	echo 'select * from quests' | sqlite3 $(DB_FILEPATH)
+
+# Index のダンプ
+INDEX_NAME=sample_books
+dump_index:
+	curl --cacert ./certs/http_ca.crt \
+    -u $(ELASTICSEARCH_USERNAME):$(ELASTICSEARCH_PASSWORD) \
+    -d '{"size": 1000}' \
+    -H 'Content-Type: application/json' \
+    https://127.0.0.1:9200/$(INDEX_NAME)/_search/ \
+    | jq .hits.hits > fixtures/sample_books_dump.json
+

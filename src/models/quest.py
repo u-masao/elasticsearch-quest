@@ -1,7 +1,7 @@
 # src/models/quest.py
 import json
 from dataclasses import dataclass
-from typing import List, Optional, Any, Dict
+from typing import List, Optional, Any, Dict, Literal
 
 
 @dataclass
@@ -13,7 +13,9 @@ class Quest:
     description: str
     difficulty: int
     query_type_hint: Optional[str]
-    evaluation_type: str
+    evaluation_type: Literal[
+        "result_count", "doc_ids_include", "doc_ids_in_order", "aggregation_result"
+    ]
     evaluation_data_raw: str  # DBから取得した生の評価データ(JSON文字列など)
     hints_raw: Optional[str]  # DBから取得した生のヒント(JSON文字列など)
     created_at: str  # ISOフォーマット想定
@@ -27,7 +29,10 @@ class Quest:
             try:
                 return int(self.evaluation_data_raw)
             except (ValueError, TypeError):
-                return None  # エラー時はNoneを返すなど適切に処理
+                raise ValueError(
+                    "指定の evaluation_data_raw が int にパースできません: "
+                    f"{self.evaluation_data_raw}"
+                )
         elif self.evaluation_type in [
             "doc_ids_include",
             "doc_ids_in_order",
@@ -36,10 +41,15 @@ class Quest:
             try:
                 return json.loads(self.evaluation_data_raw)
             except json.JSONDecodeError:
-                return None  # エラーハンドリング
+                raise ValueError(
+                    "指定の evaluation_data_raw がJSONデコードできません: "
+                    f"{self.evaluation_data_raw}"
+                )
         else:
             # 他の評価タイプや未定義の場合は生データを返すかエラーにする
-            return self.evaluation_data_raw
+            raise ValueError(
+                f"指定の evaluation_type はサポートしていません: {self.evaluation_type}"
+            )
 
     # パースされたヒント (プロパティとしてアクセス)
     @property
@@ -54,10 +64,12 @@ class Quest:
                     return hints_list
                 else:
                     # 想定外の形式ならNoneや空リストを返す
-                    return None
+                    raise ValueError(f"hints_raw の形式が不正です: {self.hints_raw}")
             except json.JSONDecodeError:
-                return None  # エラーハンドリング
-        return None
+                raise ValueError(
+                    f"hints_raw がJSONデコードできません: {self.hints_raw}"
+                )
+        return []
 
     # dataclassから辞書への変換（必要であれば）
     def as_dict(self) -> Dict[str, Any]:
