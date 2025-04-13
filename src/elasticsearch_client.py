@@ -1,7 +1,8 @@
 # src/elasticsearch_client.py
 import os
-from elasticsearch import Elasticsearch
+
 from dotenv import load_dotenv
+from elasticsearch import Elasticsearch
 
 load_dotenv()
 

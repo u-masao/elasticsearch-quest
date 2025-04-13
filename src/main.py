@@ -1,7 +1,7 @@
+from agents import Agent, Runner
 from dotenv import load_dotenv
 
 load_dotenv()
-from agents import Agent, Runner
 
 sample_agent = Agent(
     name="hello agent",

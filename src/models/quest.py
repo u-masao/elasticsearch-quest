@@ -1,7 +1,7 @@
 # src/models/quest.py
 import json
 from dataclasses import dataclass
-from typing import List, Optional, Any, Dict, Literal
+from typing import Any, Dict, List, Literal, Optional
 
 
 @dataclass

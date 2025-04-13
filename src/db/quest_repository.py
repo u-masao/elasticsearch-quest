@@ -1,8 +1,8 @@
 # src/db/quest_repository.py
-import sqlite3
 import os
-from typing import List, Optional
+import sqlite3
 from contextlib import contextmanager
+from typing import List, Optional
 
 from src.models.quest import Quest
 
