@@ -9,44 +9,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-async def run(mcp_server: MCPServer):
-    """エージェントの定義と実行"""
-    agent = Agent(
-        name="アシスタント",
-        # エージェントへの指示 (自然言語)
-        instructions="ユーザーのリクエストにしたがってElasticsearch を操作して",
-        # 連携する MCP Server を指定
-        mcp_servers=[mcp_server],
-    )
-
-    # 最初の命令
-    message = "インデックス一覧を見せて"
-    print(f"命令: {message}")
-    result = await Runner.run(starting_agent=agent, input=message)
-    print(result.final_output)
-
-    # 対話ループ
-    while True:
-        message = input("Elasticsearch で何がしたいですか？ > ")
-        if message.lower() in ["exit", "quit"]:
-            print("終了します。")
-            break
-        print(f"命令: {message}")
-        result = await Runner.run(starting_agent=agent, input=message)
-        print(result.final_output)
-
-
-async def main():
-    """メイン処理"""
-
-    # MCPServerStdio を使って Elasticsearch MCP Server をサブプロセスとして起動・連携
-    async with MCPServerStdio(
+def generate_elasticsearch_mcp_server():
+    return MCPServerStdio(
         name="MCP Elasticsearch",
         params={
             "command": "uv",  # MCP Server の実行コマンド (ここでは uv を使用)
             "args": [
                 "--directory",
-                "../elasticsearch-mcp-server",  # MCP Server のディレクトリ
+                "mcp/elasticsearch-mcp-server",  # MCP Server のディレクトリ
                 "run",
                 "elasticsearch-mcp-server",  # MCP Server の実行ファイル/モジュール名
             ],
@@ -58,7 +28,63 @@ async def main():
                 "ELASTICSEARCH_CA_CERT": os.getenv("ELASTICSEARCH_CA_CERT"),
             },
         },
-    ) as server:
+    )
+
+
+async def run(mcp_server: MCPServer):
+    """エージェントの定義と実行"""
+    elasticsearch_agent = Agent(
+        name="アシスタント",
+        # エージェントへの指示 (自然言語)
+        instructions="""
+            ユーザーのリクエストにしたがってElasticsearch を操作し、
+            結果を表示して。
+            クエリを発行した場合は、発行した具体的なクエリとURLを表示して。
+
+            <format>
+            ### 結果
+            {Elasticsearchを操作した結果}
+
+            ### 対象Index名
+            {index_name}
+
+            ### クエリ
+            {Elasticsearchを操作したクエリ JSON}
+
+            ### API
+            {Elasticsearchを操作したエンドポイントURL}
+
+            ### コメント
+            {このタスクに関するコメント}
+
+            </format>
+        """,
+        # 連携する MCP Server を指定
+        mcp_servers=[mcp_server],
+    )
+
+    # 最初の命令
+    message = "インデックス一覧を見せて"
+    print(f"命令: {message}")
+    result = await Runner.run(starting_agent=elasticsearch_agent, input=message)
+    print(result.final_output)
+
+    # 対話ループ
+    while True:
+        message = input("Elasticsearch で何がしたいですか？ > ")
+        if message.lower() in ["exit", "quit"]:
+            print("終了します。")
+            break
+        print(f"命令: {message}")
+        result = await Runner.run(starting_agent=elasticsearch_agent, input=message)
+        print(result.final_output)
+
+
+async def main():
+    """メイン処理"""
+
+    # MCPServerStdio を使って Elasticsearch MCP Server をサブプロセスとして起動・連携
+    async with generate_elasticsearch_mcp_server() as server:
         trace_id = gen_trace_id()
         # OpenAI Platform でトレースを確認するための設定
         with trace(workflow_name="MCP Elasticsearch", trace_id=trace_id):

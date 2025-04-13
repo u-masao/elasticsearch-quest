@@ -1,12 +1,13 @@
 # tests/test_core_logic.py
 
+from typing import Any, Dict
+
 import pytest
-from typing import Dict, Any
 
 # テスト対象のモジュールとクラスをインポート
 from src.core_logic import evaluate_result, get_feedback
-from src.models.quest import Quest
 from src.db.quest_repository import QuestRepository  # conftestから渡される型ヒント用
+from src.models.quest import Quest
 
 # --- テスト用ヘルパー (エッジケース Quest 生成用) ---
 

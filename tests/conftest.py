@@ -1,17 +1,19 @@
 # tests/conftest.py
-import pytest
 import os
+import sqlite3
 import sys
 import tempfile
-import sqlite3
 from pathlib import Path
+
+import pytest
+
+# QuestRepositoryをインポート
+from src.db.quest_repository import QuestRepository
 
 # プロジェクトルートをパスに追加（srcをインポートするため）
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-# QuestRepositoryをインポート
-from src.db.quest_repository import QuestRepository
 
 # フィクスチャファイルのパスを定義
 FIXTURES_DIR = project_root / "fixtures"

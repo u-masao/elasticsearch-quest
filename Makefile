@@ -5,6 +5,10 @@ es_chatbot:
 	uv run python -m src.es_chatbot
 
 # run cli version
+cli:
+	uv run python -m src.cli 1
+
+# run cli version
 run:
 	uv run python -m src.main
 
@@ -18,7 +22,7 @@ test:
 
 # run formatter and linter
 lint:
-	uv run ruff check src tests
+	uv run ruff check --fix src tests
 	uv run ruff format src tests
 
 # バックエンドの elasticsearch を起動
@@ -47,9 +51,16 @@ setup_backend_db:
 INDEX_NAME=sample_books
 dump_index:
 	curl --cacert ./certs/http_ca.crt \
-    -u $(ELASTICSEARCH_USERNAME):$(ELASTICSEARCH_PASSWORD) \
-    -d '{"size": 1000}' \
-    -H 'Content-Type: application/json' \
-    https://127.0.0.1:9200/$(INDEX_NAME)/_search/ \
-    | jq .hits.hits > fixtures/sample_books_dump.json
+        -u $(ELASTICSEARCH_USERNAME):$(ELASTICSEARCH_PASSWORD) \
+        -d '{"size": 1000}' \
+        -H 'Content-Type: application/json' https://127.0.0.1:9200/$(INDEX_NAME)/_search/ \
+        | jq .hits.hits > fixtures/sample_books_dump.json
+
+# sample query
+sample_query:
+	curl --cacert ./certs/http_ca.crt \
+        -u $(ELASTICSEARCH_USERNAME):$(ELASTICSEARCH_PASSWORD) \
+        -d '{"size": 1000, "query": {"match": {"name":"統計"}}}' \
+        -H 'Content-Type: application/json' https://127.0.0.1:9200/$(INDEX_NAME)/_search/ \
+        | jq .hits.hits
 

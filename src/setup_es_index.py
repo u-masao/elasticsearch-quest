@@ -2,11 +2,10 @@ import asyncio
 import os
 import shutil
 
+import click
 from agents import Agent, Runner, gen_trace_id, trace
 from agents.mcp import MCPServer, MCPServerStdio
 from dotenv import load_dotenv
-import click
-
 
 load_dotenv()
 

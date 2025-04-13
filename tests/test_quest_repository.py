@@ -2,13 +2,14 @@
 import sys
 from pathlib import Path
 
+# モデルとリポジトリをインポート
+from src.db.quest_repository import QuestRepository
+from src.models.quest import Quest
+
 # プロジェクトルートをパスに追加
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-# モデルとリポジトリをインポート
-from src.models.quest import Quest
-from src.db.quest_repository import QuestRepository
 # conftest.py から fixture を利用
 
 # --- テストケース ---

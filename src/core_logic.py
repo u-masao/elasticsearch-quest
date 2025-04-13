@@ -1,11 +1,13 @@
 # src/core_logic.py
 import json
+from typing import Any, Dict, Optional, Tuple
+
 from elasticsearch import Elasticsearch, TransportError
-from typing import Dict, Any, Optional, Tuple
+
+from src.db.quest_repository import QuestRepository  # QuestRepositoryを想定
 
 # 必要なクラスや関数をインポート
 from src.models.quest import Quest
-from src.db.quest_repository import QuestRepository  # QuestRepositoryを想定
 
 
 def execute_query(
