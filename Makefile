@@ -64,3 +64,9 @@ sample_query:
         -H 'Content-Type: application/json' https://127.0.0.1:9200/$(INDEX_NAME)/_search/ \
         | jq .hits.hits
 
+# get mapping
+get_mapping:
+	curl --cacert ./certs/http_ca.crt \
+        -u $(ELASTICSEARCH_USERNAME):$(ELASTICSEARCH_PASSWORD) \
+        https://127.0.0.1:9200/$(INDEX_NAME)/_mapping
+
