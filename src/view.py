@@ -1,5 +1,6 @@
 # src/view.py
 import json
+import click
 
 import click
 
@@ -10,30 +11,32 @@ from .exceptions import InvalidQueryError
 class QuestView:
     """CLIへの出力を担当するクラス"""
 
-    def display_quest_details(self, quest: Quest):
+    def custom_echo(self, message: str, fg: str = None, bold: bool = False, err: bool = False):
+        """共通の出力関数"""
+        click.echo(click.style(message, fg=fg, bold=bold), err=err)
         """クエストの詳細情報を表示する"""
         title_line = f"--- クエスト {quest.quest_id}: {quest.title} ---"
-        click.echo(click.style(title_line, fg="cyan", bold=True))
-        click.echo(f"難易度: {quest.difficulty}")
-        click.echo(f"内容:\n{quest.description}")  # 内容は改行される可能性を考慮
-        click.echo("-" * len(title_line))
+        self.custom_echo(title_line, fg="cyan", bold=True)
+        self.custom_echo(f"難易度: {quest.difficulty}")
+        self.custom_echo(f"内容:\n{quest.description}")  # 内容は改行される可能性を考慮
+        self.custom_echo("-" * len(title_line))
 
     def display_elasticsearch_response(self, response: dict | None):
         """Elasticsearchからのレスポンス（一部）を表示する"""
         if response is None:
-            click.echo(click.style("\n--- Elasticsearch Response ---", bold=True))
-            click.echo("(レスポンスなし)")
-            click.echo("-" * 30)
+            self.custom_echo("\n--- Elasticsearch Response ---", bold=True)
+            self.custom_echo("(レスポンスなし)")
+            self.custom_echo("-" * 30)
             return
 
-        click.echo(click.style("\n--- Elasticsearch Response (Hits) ---", bold=True))
+        self.custom_echo("\n--- Elasticsearch Response (Hits) ---", bold=True)
         hits_info = response.get("hits", {})
         total_hits = hits_info.get("total", {}).get("value", "N/A")
-        click.echo(f"Total Hits: {total_hits}")
+        self.custom_echo(f"Total Hits: {total_hits}")
 
         hits = hits_info.get("hits", [])
         if hits:
-            click.echo("Documents (first 3):")
+            self.custom_echo("Documents (first 3):")
             for i, hit in enumerate(hits[:3]):
                 doc_id = hit.get("_id", "N/A")
                 score = hit.get("_score", "N/A")
@@ -42,51 +45,49 @@ class QuestView:
                 source_summary = ", ".join(
                     f"{k}: {v}" for k, v in list(source.items())[:2]
                 )  # 最初の2項目
-                click.echo(
+                self.custom_echo(
                     f"  {i + 1}. ID: {click.style(str(doc_id), fg='yellow')}, "
                     f"Score: {click.style(str(score), fg='blue')}, "
                     f"Source: {{{source_summary}}}"
                 )
         else:
-            click.echo("Documents: (No hits)")
+            self.custom_echo("Documents: (No hits)")
 
         if "aggregations" in response:
-            click.echo(
-                click.style(
-                    "\n--- Elasticsearch Response (Aggregations) ---", bold=True
-                )
+            self.custom_echo(
+                "\n--- Elasticsearch Response (Aggregations) ---", bold=True
             )
-            click.echo(
+            self.custom_echo(
                 json.dumps(response["aggregations"], indent=2, ensure_ascii=False)
             )
-        click.echo("-" * 30)
+        self.custom_echo("-" * 30)
 
     def display_evaluation(self, message: str, is_correct: bool):
         """評価結果を表示する"""
-        click.echo(click.style("\n--- 評価 ---", bold=True))
+        self.custom_echo("\n--- 評価 ---", bold=True)
         color = "green" if is_correct else "red"
-        click.echo(click.style(message, fg=color))
-        click.echo("-" * 12)
+        self.custom_echo(message, fg=color)
+        self.custom_echo("-" * 12)
 
     def display_feedback(self, feedback_title: str, feedback: str | None):
         """フィードバックを表示する"""
         if feedback:
             # 複数行のフィードバックを考慮してインデントなどを調整してもよい
-            click.echo(click.style(f"\n--- {feedback_title} ---", bold=True))
-            click.echo(feedback)
-            click.echo("-" * (len(feedback_title) + 6))
+            self.custom_echo(f"\n--- {feedback_title} ---", bold=True)
+            self.custom_echo(feedback)
+            self.custom_echo("-" * (len(feedback_title) + 6))
 
     def display_error(self, message: str):
         """汎用エラーメッセージを表示する"""
-        click.secho(f"エラー: {message}", fg="red", err=True)
+        self.custom_echo(f"エラー: {message}", fg="red", err=True)
 
     def display_warning(self, message: str):
         """警告メッセージを表示する"""
-        click.secho(f"警告: {message}", fg="yellow", err=True)
+        self.custom_echo(f"警告: {message}", fg="yellow", err=True)
 
     def display_info(self, message: str):
         """情報メッセージを表示する"""
-        click.echo(message)
+        self.custom_echo(message)
 
     def display_trace_info(self, trace_id: str):
         """トレース情報へのリンクを表示"""
@@ -95,25 +96,23 @@ class QuestView:
 
     def display_clear_message(self):
         """クエストクリアメッセージを表示する"""
-        click.secho(
+        self.custom_echo(
             "\n🎉 クエストクリア！おめでとうございます！ 🎉", fg="green", bold=True
         )
 
     def display_retry_message(self):
         """再挑戦を促すメッセージ"""
-        click.secho(
+        self.custom_echo(
             "\n残念、不正解です。フィードバックを参考に、もう一度挑戦してみましょう。",
             fg="yellow",
         )
 
     def prompt_for_query(self) -> str:
         """対話的にクエリ入力を求める"""
-        click.echo(
-            click.style(
-                "\nElasticsearchクエリをJSON形式で入力してください "
-                "(Ctrl+D or Ctrl+Z+Enter で終了):",
-                fg="blue",
-            )
+        self.custom_echo(
+            "\nElasticsearchクエリをJSON形式で入力してください "
+            "(Ctrl+D or Ctrl+Z+Enter で終了):",
+            fg="blue",
         )
         lines = []
         while True:
