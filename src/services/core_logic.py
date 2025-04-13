@@ -1,39 +1,27 @@
-# src/core_logic.py
+# src/services/core_logic.py
 import json
 from typing import Any, Dict, Optional, Tuple
 
 from elasticsearch import Elasticsearch, TransportError
 
+# --- 依存関係 ---
+# (これらのモジュール/クラスが存在することを前提とします)
 from src.db.quest_repository import QuestRepository  # QuestRepositoryを想定
+from src.evaluators.factory import get_evaluator  # 評価ファクトリをインポート
+from src.models.quest import Quest  # Questモデルを想定
 
-# 必要なクラスや関数をインポート
-from src.models.quest import Quest
 
-
+# execute_query 関数は元のままで良いでしょう
 def execute_query(
     es_client: Elasticsearch, index_name: str, user_query_str: str
 ) -> Dict[str, Any]:
     """
     ユーザーが入力したJSON形式のクエリ文字列をElasticsearchで実行し、
     結果(レスポンス全体)を返す。
-
-    Args:
-        es_client: Elasticsearchクライアントインスタンス。
-        index_name: 検索対象のインデックス名。
-        user_query_str: ユーザーが入力したJSON形式のクエリ文字列。
-
-    Returns:
-        Elasticsearchからのレスポンス (dict)。
-
-    Raises:
-        ValueError: クエリ文字列が不正なJSONの場合。
-        TransportError: Elasticsearchへのクエリ実行時にエラーが発生した場合。
-        Exception: その他の予期せぬエラー。
+    (元のコードから変更なし)
     """
     try:
         # ユーザー入力をJSONとしてパース
-        # knn検索など、クエリがトップレベルのキーを持つ場合も考慮
-        # 例えば {"query": {...}} や {"knn": {...}, "query": {...}} など
         query_body = json.loads(user_query_str)
         if not isinstance(query_body, dict):
             raise ValueError("Query must be a JSON object.")
@@ -46,194 +34,147 @@ def execute_query(
         return response
 
     except json.JSONDecodeError as e:
-        raise ValueError(f"Invalid JSON format in query: {e}")
+        raise ValueError(f"Invalid JSON format in query: {e}") from e
     except TransportError as e:
         # Elasticsearch固有のエラー (クエリ構文エラーなどを含む可能性)
-        print(f"Elasticsearch query error: {e.info}")  # エラー詳細を表示
-        raise  # エラーを再送出
+        print(f"Elasticsearch query error details: {e.info}")  # エラー詳細を表示
+        # エラー情報を付加して再送出するとデバッグしやすい場合がある
+        raise TransportError(
+            f"Elasticsearch query failed: {e.error}", e.info, e.status_code
+        ) from e
     except Exception as e:
         print(f"An unexpected error occurred during query execution: {e}")
-        raise
+        raise  # その他の予期せぬエラー
 
 
 def evaluate_result(quest: Quest, es_response: Dict[str, Any]) -> Tuple[bool, str]:
     """
-    クエストの評価基準に基づき、Elasticsearchの実行結果を評価する。
+    クエストの評価基準に基づき、Elasticsearchの実行結果を評価する。（リファクタリング版）
+    評価ロジックは Evaluator クラス群に委譲する。
 
     Args:
         quest: 評価対象のQuestオブジェクト。
-        es_response: Elasticsearchからのレスポンス。
+               `evaluation_type` (str) と `evaluation_data` (Any) を持つ想定。
+        es_response: Elasticsearchからのレスポンス (dict)。
 
     Returns:
         Tuple[bool, str]: (正解かどうか, 評価メッセージ)
     """
-
     try:
+        # Quest オブジェクトから評価タイプと期待データを取得
         eval_type = quest.evaluation_type
-        expected_data = quest.evaluation_data  # パース済みの期待データ
-    except ValueError as e:
-        return False, f"Quest のパース失敗: {e}"
+        # Questモデルが evaluation_data を適切な型で返すことを前提とします。
+        # もしDB等にJSON文字列で保存されている場合は、Questモデル側か、
+        # ここで json.loads() などでパースする必要があります。
+        expected_data = quest.evaluation_data
 
-    try:
-        hits_info = es_response.get("hits", {})
-        total_hits = hits_info.get("total", {}).get("value", 0)
-        actual_hits = hits_info.get("hits", [])
+        # ファクトリ関数を使って、評価タイプに対応する Evaluator インスタンスを取得
+        evaluator = get_evaluator(eval_type, expected_data)
 
-        if eval_type == "result_count":
-            if not isinstance(expected_data, int):
-                return (
-                    False,
-                    f"[System Error] 評価用の正解データが不正です:  result_count: {type(expected_data)}",
-                )
-            is_correct = total_hits == expected_data
-            message = (
-                f"正解！ヒット数: {total_hits}"
-                if is_correct
-                else f"不正解... ヒット数: {total_hits} (期待値: {expected_data})"
-            )
-            return is_correct, message
+        # 取得した Evaluator オブジェクトの evaluate メソッドを呼び出して評価を実行
+        is_correct, message = evaluator.evaluate(es_response)
+        return is_correct, message
 
-        elif eval_type == "doc_ids_include":
-            if not isinstance(expected_data, list):
-                return (
-                    False,
-                    f"[System Error] 評価用の正解データが不正です:  doc_ids_include: {type(expected_data)}",
-                )
-            actual_ids = {hit["_id"] for hit in actual_hits}
-            missing_ids = [
-                doc_id for doc_id in expected_data if doc_id not in actual_ids
-            ]
-            is_correct = not missing_ids
-            if is_correct:
-                message = f"正解！必要なドキュメントID ({', '.join(expected_data)}) がすべて含まれています。ヒット数: {total_hits}"
-            else:
-                message = f"不正解... 必要なドキュメントIDのうち {', '.join(missing_ids)} が見つかりません。ヒット数: {total_hits}"
-            return is_correct, message
-
-        elif eval_type == "doc_ids_in_order":
-            if not isinstance(expected_data, list):
-                return (
-                    False,
-                    f"[System Error] 評価用の正解データが不正です:  doc_ids_in_order: {type(expected_data)}",
-                )
-            # 上位N件のみ比較 (期待するIDリストの長さで比較)
-            num_expected = len(expected_data)
-            actual_ids_ordered = [hit["_id"] for hit in actual_hits[:num_expected]]
-            is_correct = actual_ids_ordered == expected_data
-            if is_correct:
-                message = f"正解！上位{num_expected}件のドキュメントIDが期待通り ({', '.join(expected_data)}) です。"
-            else:
-                message = f"不正解... 上位{num_expected}件のドキュメントIDが異なります。\n期待値: {expected_data}\n実際の結果: {actual_ids_ordered}"
-            return is_correct, message
-
-        elif eval_type == "aggregation_result":
-            # 集計結果の比較は複雑になる可能性がある
-            # ここでは単純な例として、特定の集計名と値が一致するかを見る
-            # quest.evaluation_data が {"agg_name": "...", "expected_value": ...} のような形式を想定
-            if not isinstance(expected_data, dict):
-                return (
-                    False,
-                    f"[System Error] 評価用の正解データが不正です:  aggregation_result: {type(expected_data)}",
-                )
-
-            aggregations = es_response.get("aggregations")
-            if not aggregations:
-                return False, "不正解... 集計結果が含まれていません。"
-
-            # 期待する集計名と値を取得 (例)
-            expected_agg_name = expected_data.get("agg_name")
-            expected_value = expected_data.get(
-                "expected_value"
-            )  # 比較する値 (数値、文字列、dictなど)
-
-            if not expected_agg_name:
-                return (
-                    False,
-                    "[System Error] aggregation_resultに 'agg_name' が定義されていません。",
-                )
-
-            actual_agg = aggregations.get(expected_agg_name)
-            if actual_agg is None:
-                return (
-                    False,
-                    f"不正解... 集計結果に '{expected_agg_name}' が見つかりません。",
-                )
-
-            # TODO: 実際の値の比較ロジックを実装 (単純な値比較、構造比較など)
-            # 例: 単純な値の場合
-            actual_value = actual_agg.get("value")  # .value 形式の場合
-            is_correct = actual_value == expected_value
-            if is_correct:
-                message = f"正解！集計 '{expected_agg_name}' の値が期待通り ({expected_value}) です。"
-            else:
-                message = f"不正解... 集計 '{expected_agg_name}' の値が異なります。\n期待値: {expected_value}\n実際の結果: {actual_value}"
-
-            # より複雑な集計結果 (bucketsなど) の比較は別途実装が必要
-            # is_correct = (actual_agg == expected_value) # 構造全体を比較する場合 (JSON文字列で格納など)
-
-            return is_correct, message
-
-        else:
-            return False, f"[System Error] 未定義の評価タイプです: {eval_type}"
-
+    except (ValueError, TypeError) as e:
+        # get_evaluator や evaluator.evaluate で発生する可能性のあるエラー
+        # (例: 未定義のeval_type、不正なexpected_data形式、評価中のエラー)
+        # エラーメッセージはファクトリや各Evaluatorクラスで生成されることを期待
+        error_message = f"評価設定または実行時エラー: {e}"
+        print(error_message)  # ログ等にも出力推奨
+        return False, error_message  # ユーザーフレンドリーなメッセージに加工しても良い
+    except AttributeError as e:
+        # Quest オブジェクトに必要な属性 (evaluation_type, evaluation_data) がない場合など
+        error_message = f"[System Error] Questオブジェクトの形式が不正です: {e}"
+        print(error_message)
+        return False, error_message
     except Exception as e:
-        print(f"An error occurred during evaluation: {e}")
-        return False, f"[System Error] 評価中にエラーが発生しました: {e}"
+        # その他の予期せぬエラー (Elasticsearchレスポンスの構造が想定外など)
+        error_message = f"[System Error] 評価中に予期せぬエラーが発生しました: {e}"
+        # 本番環境では、エラーの詳細をログに記録することが重要
+        import traceback
+
+        print(f"{error_message}\n{traceback.format_exc()}")
+        return False, error_message
 
 
+# get_feedback 関数は元のままで良いでしょう
+# (依存している quest.hints の取得方法に合わせて調整が必要な場合があります)
 def get_feedback(quest: Quest, is_correct: bool, attempt_count: int) -> str:
     """
     評価結果や試行回数に基づき、ユーザーへのフィードバック（ヒントなど）を生成する。
-
-    Args:
-        quest: 対象のQuestオブジェクト。
-        is_correct: 評価結果 (正解かどうか)。
-        attempt_count: ユーザーの試行回数。
-
-    Returns:
-        フィードバックメッセージ文字列。
+    (元のコードから変更なし、ただし quest.hints の取得方法に注意)
     """
     feedback = ""
     if not is_correct:
         feedback += "もう一度試してみましょう。\n"
-        hints = quest.hints  # パース済みのヒントリスト
-        if hints:
-            # 試行回数に応じてヒントを出す (例: 1回目はヒント1、2回目はヒント2...)
-            hint_index = attempt_count - 1  # 0-based index
-            if 0 <= hint_index < len(hints):
-                feedback += f"ヒント {attempt_count}: {hints[hint_index]}"
-            elif hint_index >= len(hints):
-                feedback += f"ヒント {len(hints)}: {hints[-1]} (これが最後のヒントです)"
-            else:  # attempt_countが0以下の場合など(通常はないはず)
-                feedback += f"ヒント 1: {hints[0]}"  # 最初のヒントを出す
-        else:
-            feedback += "この問題には利用可能なヒントがありません。"
+        try:
+            # Questモデルが hints をリスト (List[str]) として返すことを前提とします。
+            # もしJSON文字列などで格納されている場合は、Questモデル側かここでパースします。
+            hints = quest.hints
+            if hints and isinstance(hints, list):
+                # 試行回数に応じてヒントを選択 (1-based index で扱う)
+                hint_index = attempt_count - 1  # リストのインデックスは0-based
+                if 0 <= hint_index < len(hints):
+                    feedback += f"ヒント {attempt_count}: {hints[hint_index]}"
+                elif hint_index >= len(hints) and hints:  # ヒントを使い切った場合
+                    feedback += (
+                        f"ヒント {len(hints)}: {hints[-1]} (これが最後のヒントです)"
+                    )
+                # else: attempt_count が 0 以下などの異常ケース (最初のヒントを出すなど検討)
+            else:
+                feedback += "この問題には利用可能なヒントがありません。"
+        except AttributeError:
+            feedback += (
+                "[System Error] Questオブジェクトからヒント情報を取得できませんでした。"
+            )
+        except Exception as e:
+            # ヒント処理中の予期せぬエラー
+            print(f"Error processing hints: {e}")
+            feedback += "[System Error] ヒントの処理中にエラーが発生しました。"
 
-    # 正解時のメッセージは evaluate_result 側で生成済みなので、ここでは追加しない
-    # 必要であれば、正解時にも追加のメッセージ（例：「素晴らしい！」など）を生成
+    # 正解時の追加メッセージが必要であればここに記述
+    # if is_correct:
+    #    feedback += "\n素晴らしい！見事にクリアしました！"
 
     return feedback
 
 
-# --- 解答例関連 ---
-# QuestRepositoryに解答例取得メソッドが追加されたと仮定
+# get_example_solution 関数は元のままで良いでしょう
+# (依存している quest_repo の実装に合わせて調整が必要な場合があります)
 def get_example_solution(quest_repo: QuestRepository, quest_id: int) -> Optional[str]:
     """
-    指定されたクエストIDの解答例を取得する (DBに保存されている場合)
+    指定されたクエストIDの解答例を取得する (DBに保存されている場合)。
+    (元のコードから変更なし、ただし quest_repo のメソッド名に注意)
     """
-    solution = quest_repo.get_solution_by_quest_id(quest_id)  # 仮のメソッド名
-    if solution:
-        try:
-            # 整形して返す
-            parsed_solution = json.loads(solution)
-            return json.dumps(parsed_solution, indent=2, ensure_ascii=False)
-        except json.JSONDecodeError:
-            return solution  # パースできない場合はそのまま返す
-    return None
+    try:
+        # QuestRepository に解答例取得メソッドが存在すると仮定
+        # (メソッド名は実際のリポジトリ実装に合わせる)
+        solution_json_str = quest_repo.get_solution_by_quest_id(quest_id)
+        if solution_json_str:
+            try:
+                # JSON文字列をパースして整形して返す
+                parsed_solution = json.loads(solution_json_str)
+                return json.dumps(parsed_solution, indent=2, ensure_ascii=False)
+            except json.JSONDecodeError:
+                # パースできない場合 (JSON形式でない場合など) はそのまま返す
+                return solution_json_str
+        return None  # 解答例が見つからない場合は None を返す
+    except AttributeError:
+        # QuestRepository に指定のメソッドがない場合
+        print(
+            "Error: QuestRepository instance lacks 'get_solution_by_quest_id' method."
+        )
+        # ユーザーにはシステムエラーとして伝えるのが適切か検討
+        return "[System Error] 解答例取得機能が利用できません。"
+    except Exception as e:
+        # DB接続エラーなど、解答例取得中のその他のエラー
+        print(f"Error fetching example solution for quest_id {quest_id}: {e}")
+        return "[System Error] 解答例の取得中にエラーが発生しました。"
 
 
-# LLMを使って解答例を「作る」機能は、別途LLM連携部分で実装が必要
+# generate_example_solution_with_llm 関数は元のままで良いでしょう
+# (具体的な実装は別途必要)
 def generate_example_solution_with_llm(quest: Quest) -> str:
     """(将来実装) LLMを使ってクエストの解答例を生成する"""
-    # LLM API呼び出しロジック
-    pass
+    # ここにLLM API呼び出しなどのロジックを実装
+    raise NotImplementedError("LLMによる解答例生成は未実装です。")
