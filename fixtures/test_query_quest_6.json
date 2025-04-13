@@ -1,0 +1,8 @@
+{
+  "knn": {
+    "field": "metric_vector",
+    "query_vector": [9, 1],
+    "k": 3,
+    "num_candidates": 10
+  }
+}
