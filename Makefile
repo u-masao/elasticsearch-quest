@@ -22,8 +22,8 @@ test:
 
 # run formatter and linter
 lint:
-	uv run ruff check --fix src tests
 	uv run ruff format src tests
+	uv run ruff check --fix src tests
 
 # バックエンドの elasticsearch を起動
 # アクセス情報をホスト側へ展開
