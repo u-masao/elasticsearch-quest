@@ -14,7 +14,7 @@ export ELASTICSEARCH_CA_CERT=$ELASTICSEARCH_CA_CERT
 uv run python -m src.cli 1 --query '{ "query": { "match": { "name": "Deep Learning" } } }'
 
 # 例: クエストID 3 に挑戦し、インタラクティブにクエリを入力
-echo '{ "query": { "range": { "pages": { "gte": 500 } } } }' | uv run python -m src.cli 3
+uv run python -m src.cli 3 --query '{}'
 
 # 例: クエストID 6 に挑戦し、クエリをファイルから読み込む
 uv run python -m src.cli 6 --query_file fixtures/test_query_quest_6.json
