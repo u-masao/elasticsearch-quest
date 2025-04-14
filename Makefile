@@ -6,7 +6,7 @@ es_chatbot:
 
 # run cli version
 cli:
-	uv run python -m src.cli 1
+	uv run python -m src.cli 1 --query '{}'
 
 # run cli version
 run:
