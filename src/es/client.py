@@ -15,9 +15,11 @@ def get_es_client(config: AppConfig) -> Elasticsearch:
         if not config.elasticsearch_username or not config.elasticsearch_password:
             # 警告を出すかエラーにする
             print(
-                "警告: Cloud IDを使用する場合、ELASTICSEARCH_USERNAME と ELASTICSEARCH_PASSWORD の設定が必要です。"
+                "警告: Cloud IDを使用する場合、ELASTICSEARCH_USERNAME と "
+                "ELASTICSEARCH_PASSWORD の設定が必要です。"
             )
-            # raise InitializationError("Cloud ID認証にはユーザー名とパスワードが必要です。")
+            # raise InitializationError("Cloud ID認証にはユーザー名
+            # とパスワードが必要です。")
         return Elasticsearch(
             cloud_id=config.elastic_cloud_id,
             basic_auth=(config.elasticsearch_username, config.elasticsearch_password),

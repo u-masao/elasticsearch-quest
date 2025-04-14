@@ -31,8 +31,10 @@ class DocIdsIncludeEvaluator(Evaluator):
         expected_ids_str = ", ".join(expected_ids)  # メッセージ表示用に整形
 
         if is_correct:
-            message = f"正解！必要なドキュメントID ({expected_ids_str}) がすべて含まれています。ヒット数: {total_hits}"
+            message = f"正解！必要なドキュメントID ({expected_ids_str}) が"
+            f"すべて含まれています。ヒット数: {total_hits}"
         else:
             missing_ids_str = ", ".join(missing_ids)
-            message = f"不正解... 必要なドキュメントIDのうち {missing_ids_str} が見つかりません。ヒット数: {total_hits}"
+            message = f"不正解... 必要なドキュメントIDのうち {missing_ids_str}"
+            f" が見つかりません。ヒット数: {total_hits}"
         return is_correct, message

@@ -64,7 +64,8 @@ def quest_repository() -> QuestRepository:
             print(f"Number of quests loaded: {count}")  # デバッグ用
             if count != 6:  # 期待されるクエスト数を確認
                 raise Exception(
-                    f"Data loading failed or incomplete ({count} quests found, expected 6)."
+                    f"Data loading failed or incomplete ({count} "
+                    "quests found, expected 6)."
                 )
         finally:
             if conn_check:

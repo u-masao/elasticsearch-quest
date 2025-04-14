@@ -6,7 +6,7 @@ es_chatbot:
 
 # run cli version
 cli:
-	uv run python -m src.cli 1
+	uv run python -m src.cli 1 --query '{}'
 
 # run cli version
 run:
@@ -14,7 +14,7 @@ run:
 
 # run gui version
 ui:
-	uv run gradio src/ui.py
+	PYTHONPATH=. uv run gradio src/ui.py
 
 # run test
 test:
@@ -22,8 +22,8 @@ test:
 
 # run formatter and linter
 lint:
-	uv run ruff check --fix src tests
 	uv run ruff format src tests
+	uv run ruff check --fix src tests
 
 # バックエンドの elasticsearch を起動
 # アクセス情報をホスト側へ展開
@@ -63,4 +63,10 @@ sample_query:
         -d '{"size": 1000, "query": {"match": {"name":"統計"}}}' \
         -H 'Content-Type: application/json' https://127.0.0.1:9200/$(INDEX_NAME)/_search/ \
         | jq .hits.hits
+
+# get mapping
+get_mapping:
+	curl --cacert ./certs/http_ca.crt \
+        -u $(ELASTICSEARCH_USERNAME):$(ELASTICSEARCH_PASSWORD) \
+        https://127.0.0.1:9200/$(INDEX_NAME)/_mapping
 

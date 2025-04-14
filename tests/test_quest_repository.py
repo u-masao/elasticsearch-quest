@@ -28,7 +28,8 @@ def test_get_quest_by_id_exists(quest_repository: QuestRepository):
     assert quest.evaluation_data == 3
     # hints もプロパティ経由でパース
     assert quest.hints == [
-        "`match` クエリは、指定されたテキストを解析し、一致するドキュメントを検索します。",
+        "`match` クエリは、指定されたテキストを解析し、"
+        "一致するドキュメントを検索します。",
         '基本的な構文: `query: { match: { field_name: "search_term" } }`',
     ]
 
@@ -99,7 +100,8 @@ def test_evaluation_data_parsing(quest_repository: QuestRepository):
     assert isinstance(q6.evaluation_data, list)
     assert q6.evaluation_data == ["10", "11", "18"]
 
-    # evaluation_dataが不正なJSONの場合のテストも追加可能 (今回はサンプルデータが正しい前提)
+    # evaluation_dataが不正なJSONの場合のテストも追加可能
+    # (今回はサンプルデータが正しい前提)
 
 
 def test_hints_parsing(quest_repository: QuestRepository):

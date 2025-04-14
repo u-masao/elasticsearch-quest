@@ -18,7 +18,8 @@ class AggregationResultEvaluator(Evaluator):
         if "agg_name" not in expected_data:
             # 必須キーがない場合はValueErrorを送出
             raise ValueError(
-                "[System Error] aggregation_resultの評価データには 'agg_name' キーが必要です。"
+                "[System Error] aggregation_resultの評価データには"
+                " 'agg_name' キーが必要です。"
             )
         # expected_value の型は多様なため、ここではチェックせず、evaluate内で扱う
         super().__init__(expected_data)
@@ -55,7 +56,8 @@ class AggregationResultEvaluator(Evaluator):
         ):
             is_correct = actual_simple_value == expected_value
             if is_correct:
-                message = f"正解！集計 '{expected_agg_name}' の値が期待通り ({self._format_value(expected_value)}) です。"
+                message = f"正解！集計 '{expected_agg_name}' の値が期待通り "
+                f"({self._format_value(expected_value)}) です。"
             else:
                 message = (
                     f"不正解... 集計 '{expected_agg_name}' の値が異なります。\n"

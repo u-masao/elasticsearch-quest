@@ -90,6 +90,9 @@ class QuestRepository:
         _ = quest.as_dict()  # 強制的にパースを走らせる。
         return quest
 
+    async def get_quest_by_id_async(self, quest_id: int) -> Optional[Quest]:
+        return self.get_quest_by_id(quest_id)
+
     def get_quest_by_id(self, quest_id: int) -> Optional[Quest]:
         """
         指定されたIDのクエストを取得します。

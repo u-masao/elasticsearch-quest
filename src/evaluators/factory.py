@@ -32,7 +32,8 @@ def get_evaluator(eval_type: str, expected_data: Any) -> Evaluator:
 
     Raises:
         ValueError: 未定義の評価タイプが指定された場合。
-        TypeError: expected_data の型が評価クラスの期待と異なる場合 (コンストラクタで発生)。
+        TypeError: expected_data の型が評価クラスの期待と異なる場合
+        (コンストラクタで発生)。
         ValueError: expected_data の値が不正な場合 (コンストラクタで発生)。
     """
     evaluator_class = EVALUATOR_MAP.get(eval_type)

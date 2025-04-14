@@ -1,7 +1,6 @@
 # src/utils/query_loader.py
 import json
 from pathlib import Path
-from typing import Callable
 
 from ..exceptions import InvalidQueryError
 
@@ -9,7 +8,6 @@ from ..exceptions import InvalidQueryError
 def load_query_from_source(
     query_str: str | None,
     query_file: Path | None,
-    prompt_func: Callable[[], str] | None = None,
 ) -> str:
     """
     ファイル、文字列、または対話入力からクエリ文字列を取得し、JSON形式か検証する。
@@ -17,7 +15,6 @@ def load_query_from_source(
     Args:
         query_str: クエリ文字列 (CLI引数).
         query_file: クエリファイルパス (CLI引数).
-        prompt_func: 対話入力が必要な場合に呼び出す関数.
 
     Returns:
         有効なJSON形式のクエリ文字列.
@@ -45,14 +42,11 @@ def load_query_from_source(
     elif query_str:
         source = "コマンドライン引数 (--query)"
         user_query_str = query_str
-    elif prompt_func:
-        source = "対話入力"
-        # prompt_func内でEOFErrorや空入力はInvalidQueryErrorとして処理される想定
-        user_query_str = prompt_func()
     else:
         # どのソースも指定されていない場合
         raise InvalidQueryError(
-            "クエリのソースが指定されていません (--query または --query-file を使用するか、対話モードで入力してください)。"
+            "クエリのソースが指定されていません (--query または "
+            "--query-file を使用するか、対話モードで入力してください)。"
         )
 
     if not user_query_str or not user_query_str.strip():

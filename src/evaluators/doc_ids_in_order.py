@@ -32,7 +32,8 @@ class DocIdsInOrderEvaluator(Evaluator):
         expected_ids_str = ", ".join(expected_ids_ordered)  # メッセージ表示用
 
         if is_correct:
-            message = f"正解！上位{num_expected}件のドキュメントIDが期待通り ({expected_ids_str}) です。"
+            message = f"正解！上位{num_expected}件のドキュメントIDが"
+            f"期待通り ({expected_ids_str}) です。"
         else:
             actual_ids_str = ", ".join(actual_ids_ordered)
             message = (
