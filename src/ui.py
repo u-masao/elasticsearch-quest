@@ -29,7 +29,6 @@ class QueuedQuestView(QuestView):
 
     async def send_message(self, message: str | EndOfMessage, **kwargs: Dict[str, Any]):
         """非同期にメッセージをキューに送信する"""
-        print(message)
         await self.message_queue.put(message)
 
     async def receive_messages(self):
@@ -87,7 +86,6 @@ async def cli(
     try:
         # 1. 設定のロード (CLI引数でオーバーライド)
         # ValidationError が発生する可能性あり
-        print("load config")
         config = load_config(
             db_path_override=db_path,
             index_name_override=index_name,
@@ -97,7 +95,6 @@ async def cli(
 
         # 2. 依存関係の初期化とサービスの準備
         # DIコンテナを使う場合:
-        print("init services")
         container = AppContainer(config, view)
         quest_repo = await container.quest_repository  # ここで初期化が走る
         es_client = await container.es_client  # ここで初期化が走る
@@ -111,7 +108,6 @@ async def cli(
         # agent_service = AgentService(config, view)
 
         # 3. メイン処理の実行 (非同期)
-        print("run run_quest_flow()")
         await run_quest_flow(
             view=view,
             quest_service=quest_service,
@@ -203,6 +199,9 @@ async def run_quest_flow(
     else:
         await view.display_retry_message()
 
+    # 7. 終了
+    await view.close()
+
 
 async def load_quest(quest_id):
     view = QueuedQuestView()  # View は最初に初期化
@@ -226,21 +225,24 @@ async def load_quest(quest_id):
 async def submit_answer(quest_id, query, history):
     # ユーザーの入力を反映
     history.append({"role": "user", "content": f"これでどう？\n\n{query}"})
-    yield history
+    yield history, gr.Button("submit", interactive=False)
 
     # view を作成
     view = QueuedQuestView()
-    print(view)
 
     # 実行
     quest_task = asyncio.create_task(cli(view=view, quest_id=quest_id, query=query))
-    print(quest_task)
 
     # メッセージを受信
     async for message in view.receive_messages():
         history.append({"role": "assistant", "content": message})
-        print(history[-1])
-        yield history
+        yield history, gr.Button("submit", interactive=False)
+
+    # タスク完了までブロック
+    await quest_task
+
+    # タスク完了時にボタンを有効化
+    yield history, gr.Button("submit", interactive=True, variant="primary")
 
 
 def json_check(query):
@@ -253,12 +255,12 @@ def json_check(query):
         return "🟥 JSON 形式ではありません"
 
 
-with gr.Blocks() as demo:
+with gr.Blocks(fill_width=True) as demo:
     ui_quest_id = gr.Number(1)
     ui_question_markdown = gr.Markdown()
     ui_user_query = gr.Textbox("", lines=5, label="ここに答えを書いてください")
     ui_json_validator = gr.Markdown()
-    ui_submit_button = gr.Button("submit")
+    ui_submit_button = gr.Button("submit", variant="primary")
     ui_chat = gr.Chatbot(type="messages")
 
     ui_user_query.change(
@@ -273,7 +275,7 @@ with gr.Blocks() as demo:
     ui_submit_button.click(
         submit_answer,
         inputs=[ui_quest_id, ui_user_query, ui_chat],
-        outputs=[ui_chat],
+        outputs=[ui_chat, ui_submit_button],
     )
 
 
