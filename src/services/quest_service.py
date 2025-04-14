@@ -50,7 +50,7 @@ class QuestService:
             raise QuestNotFoundError(f"クエストID {quest_id} が見つかりません。")
         return quest
 
-    def execute_and_evaluate(
+    async def execute_and_evaluate(
         self, quest: Quest, user_query_str: str
     ) -> tuple[bool, str, str | None, dict | None]:
         """

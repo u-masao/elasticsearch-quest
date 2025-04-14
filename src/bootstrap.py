@@ -8,7 +8,7 @@ from .exceptions import DatabaseError, ElasticsearchError
 from .view import QuestView
 
 
-def initialize_database(config: AppConfig, view: QuestView) -> QuestRepository:
+async def initialize_database(config: AppConfig, view: QuestView) -> QuestRepository:
     """
     データベースリポジトリを初期化し、必要であればスキーマとデータをロードする。
 
@@ -29,22 +29,22 @@ def initialize_database(config: AppConfig, view: QuestView) -> QuestRepository:
         # ファイルの存在チェックは config の FilePath Validator が行う
         # ここではファイルサイズで空かどうかをチェック
         if not config.db_path.exists() or config.db_path.stat().st_size == 0:
-            view.display_info(
+            await view.display_info(
                 f"データベースファイル '{config.db_path}' が存在しないか"
                 "空のため初期化します..."
             )
             repo.initialize_schema(str(config.schema_file))
             repo.load_data(str(config.data_file))
-            view.display_info("データベースの初期化が完了しました。")
+            await view.display_info("データベースの初期化が完了しました。")
         else:
-            view.display_info(f"データベース '{config.db_path}' を使用します。")
+            await view.display_info(f"データベース '{config.db_path}' を使用します。")
         return repo
     except Exception as e:
         # QuestRepository 内で発生したエラーも含む
         raise DatabaseError(f"データベース初期化中にエラーが発生しました: {e}") from e
 
 
-def initialize_elasticsearch(config: AppConfig, view: QuestView) -> Elasticsearch:
+async def initialize_elasticsearch(config: AppConfig, view: QuestView) -> Elasticsearch:
     """
     Elasticsearchクライアントを初期化し、接続を確認する。
 
@@ -61,7 +61,7 @@ def initialize_elasticsearch(config: AppConfig, view: QuestView) -> Elasticsearc
     try:
         # 環境変数に関する警告 (接続情報がない場合)
         if not config.elasticsearch_url and not config.elastic_cloud_id:
-            view.display_warning(
+            await view.display_warning(
                 "環境変数 ELASTICSEARCH_URL または ELASTIC_CLOUD_ID "
                 "が設定されていません。\n"
                 "デフォルトの http://localhost:9200 への接続を試みます。"
@@ -69,13 +69,13 @@ def initialize_elasticsearch(config: AppConfig, view: QuestView) -> Elasticsearc
 
         # get_es_client は設定オブジェクトを受け取るように変更
         es_client = get_es_client(config)
-        view.display_info("Elasticsearchに接続中...")
+        await view.display_info("Elasticsearchに接続中...")
         if not es_client.ping():
             raise ElasticsearchError(
                 "Elasticsearch に接続できません。"
                 "設定とサーバーの状態を確認してください。"
             )
-        view.display_info("Elasticsearchに接続しました。")
+        await view.display_info("Elasticsearchに接続しました。")
         return es_client
     except Exception as e:
         # get_es_client 内のエラーや ping() のエラーを含む
@@ -98,9 +98,9 @@ class AppContainer:
         self._es_client = None
 
     @property
-    def quest_repository(self) -> QuestRepository:
+    async def quest_repository(self) -> QuestRepository:
         if self._quest_repo is None:
-            self._quest_repo = initialize_database(self.config, self.view)
+            self._quest_repo = await initialize_database(self.config, self.view)
         return self._quest_repo
 
     @property

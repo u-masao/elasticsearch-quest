@@ -2,6 +2,7 @@
 import asyncio
 import json
 from pathlib import Path
+from typing import Any, Dict
 
 import gradio as gr
 
@@ -15,28 +16,59 @@ from src.exceptions import QuestCliError  # キャッチするベース例外
 from src.services.agent_service import AgentService
 from src.services.quest_service import QuestService
 from src.utils.query_loader import load_query_from_source
-from src.view import QuestView
+from src.view import EndOfMessage, QuestView
+
+
+class QueuedQuestView(QuestView):
+    """非同期メッセージキューを持つQuestViewの拡張クラス"""
+
+    def __init__(self):
+        super().__init__()
+        self.message_queue = asyncio.Queue()  # 非同期メッセージキューを追加
+        self.custom_echo = self.send_message
+
+    async def send_message(self, message: str | EndOfMessage, **kwargs: Dict[str, Any]):
+        """非同期にメッセージをキューに送信する"""
+        print(message)
+        await self.message_queue.put(message)
+
+    async def receive_messages(self):
+        """キューからメッセージを取り出して処理する非同期メソッド"""
+        while True:
+            message = await self.message_queue.get()
+            self.message_queue.task_done()
+            if isinstance(message, EndOfMessage):
+                break
+            elif isinstance(message, str):
+                yield message
+            else:
+                raise ValueError(
+                    f"receive_messages で予期しない型を受け取りました: {type(message)}"
+                )
 
 
 # --- ヘルパー関数 ---
-def handle_exception(view: QuestView, e: Exception):
+async def handle_exception(view: QuestView, e: Exception):
     """集約的な例外ハンドリング"""
     if isinstance(e, QuestCliError):
         # アプリケーション内で定義されたエラー
-        view.display_error(str(e))
+        await view.display_error(str(e))
     elif isinstance(e, FileNotFoundError):
         # ファイルが見つからない場合のエラーを個別表示
-        view.display_error(f"必要なファイルが見つかりません: {e}")
+        await view.display_error(f"必要なファイルが見つかりません: {e}")
     else:
         # 予期せぬその他のエラー
-        view.display_error(f"予期せぬエラーが発生しました: {type(e).__name__}: {e}")
+        await view.display_error(
+            f"予期せぬエラーが発生しました: {type(e).__name__}: {e}"
+        )
         # デバッグ用にトレースバックを表示するオプションなど追加しても良い
         # import traceback
         # traceback.print_exc()
     # sys.exit(1)
 
 
-def cli(
+async def cli(
+    view: QueuedQuestView,
     quest_id: int,
     query: str | None = None,
     query_file: Path | None = None,
@@ -51,11 +83,11 @@ def cli(
 
     QUEST_ID: 挑戦するクエストのID（整数）。
     """
-    view = QuestView()  # View は最初に初期化
 
     try:
         # 1. 設定のロード (CLI引数でオーバーライド)
         # ValidationError が発生する可能性あり
+        print("load config")
         config = load_config(
             db_path_override=db_path,
             index_name_override=index_name,
@@ -65,9 +97,10 @@ def cli(
 
         # 2. 依存関係の初期化とサービスの準備
         # DIコンテナを使う場合:
+        print("init services")
         container = AppContainer(config, view)
-        quest_repo = container.quest_repository  # ここで初期化が走る
-        es_client = container.es_client  # ここで初期化が走る
+        quest_repo = await container.quest_repository  # ここで初期化が走る
+        es_client = await container.es_client  # ここで初期化が走る
         quest_service = QuestService(quest_repo, es_client, config.index_name)
         agent_service = AgentService(config, view)  # AgentService も view を使う
 
@@ -78,16 +111,15 @@ def cli(
         # agent_service = AgentService(config, view)
 
         # 3. メイン処理の実行 (非同期)
-        asyncio.run(
-            run_quest_flow(
-                view=view,
-                quest_service=quest_service,
-                agent_service=agent_service,
-                quest_id=quest_id,
-                query_str_arg=query,
-                query_file_arg=query_file,
-                skip_agent=skip_agent,
-            )
+        print("run run_quest_flow()")
+        await run_quest_flow(
+            view=view,
+            quest_service=quest_service,
+            agent_service=agent_service,
+            quest_id=quest_id,
+            query_str_arg=query,
+            query_file_arg=query_file,
+            skip_agent=skip_agent,
         )
 
     # except ValidationError as e: # Pydantic のエラー
@@ -95,12 +127,12 @@ def cli(
     #     sys.exit(1)
     except QuestCliError as e:
         # アプリケーション定義のエラーをまとめて処理
-        handle_exception(view, e)
+        await handle_exception(view, e)
     except FileNotFoundError as e:
         # クエリファイルが見つからない場合など
-        handle_exception(view, e)
+        await handle_exception(view, e)
     except Exception as e:  # その他の予期せぬエラー
-        handle_exception(view, e)
+        await handle_exception(view, e)
 
 
 # --- 非同期メインフロー ---
@@ -116,47 +148,50 @@ async def run_quest_flow(
     """クエスト実行の非同期フロー"""
     # 1. クエストを取得
     quest = quest_service.get_quest(quest_id)  # QuestNotFoundError が発生する可能性
-    view.display_quest_details(quest)
+    await view.display_quest_details(quest)
 
     # 2. ユーザーのクエリを取得 (ファイル > 文字列 > 対話入力)
     # InvalidQueryError, FileNotFoundError が発生する可能性
     user_query_str = load_query_from_source(
         query_str=query_str_arg,
         query_file=query_file_arg,
-        prompt_func=view.prompt_for_query
-        if not query_str_arg and not query_file_arg
-        else None,
+        # prompt_func=await view.prompt_for_query
+        # if not query_str_arg and not query_file_arg
+        # else None,
         # query または query_file が指定されていれば対話入力はしない
     )
-    view.display_info("\n--- 提出されたクエリ ---")
-    view.display_info(user_query_str)  # 提出されたクエリを表示
+    await view.display_info("\n--- 提出されたクエリ ---")
+    await view.display_info(user_query_str)  # 提出されたクエリを表示
 
     # 3. クエリを実行し、ルールベースで評価
     # ElasticsearchError, QuestCliError が発生する可能性
-    is_correct, rule_eval_message, rule_feedback, es_response = (
-        quest_service.execute_and_evaluate(quest, user_query_str)
-    )
+    (
+        is_correct,
+        rule_eval_message,
+        rule_feedback,
+        es_response,
+    ) = await quest_service.execute_and_evaluate(quest, user_query_str)
 
     # 4. 結果を表示
     # Elasticsearchレスポンス表示
-    view.display_elasticsearch_response(es_response)
+    await view.display_elasticsearch_response(es_response)
     # ルールベース評価結果表示
-    view.display_evaluation(rule_eval_message, is_correct)
-    view.display_feedback("ルールベース評価フィードバック", rule_feedback)
+    await view.display_evaluation(rule_eval_message, is_correct)
+    await view.display_feedback("ルールベース評価フィードバック", rule_feedback)
 
     # 5. LLMエージェントによる評価 (スキップしない場合)
     agent_feedback = None
     if not skip_agent:
-        view.display_info("\n🤖 LLMエージェントによる評価を実行中...")
+        await view.display_info("\n🤖 LLMエージェントによる評価を実行中...")
         try:
             # AgentError が発生する可能性
             agent_feedback = await agent_service.run_evaluation_agent(
                 quest, user_query_str, rule_eval_message
             )
-            view.display_feedback("🤖 AI評価フィードバック", agent_feedback)
+            await view.display_feedback("🤖 AI評価フィードバック", agent_feedback)
         except QuestCliError as e:  # AgentError も QuestCliError を継承
             # エージェント実行中のエラーは警告として表示し、処理は続行する
-            view.display_warning(
+            await view.display_warning(
                 f"AI評価中にエラーが発生しました (処理は続行します): {e}"
             )
         # except Exception as e: # AgentService内で捕捉されなかった予期せぬエラー
@@ -164,16 +199,16 @@ async def run_quest_flow(
 
     # 6. 最終結果メッセージ
     if is_correct:
-        view.display_clear_message()
+        await view.display_clear_message()
     else:
-        view.display_retry_message()
+        await view.display_retry_message()
 
 
-def load_quest(quest_id):
-    view = QuestView()  # View は最初に初期化
+async def load_quest(quest_id):
+    view = QueuedQuestView()  # View は最初に初期化
     config = load_config()
     container = AppContainer(config, view)
-    quest_repo = container.quest_repository  # ここで初期化が走る
+    quest_repo = await container.quest_repository  # ここで初期化が走る
     quest = quest_repo.get_quest_by_id(quest_id)
     if quest is None:
         return gr.Markdown("")
@@ -188,23 +223,24 @@ def load_quest(quest_id):
     return gr.Markdown(question)
 
 
-def submit_answer(quest_id, query, history):
+async def submit_answer(quest_id, query, history):
+    # ユーザーの入力を反映
     history.append({"role": "user", "content": f"これでどう？\n\n{query}"})
-    cli(quest_id=quest_id, query=query)
-    correct = '{"query": {"match": {"name": "Hello"}}}'
-    response = f"""
-    あなたのクエリは {query} です。
-    クエスト {quest_id} の正解は
+    yield history
 
-    ```json
-    {correct}
-    ```
-    でした。
+    # view を作成
+    view = QueuedQuestView()
+    print(view)
 
-    正解おめでとうございます🤖
-    """
-    history.append({"role": "assistant", "content": response})
-    return history
+    # 実行
+    quest_task = asyncio.create_task(cli(view=view, quest_id=quest_id, query=query))
+    print(quest_task)
+
+    # メッセージを受信
+    async for message in view.receive_messages():
+        history.append({"role": "assistant", "content": message})
+        print(history[-1])
+        yield history
 
 
 def json_check(query):

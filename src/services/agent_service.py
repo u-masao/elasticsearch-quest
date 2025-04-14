@@ -125,7 +125,7 @@ class AgentService:
                 name="MCP Elasticsearch Eval", params=mcp_server_params
             ) as server:
                 trace_id = gen_trace_id()
-                self.view.display_trace_info(trace_id)  # トレースURLを表示
+                await self.view.display_trace_info(trace_id)  # トレースURLを表示
 
                 # OpenAI Platform でトレースを確認するための設定
                 # workflow_name は適宜変更
