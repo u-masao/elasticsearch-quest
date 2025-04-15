@@ -33,6 +33,7 @@ async def run(
 
     - ベクトルフィールドは L2 距離で利用します。
     - アイテムの ID は、1 から連番とします。
+    - publisher は、publisher.keyword も作って
 
     <data>
     {data}
