@@ -255,13 +255,18 @@ def json_check(query):
         return "🟥 JSON 形式ではありません"
 
 
-with gr.Blocks(fill_width=True) as demo:
-    ui_quest_id = gr.Number(1)
-    ui_question_markdown = gr.Markdown()
-    ui_user_query = gr.Textbox("", lines=5, label="ここに答えを書いてください")
-    ui_json_validator = gr.Markdown()
-    ui_submit_button = gr.Button("submit", variant="primary")
-    ui_chat = gr.Chatbot(type="messages")
+with gr.Blocks(fill_width=True, fill_height=True) as demo:
+    ui_chat = gr.Chatbot(type="messages", scale=1)
+    with gr.Row(scale=0):
+        with gr.Column():
+            ui_quest_id = gr.Number(1)
+            ui_question_markdown = gr.Markdown()
+        with gr.Column():
+            ui_user_query = gr.Textbox(
+                "{}", lines=5, label="ここに答えを書いてください"
+            )
+            ui_json_validator = gr.Markdown("🟩 JSON 形式です")
+            ui_submit_button = gr.Button("submit", variant="primary")
 
     ui_user_query.change(
         json_check, inputs=[ui_user_query], outputs=[ui_json_validator]
