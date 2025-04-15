@@ -64,11 +64,11 @@ class QuestView:
                 source = hit.get("_source", {})
                 # ソースの内容を簡潔に表示 (例: nameやtitleなど代表的なフィールド)
                 source_summary = ", ".join(
-                    f"{k}: {v}" for k, v in list(source.items())[:2]
+                    f"{k}: {v}" for k, v in list(source.items())[:]
                 )  # 最初の2項目
                 await self.custom_echo(
-                    f"  {i + 1}. ID: {click.style(str(doc_id), fg='yellow')}, "
-                    f"Score: {click.style(str(score), fg='blue')}, "
+                    f"  {i + 1}. ID: {doc_id}, "
+                    f"Score: {score}, "
                     f"Source: {{{source_summary}}}"
                 )
         else:
