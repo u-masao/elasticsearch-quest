@@ -31,9 +31,10 @@ async def run(
     インデックス名は {index_name} です。
     すでにインデックスがある場合は、一度消してから上書きして。
 
-    - ベクトルフィールドは L2 距離で利用します。
-    - アイテムの ID は、1 から連番とします。
-    - publisher は、publisher.keyword も作って
+    - metric_vector フィールドは L2 距離でベクトル検索します
+      - index_options は "type":"hnsw" として
+    - アイテムの ID は、1 から連番とします
+    - publisher フィールドは、publisher.keyword も作って
 
     <data>
     {data}
@@ -84,7 +85,7 @@ async def run(
     2. そしてこのインデックスを作るための CURL コマンドを作成して。
 
     - インデックス削除
-    - インデックス作成とフィールド設定
+    - インデックス作成と Maping 設定
       - 特にベクトルフィールドに注意
     - データ投入20件すべて
     - 簡単なデータ確認
