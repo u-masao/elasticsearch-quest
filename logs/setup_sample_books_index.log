@@ -1,4 +1,4 @@
-[04/13/25 19:54:07] INFO     Initializing                           server.py:20
+[04/15/25 22:13:08] INFO     Initializing                           server.py:20
                              elasticsearch_mcp_server...                        
                     INFO     Elasticsearch client initialized with    base.py:44
                              hosts: ['https://localhost:9200']                  
@@ -9,16 +9,21 @@
                     INFO     Registering tools from AliasTools    register.py:33
                     INFO     Processing request of type            server.py:534
                              ListToolsRequest                                   
-[04/13/25 19:54:09] INFO     Processing request of type            server.py:534
+[04/15/25 22:13:09] INFO     Processing request of type            server.py:534
+                             CallToolRequest                                    
+                    INFO     GET                               _transport.py:349
+                             https://localhost:9200/_cat/indic                  
+                             es [status:200 duration:0.032s]                    
+[04/15/25 22:13:12] INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     DELETE                            _transport.py:349
                              https://localhost:9200/sample_boo                  
-                             ks [status:200 duration:0.058s]                    
+                             ks [status:200 duration:0.067s]                    
                     INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
-                             ks [status:400 duration:0.021s]                    
+                             ks [status:400 duration:0.015s]                    
                     ERROR    Unexpected error in create_index:  exceptions.py:26
                              BadRequestError(400,                               
                              'mapper_parsing_exception',                        
@@ -26,119 +31,119 @@
                              [similarity] - accepted values are                 
                              [l2_norm, cosine, dot_product,                     
                              max_inner_product]')                               
-[04/13/25 19:54:11] INFO     Processing request of type            server.py:534
+[04/15/25 22:13:15] INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
-[04/13/25 19:54:12] INFO     PUT                               _transport.py:349
+                    INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
-                             ks [status:200 duration:0.153s]                    
-[04/13/25 19:54:23] INFO     Processing request of type            server.py:534
+                             ks [status:200 duration:0.192s]                    
+[04/15/25 22:13:19] INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_doc/1 [status:201                              
-                             duration:0.013s]                                   
+                             duration:0.028s]                                   
                     INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_doc/2 [status:201                              
-                             duration:0.005s]                                   
+                             duration:0.008s]                                   
                     INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_doc/3 [status:201                              
-                             duration:0.009s]                                   
+                             duration:0.006s]                                   
                     INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_doc/4 [status:201                              
-                             duration:0.005s]                                   
+                             duration:0.007s]                                   
                     INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_doc/5 [status:201                              
-                             duration:0.005s]                                   
-                    INFO     Processing request of type            server.py:534
+                             duration:0.008s]                                   
+[04/15/25 22:13:23] INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_doc/6 [status:201                              
-                             duration:0.006s]                                   
+                             duration:0.021s]                                   
                     INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_doc/7 [status:201                              
-                             duration:0.005s]                                   
+                             duration:0.015s]                                   
                     INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_doc/8 [status:201                              
-                             duration:0.005s]                                   
-                    INFO     Processing request of type            server.py:534
-                             CallToolRequest                                    
-                    INFO     PUT                               _transport.py:349
-                             https://localhost:9200/sample_boo                  
-                             ks/_doc/9 [status:201                              
                              duration:0.011s]                                   
                     INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
-                             ks/_doc/10 [status:201                             
-                             duration:0.006s]                                   
+                             ks/_doc/9 [status:201                              
+                             duration:0.013s]                                   
                     INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
+                             ks/_doc/10 [status:201                             
+                             duration:0.009s]                                   
+[04/15/25 22:13:28] INFO     Processing request of type            server.py:534
+                             CallToolRequest                                    
+                    INFO     PUT                               _transport.py:349
+                             https://localhost:9200/sample_boo                  
                              ks/_doc/11 [status:201                             
-                             duration:0.004s]                                   
+                             duration:0.017s]                                   
                     INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_doc/12 [status:201                             
-                             duration:0.005s]                                   
+                             duration:0.010s]                                   
                     INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_doc/13 [status:201                             
-                             duration:0.004s]                                   
+                             duration:0.007s]                                   
                     INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_doc/14 [status:201                             
-                             duration:0.005s]                                   
+                             duration:0.008s]                                   
                     INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_doc/15 [status:201                             
-                             duration:0.004s]                                   
-                    INFO     Processing request of type            server.py:534
+                             duration:0.007s]                                   
+[04/15/25 22:13:31] INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_doc/16 [status:201                             
-                             duration:0.006s]                                   
-                    INFO     Processing request of type            server.py:534
+                             duration:0.015s]                                   
+[04/15/25 22:13:34] INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_doc/17 [status:201                             
-                             duration:0.005s]                                   
+                             duration:0.021s]                                   
                     INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_doc/18 [status:201                             
-                             duration:0.004s]                                   
+                             duration:0.007s]                                   
                     INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     PUT                               _transport.py:349
@@ -150,24 +155,24 @@
                     INFO     PUT                               _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_doc/20 [status:201                             
-                             duration:0.005s]                                   
-[04/13/25 19:54:25] INFO     Processing request of type            server.py:534
+                             duration:0.006s]                                   
+[04/15/25 22:13:37] INFO     Processing request of type            server.py:534
                              ListToolsRequest                                   
-[04/13/25 19:54:26] INFO     Processing request of type            server.py:534
+[04/15/25 22:13:38] INFO     Processing request of type            server.py:534
+                             CallToolRequest                                    
+                    INFO     POST                              _transport.py:349
+                             https://localhost:9200/sample_boo                  
+                             ks/_search [status:200                             
+                             duration:0.004s]                                   
+[04/15/25 22:13:39] INFO     Processing request of type            server.py:534
+                             ListToolsRequest                                   
+[04/15/25 22:13:40] INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     POST                              _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_search [status:200                             
                              duration:0.008s]                                   
-                    INFO     Processing request of type            server.py:534
-                             ListToolsRequest                                   
-[04/13/25 19:54:27] INFO     Processing request of type            server.py:534
-                             CallToolRequest                                    
-                    INFO     POST                              _transport.py:349
-                             https://localhost:9200/sample_boo                  
-                             ks/_search [status:200                             
-                             duration:0.010s]                                   
-トレース情報: https://platform.openai.com/traces/trace?trace_id=trace_dbe3c254b5554fb9bfb948a8a499ab11
+トレース情報: https://platform.openai.com/traces/trace?trace_id=trace_d1c26ed1970d42d7aff4b8ed76254d03
 
 命令: 
     次のデータを投入するインデックスを作って。
@@ -176,6 +181,7 @@
 
     - ベクトルフィールドは L2 距離で利用します。
     - アイテムの ID は、1 から連番とします。
+    - publisher は、publisher.keyword も作って
 
     <data>
     [
@@ -343,63 +349,47 @@
 
     </data>
     
-応答: すべてのデータが正常にインデックス「sample_books」に登録されました。ベクトルの類似度は「l2_norm」を使用しています。何か他にご質問がありますか？
+応答: インデックス「sample_books」を作成し、すべてのデータを投入しました。ベクトルフィールドはL2ノルムで設定され、`publisher.keyword`フィールドも作成されています。
 命令: 
     sample_books インデックスのドキュメントの件数を教えて
     
-応答: `sample_books` インデックスには 20 件のドキュメントがあります。
+応答: `sample_books` インデックスのドキュメント数は20件です。
 命令: 
     インデックス名: sample_books
 
     publisher フィールドが "オライリー" に部分一致するものを列挙して
     
-[04/13/25 19:54:30] INFO     Processing request of type            server.py:534
+[04/15/25 22:13:44] INFO     Processing request of type            server.py:534
                              ListToolsRequest                                   
-[04/13/25 19:54:32] INFO     Processing request of type            server.py:534
-                             CallToolRequest                                    
-                    INFO     POST                              _transport.py:349
-                             https://localhost:9200/sample_boo                  
-                             ks/_search [status:400                             
-                             duration:0.041s]                                   
-                    ERROR    Unexpected error in                exceptions.py:26
-                             search_documents:                                  
-                             BadRequestError(400,                               
-                             'search_phase_execution_exception'                 
-                             , 'runtime error')                                 
-[04/13/25 19:54:34] INFO     Processing request of type            server.py:534
-                             CallToolRequest                                    
-                    INFO     GET                               _transport.py:349
-                             https://localhost:9200/sample_boo                  
-                             ks [status:200 duration:0.006s]                    
-[04/13/25 19:54:36] INFO     Processing request of type            server.py:534
+[04/15/25 22:13:46] INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     POST                              _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_search [status:200                             
-                             duration:0.016s]                                   
-[04/13/25 19:54:39] INFO     Processing request of type            server.py:534
+                             duration:0.048s]                                   
+[04/15/25 22:13:53] INFO     Processing request of type            server.py:534
                              ListToolsRequest                                   
-[04/13/25 19:54:40] INFO     Processing request of type            server.py:534
+[04/15/25 22:13:54] INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     GET                               _transport.py:349
                              https://localhost:9200/sample_boo                  
-                             ks [status:200 duration:0.006s]                    
-                    INFO     Processing request of type            server.py:534
+                             ks [status:200 duration:0.007s]                    
+[04/15/25 22:13:56] INFO     Processing request of type            server.py:534
                              CallToolRequest                                    
                     INFO     POST                              _transport.py:349
                              https://localhost:9200/sample_boo                  
                              ks/_search [status:200                             
-                             duration:0.004s]                                   
-応答: 以下は、「オライリー」に部分一致する出版社を持つ書籍のリストです。
+                             duration:0.011s]                                   
+応答: 以下は、出版社が「オライリー」に部分一致する本の一覧です：
 
 1. **データサイエンスのための統計学入門**
-   - 著者: Peter Bruce, Andrew Bruce, Peter Gedeck (訳: 黒川 利明)
+   - 著者: Peter Bruce, Andrew Bruce, Peter Gedeck (著), 黒川 利明 (訳)
    - 出版社: オライリー・ジャパン
    - ISBN: 978-4873119208
    - ページ数: 424
 
 2. **Pythonではじめる機械学習 ―scikit-learn、scipy、numpy、pandas、matplotlibを使ったデータ分析**
-   - 著者: Andreas C. Müller, Sarah Guido (訳: 中田 秀基)
+   - 著者: Andreas C. Müller, Sarah Guido (著), 中田 秀基 (訳)
    - 出版社: オライリー・ジャパン
    - ISBN: 978-4873117983
    - ページ数: 400
@@ -427,8 +417,6 @@
    - 出版社: オライリー・ジャパン
    - ISBN: 978-4873118218
    - ページ数: 272
-
-以上の書籍が見つかりました。
 命令: 
     インデックス名: sample_books
 
@@ -438,20 +426,54 @@
 
     結果にはL2距離も含めて
     
-応答: ベクトル検索の結果をL2距離順に並べたものです：
+応答: 以下は「metric_vector」フィールドが[5,6]に近い順に列挙した結果です。L2距離に基づく類似度も含まれています。
 
-1. **ID**: 2, **Technical Score**: 6, **Mathematical Score**: 7, **L2距離 (スコア)**: 1.9999
-2. **ID**: 4, **Technical Score**: 6, **Mathematical Score**: 6, **L2距離 (スコア)**: 1.9958
-3. **ID**: 12, **Technical Score**: 7, **Mathematical Score**: 7, **L2距離 (スコア)**: 1.9958
-4. **ID**: 7, **Technical Score**: 8, **Mathematical Score**: 7, **L2距離 (スコア)**: 1.9877
-5. **ID**: 14, **Technical Score**: 5, **Mathematical Score**: 9, **L2距離 (スコア)**: 1.9824
-6. **ID**: 8, **Technical Score**: 9, **Mathematical Score**: 7, **L2距離 (スコア)**: 1.9769
-7. **ID**: 6, **Technical Score**: 8, **Mathematical Score**: 6, **L2距離 (スコア)**: 1.9731
-8. **ID**: 13, **Technical Score**: 8, **Mathematical Score**: 6, **L2距離 (スコア)**: 1.9731
-9. **ID**: 15, **Technical Score**: 4, **Mathematical Score**: 9, **L2距離 (スコア)**: 1.9620
-10. **ID**: 16, **Technical Score**: 4, **Mathematical Score**: 9, **L2距離 (スコア)**: 1.9620
+1. **データサイエンスのための統計学入門**
+   - 著者: Peter Bruce, Andrew Bruce, Peter Gedeck (著), 黒川 利明 (訳)
+   - 出版社: オライリー・ジャパン
+   - ISBN: 978-4873119208
+   - ページ数: 424
+   - Technical Score: 6
+   - Mathematical Score: 6
+   - スコア: 0.5
 
-これらの結果は、`metric_vector`がクエリベクトル[5,6]に最も近い順に並べられています。
+2. **効果検証入門〜正しい比較のための因果推論／計量経済学の基礎**
+   - 著者: 安井 翔太, 株式会社ホクソエム
+   - 出版社: 技術評論社
+   - ISBN: 978-4297108328
+   - ページ数: 312
+   - Technical Score: 6
+   - Mathematical Score: 7
+   - スコア: 0.414
+
+3. **機械学習のエッセンス -実装しながら学ぶPython,数学,アルゴリズム-**
+   - 著者: 加藤 公一
+   - 出版社: SBクリエイティブ
+   - ISBN: 978-4797398236
+   - ページ数: 352
+   - Technical Score: 7
+   - Mathematical Score: 7
+   - スコア: 0.309
+
+4. **統計学入門 (基礎統計学Ⅰ)**
+   - 著者: 東京大学教養学部統計学教室 (編)
+   - 出版社: 東京大学出版会
+   - ISBN: 978-4130420655
+   - ページ数: 304
+   - Technical Score: 3
+   - Mathematical Score: 8
+   - スコア: 0.261
+
+5. **仕事ではじめる機械学習 第2版**
+   - 著者: 有賀 友紀, 中山 心太, 西田 貴紀, 他
+   - 出版社: オライリー・ジャパン
+   - ISBN: 978-4873118218
+   - ページ数: 272
+   - Technical Score: 7
+   - Mathematical Score: 4
+   - スコア: 0.261
+
+スコアは類似度であり、1に近いほど「metric_vector」=[5,6]に近いことを示しています。
 命令: 
     インデックス名: sample_books
 
@@ -465,104 +487,88 @@
     - データ投入20件すべて
     - 簡単なデータ確認
     
-応答: ### スキーマ詳細
+応答: インデックス「sample_books」のスキーマとデータを確認しました。
 
-インデックス名: `sample_books`
+### スキーマ:
+- **author**: text
+- **isbn**: text
+- **metric_vector**: dense_vector (dims: 2, index: True, similarity: l2_norm)
+- **name**: text
+- **pages**: integer
+- **publisher**: text, keyword
 
-#### フィールド設定
-- **name**: `text`
-- **author**: `text`
-- **publisher**: `text`
-- **isbn**: `keyword`
-- **pages**: `integer`
-- **metric_vector**: `dense_vector`
-  - **dims**: 2
-  - **index**: `True`
-  - **similarity**: `l2_norm`
-  - **index_options**:
-    - **type**: `int8_hnsw`
-    - **m**: 16
-    - **ef_construction**: 100
+### データ20件:
+1. 統計学入門 (基礎統計学Ⅰ), 東京大学教養学部統計学教室 (編), 東京大学出版会, isbn: 978-4130420655, pages: 304, metric_vector: [3, 8]
+2. 効果検証入門〜正しい比較のための因果推論, 安井 翔太, 技術評論社, isbn: 978-4297108328, pages: 312, metric_vector: [6, 7]
+3. Pythonによるあたらしいデータ分析の教科書, 寺田 学, 翔泳社, isbn: 978-4798169307, pages: 432, metric_vector: [8, 4]
+4. データサイエンスのための統計学入門, Peter Bruce, オライリー・ジャパン, isbn: 978-4873119208, pages: 424, metric_vector: [6, 6]
+5. Pythonではじめる機械学習, Andreas C. Müller, オライリー・ジャパン, isbn: 978-4873117983, pages: 400, metric_vector: [8, 5]
+6. ゼロから作るDeep Learning, 斎藤 康毅, オライリー・ジャパン, isbn: 978-4873117587, pages: 304, metric_vector: [8, 6]
+7. ゼロから作るDeep Learning ❷, 斎藤 康毅, オライリー・ジャパン, isbn: 978-4873118362, pages: 432, metric_vector: [8, 7]
+8. ゼロから作るDeep Learning ❸, 斎藤 康毅, オライリー・ジャパン, isbn: 978-4873119062, pages: 600, metric_vector: [9, 7]
+9. 仕事ではじめる機械学習 第2版, 有賀 友紀, オライリー・ジャパン, isbn: 978-4873118218, pages: 272, metric_vector: [7, 4]
+10. 前処理大全, 本橋 智光, 技術評論社, isbn: 978-4297130350, pages: 704, metric_vector: [9, 3]
+11. データ分析のためのSQL入門, NTTコム オンライン, ソシム, isbn: 978-4802613353, pages: 256, metric_vector: [9, 1]
+12. 機械学習のエッセンス, 加藤 公一, SBクリエイティブ, isbn: 978-4797398236, pages: 352, metric_vector: [7, 7]
+13. Python機械学習プログラミング, Sebastian Raschka, インプレス, isbn: 978-4295015241, pages: 768, metric_vector: [8, 6]
+14. 統計的学習の基礎, Trevor Hastie, 共立出版, isbn: 978-4320123625, pages: 788, metric_vector: [5, 9]
+15. パターン認識と機械学習 上, C.M. ビショップ, 丸善出版, isbn: 978-4621083300, pages: 400, metric_vector: [4, 9]
+16. パターン認識と機械学習 下, C.M. ビショップ, 丸善出版, isbn: 978-4621083317, pages: 430, metric_vector: [4, 9]
+17. kaggleで勝つデータ分析の技術, 門脇 大輔, 技術評論社, isbn: 978-4297108434, pages: 512, metric_vector: [9, 5]
+18. 実践的データ基盤への処方箋, ゆずたそ, 技術評論社, isbn: 978-4297131883, pages: 464, metric_vector: [8, 2]
+19. AI・データ分析プロジェクトのすべて, 巣籠 悠輔, 技術評論社, isbn: 978-4297130787, pages: 352, metric_vector: [6, 3]
+20. データ分析力を上げるための8つの必須スキル, 株式会社データミックス, 翔泳社, isbn: 978-4798169079, pages: 304, metric_vector: [7, 4]
 
-### データ20件 (例)
-1. 統計学入門 (基礎統計学Ⅰ) - [東京大学教養学部統計学教室 (編)]
-2. 効果検証入門〜正しい比較のための因果推論／計量経済学の基礎 - [安井 翔太, 株式会社ホクソエム]
-3. Pythonによるあたらしいデータ分析の教科書 - [寺田 学, 辻 真吾, 鈴木 たかのり, 福島 真太朗]
-4. データサイエンスのための統計学入門 - [Peter Bruce, Andrew Bruce, Peter Gedeck (著), 黒川 利明 (訳)]
-5. Pythonではじめる機械学習 - [Andreas C. Müller, Sarah Guido (著), 中田 秀基 (訳)]
-6. ゼロから作るDeep Learning - [斎藤 康毅]
-7. ゼロから作るDeep Learning ❷ - [斎藤 康毅]
-8. ゼロから作るDeep Learning ❸ - [斎藤 康毅]
-9. 仕事ではじめる機械学習 第2版 - [有賀 友紀, 中山 心太, 西田 貴紀, 他]
-10. 前処理大全 - [本橋 智光]
-11. データ分析のためのSQL入門 - [NTTコム オンライン・マーケティング・ソリューション株式会社]
-12. 機械学習のエッセンス - [加藤 公一]
-13. Python機械学習プログラミング 達人データサイエンティストによる理論と実践 第4版 - [Sebastian Raschka, Vahid Mirjalili (著), 株式会社クイープ (訳)]
-14. 統計的学習の基礎 - [Trevor Hastie, Robert Tibshirani, Jerome Friedman (著)]
-15. パターン認識と機械学習 上 - [C.M. ビショップ (著)]
-16. パターン認識と機械学習 下 - [C.M. ビショップ (著)]
-17. kaggleで勝つデータ分析の技術 - [門脇 大輔, 阪田 隆司, 保坂 桂佑, 平松 雄司]
-18. 実践的データ基盤への処方箋 - [ゆずたそ, 伊藤 徹郎, wataru.oyama]
-19. AI・データ分析プロジェクトのすべて - [巣籠 悠輔]
-20. データ分析力を上げるための8つの必須スキル - [株式会社データミックス]
+### CURL コマンド例
 
-### CURL コマンド
-
-#### インデックス削除
 ```bash
-curl -X DELETE "http://localhost:9200/sample_books"
-```
+# インデックスを削除
+curl -X DELETE "localhost:9200/sample_books"
 
-#### インデックス作成とフィールド設定
-```bash
-curl -X PUT "http://localhost:9200/sample_books" -H 'Content-Type: application/json' -d'
+# インデックスを作成し、フィールドを設定
+curl -X PUT "localhost:9200/sample_books" -H "Content-Type: application/json" -d'
 {
-  "settings": {
-    "index": {
-      "number_of_shards": 1,
-      "number_of_replicas": 1
-    }
-  },
   "mappings": {
     "properties": {
-      "name": { "type": "text" },
-      "author": { "type": "text" },
-      "publisher": { "type": "text" },
-      "isbn": { "type": "keyword" },
-      "pages": { "type": "integer" },
+      "author": {"type": "text"},
+      "isbn": {"type": "text"},
       "metric_vector": {
         "type": "dense_vector",
         "dims": 2,
         "index": true,
         "similarity": "l2_norm",
-        "index_options": {
-          "type": "int8_hnsw",
-          "m": 16,
-          "ef_construction": 100
-        }
-      }
+        "index_options": {"type": "int8_hnsw", "m": 16, "ef_construction": 100}
+      },
+      "name": {"type": "text"},
+      "pages": {"type": "integer"},
+      "publisher": {"type": "text", "fields": {"keyword": {"type": "keyword"}}}
     }
   }
 }'
 ```
 
-#### データ投入 (例: 1件)
+#### データ投入:
 ```bash
-curl -X POST "http://localhost:9200/sample_books/_doc/1" -H 'Content-Type: application/json' -d'
+# データを一括でインデックス
+curl -X POST "localhost:9200/sample_books/_bulk" -H "Content-Type: application/json" -d'
+{"index": {"_id": "1"}}
+{"name": "統計学入門 (基礎統計学Ⅰ)", "author": "東京大学教養学部統計学教室 (編)", "publisher": "東京大学出版会", "isbn": "978-4130420655", "pages": 304, "metric_vector": [3, 8]}
+{"index": {"_id": "2"}}
+{"name": "効果検証入門〜正しい比較のための因果推論", "author": "安井 翔太", "publisher": "技術評論社", "isbn": "978-4297108328", "pages": 312, "metric_vector": [6, 7]}
+...
+{"index": {"_id": "20"}}
+{"name": "データ分析力を上げるための8つの必須スキル", "author": "株式会社データミックス", "publisher": "翔泳社", "isbn": "978-4798169079", "pages": 304, "metric_vector": [7, 4]}
+'
+```
+
+#### 確認:
+```bash
+# データの確認
+curl -X GET "localhost:9200/sample_books/_search?pretty" -H "Content-Type: application/json" -d'
 {
-  "name": "統計学入門 (基礎統計学Ⅰ)",
-  "author": "東京大学教養学部統計学教室 (編)",
-  "publisher": "東京大学出版会",
-  "isbn": "978-4130420655",
-  "pages": 304,
-  "metric_vector": [3, 8]
-}'
-```
-同様に他の19件も投入します。
-
-#### 簡単なデータ確認
-```bash
-curl -X GET "http://localhost:9200/sample_books/_search?pretty=true&q=*:*&size=20"
+  "query": {"match_all": {}}
+}
+'
 ```
 
-これらのコマンドを使って、インデックスを再作成し、データを再投入することができます。
+上記のCURLコマンドを利用して、Elasticsearch上でインデックスを管理し、データを操作できます。
