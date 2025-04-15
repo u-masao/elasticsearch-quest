@@ -35,8 +35,11 @@ setup:
 	./shells/copy_http_ca_cert.sh
 	./shells/generate_es_password.sh
 
-# Elasticsearch にサンプルデータを投入
-setup_es_index:
+# API 経由で Elasticsearch にサンプルデータを投入
+setup_es_index: delete_index create_index append_documents
+
+# MCP 経由で Elasticsearch にサンプルデータを投入
+generate_es_index:
 	uv run python -m src.misc.setup_es_index \
     sample_books \
     fixtures/sample_books.json 2>&1 \
@@ -52,14 +55,6 @@ setup_backend_db:
 
 # Index のダンプ
 INDEX_NAME=sample_books
-dump_index:
-	curl --cacert ./certs/http_ca.crt \
-        -u $(ELASTICSEARCH_USERNAME):$(ELASTICSEARCH_PASSWORD) \
-        -d '{"size": 1000}' \
-        -H 'Content-Type: application/json' \
-        https://127.0.0.1:9200/$(INDEX_NAME)/_search/ \
-        | jq .hits.hits > fixtures/sample_books_dump.json
-
 dump_mapping:
 	curl --cacert ./certs/http_ca.crt \
         -u $(ELASTICSEARCH_USERNAME):$(ELASTICSEARCH_PASSWORD) \
@@ -80,4 +75,39 @@ get_mapping:
 	curl --cacert ./certs/http_ca.crt \
         -u $(ELASTICSEARCH_USERNAME):$(ELASTICSEARCH_PASSWORD) \
         https://127.0.0.1:9200/$(INDEX_NAME)/_mapping
+
+
+# delete index
+delete_index:
+	curl --cacert ./certs/http_ca.crt \
+        -u $(ELASTICSEARCH_USERNAME):$(ELASTICSEARCH_PASSWORD) \
+        -H 'Content-Type: application/json' \
+        -X DELETE \
+        "https://127.0.0.1:9200/$(INDEX_NAME)?pretty"
+
+# create index
+create_index:
+	curl --cacert ./certs/http_ca.crt \
+        -u $(ELASTICSEARCH_USERNAME):$(ELASTICSEARCH_PASSWORD) \
+        -H 'Content-Type: application/json' \
+        -X PUT \
+        --data-binary "@fixtures/sample_books_mapping.json" \
+        "https://127.0.0.1:9200/$(INDEX_NAME)?pretty"
+
+
+# append documents
+append_documents:
+	curl --cacert ./certs/http_ca.crt \
+        -u $(ELASTICSEARCH_USERNAME):$(ELASTICSEARCH_PASSWORD) \
+        -H 'Content-Type: application/x-ndjson' \
+        -X POST \
+        --data-binary "@fixtures/sample_books.ndjson" \
+        "https://127.0.0.1:9200/$(INDEX_NAME)/_bulk?pretty"
+
+dump_index:
+	curl -q --cacert ./certs/http_ca.crt \
+        -u $(ELASTICSEARCH_USERNAME):$(ELASTICSEARCH_PASSWORD) \
+        -d '{"size":1000}' \
+        -H 'Content-Type: application/json' \
+        https://127.0.0.1:9200/$(INDEX_NAME)/_search?pretty
 
