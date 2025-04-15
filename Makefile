@@ -1,5 +1,8 @@
 include .env
 
+# default target
+default: ui
+
 # run es chatbot
 es_chatbot:
 	uv run python -m src.misc.es_chatbot
@@ -53,8 +56,16 @@ dump_index:
 	curl --cacert ./certs/http_ca.crt \
         -u $(ELASTICSEARCH_USERNAME):$(ELASTICSEARCH_PASSWORD) \
         -d '{"size": 1000}' \
-        -H 'Content-Type: application/json' https://127.0.0.1:9200/$(INDEX_NAME)/_search/ \
+        -H 'Content-Type: application/json' \
+        https://127.0.0.1:9200/$(INDEX_NAME)/_search/ \
         | jq .hits.hits > fixtures/sample_books_dump.json
+
+dump_mapping:
+	curl --cacert ./certs/http_ca.crt \
+        -u $(ELASTICSEARCH_USERNAME):$(ELASTICSEARCH_PASSWORD) \
+        -H 'Content-Type: application/json' \
+        https://127.0.0.1:9200/$(INDEX_NAME)/_mapping \
+        | jq . > fixtures/sample_books_mapping.json
 
 # sample query
 sample_query:
