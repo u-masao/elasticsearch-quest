@@ -256,6 +256,32 @@ def json_check(query):
         return JSON_CHECK_NG
 
 
+async def get_mapping(history):
+    history.append(
+        {
+            "role": "user",
+            "content": "マッピングを取得して。",
+        }
+    )
+    yield history
+
+    view = QueuedQuestView()
+    config = load_config()
+    container = AppContainer(config, view)
+    es_client = await container.es_client
+
+    result = es_client.indices.get_mapping(index=config.index_name)
+    formatted_mapping = json.dumps(result.body, indent=4, ensure_ascii=False)
+    history.append(
+        {
+            "role": "assistant",
+            "content": "マッピングは以下のとおりです。\n"
+            f"```json\n{formatted_mapping}\n```",
+        }
+    )
+    yield history
+
+
 async def execute_query(query, history):
     print(f"query: {query}")
     try:
@@ -319,11 +345,14 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
                 ui_json_validator = gr.Markdown(JSON_CHECK_OK)
                 ui_execute_button = gr.Button("▶️  テスト実行 ▶️", variant="secondary")
                 ui_format_button = gr.Button("✨ 自動整形 ✨")
+                ui_mapping_button = gr.Button("マッピング取得")
                 ui_submit_button = gr.Button(SUBMIT_BUTTON_TEXT, variant="primary")
+
     # select quest
     ui_user_query.change(
         json_check, inputs=[ui_user_query], outputs=[ui_json_validator]
     )
+
     # load quest
     gr.on(
         [ui_quest_id.change],
@@ -331,12 +360,14 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
         inputs=[ui_quest_id],
         outputs=[ui_chat],
     )
+
     # submit query
     ui_submit_button.click(
         submit_answer,
         inputs=[ui_quest_id, ui_user_query, ui_chat],
         outputs=[ui_chat, ui_submit_button],
     )
+
     # execute query
     gr.on(
         [ui_execute_button.click],
@@ -344,12 +375,21 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
         inputs=[ui_user_query, ui_chat],
         outputs=[ui_chat],
     )
+
     # format query
     gr.on(
         [ui_format_button.click],
         fn=format_query,
         inputs=[ui_user_query],
         outputs=[ui_user_query],
+    )
+
+    # get mapping
+    gr.on(
+        [ui_mapping_button.click],
+        fn=get_mapping,
+        inputs=[ui_chat],
+        outputs=[ui_chat],
     )
 
 
