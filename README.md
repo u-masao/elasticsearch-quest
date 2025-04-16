@@ -10,10 +10,11 @@ Elasticsearch Questは、Elasticsearchを用いたクエスト形式の学習プ
 
 ## インストール
 
-1. リポジトリをクローンします。
+1. リポジトリをクローンし、サブモジュールを初期化します。
    ```bash
    git clone https://github.com/yourusername/elasticsearch-quest.git
    cd elasticsearch-quest
+   git submodule update --init --recursive
    ```
 
 2. 必要なパッケージをインストールします。
