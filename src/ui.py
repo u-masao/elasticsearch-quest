@@ -9,14 +9,17 @@ import gradio as gr
 from src.bootstrap import AppContainer  # DIコンテナを使用する場合
 
 # リファクタリングで分割・作成したモジュールをインポート
-from src.config import (  # デフォルト値表示用
-    load_config,
-)
+from src.config import load_config
 from src.exceptions import QuestCliError  # キャッチするベース例外
 from src.services.agent_service import AgentService
+from src.services.core_logic import execute_query as core_logic_execute_query
 from src.services.quest_service import QuestService
 from src.utils.query_loader import load_query_from_source
 from src.view import EndOfMessage, QuestView
+
+SUBMIT_BUTTON_TEXT = "⭐️ 採点 ⭐️"
+JSON_CHECK_OK = "🟢 JSON 形式です"
+JSON_CHECK_NG = "❌ JSON 形式？？"
 
 
 class QueuedQuestView(QuestView):
@@ -210,22 +213,20 @@ async def load_quest(quest_id):
     quest_repo = await container.quest_repository  # ここで初期化が走る
     quest = quest_repo.get_quest_by_id(quest_id)
     if quest is None:
-        return gr.Markdown("")
+        return [
+            {"role": "assistant", "content": f"クエストが読み込めません: {quest_id=}"}
+        ]
     question = f"""
-        ## {quest.title}
-
+        ## Quest {quest_id}: {quest.title}
         {quest.description}
-
-        ## detail
-        {quest}
         """
-    return gr.Markdown(question)
+    return [{"role": "assistant", "content": question}]
 
 
 async def submit_answer(quest_id, query, history):
     # ユーザーの入力を反映
     history.append({"role": "user", "content": f"これでどう？\n\n{query}"})
-    yield history, gr.Button("submit", interactive=False)
+    yield history, gr.Button(SUBMIT_BUTTON_TEXT, interactive=False)
 
     # view を作成
     view = QueuedQuestView()
@@ -236,51 +237,119 @@ async def submit_answer(quest_id, query, history):
     # メッセージを受信
     async for message in view.receive_messages():
         history.append({"role": "assistant", "content": message})
-        yield history, gr.Button("submit", interactive=False)
+        yield history, gr.Button(SUBMIT_BUTTON_TEXT, interactive=False)
 
     # タスク完了までブロック
     await quest_task
 
     # タスク完了時にボタンを有効化
-    yield history, gr.Button("submit", interactive=True, variant="primary")
+    yield history, gr.Button(SUBMIT_BUTTON_TEXT, interactive=True, variant="primary")
 
 
 def json_check(query):
     if query is None or query == "":
-        return "🟥 JSON 形式ではありません"
+        return JSON_CHECK_NG
     try:
         _ = json.loads(query)
-        return "🟩 JSON 形式です"
+        return JSON_CHECK_OK
     except json.JSONDecodeError:
-        return "🟥 JSON 形式ではありません"
+        return JSON_CHECK_NG
+
+
+async def execute_query(query, history):
+    print(f"query: {query}")
+    try:
+        formatted_query = json.dumps(json.loads(query), indent=4, ensure_ascii=False)
+    except json.JSONDecodeError:
+        history.append(
+            {
+                "role": "assistant",
+                "content": "----\nクエリは JSON 形式にしてください:\n"
+                f"```\n{query}\n```",
+            }
+        )
+        yield history
+        return
+
+    history.append(
+        {
+            "role": "user",
+            "content": f"""
+        Elasticsearch に直接クエリを投げます。
+        ```
+        {formatted_query}
+        ```
+        """,
+        }
+    )
+    yield history
+
+    view = QueuedQuestView()
+    config = load_config()
+    container = AppContainer(config, view)
+    es_client = await container.es_client
+    result = core_logic_execute_query(es_client, config.index_name, query)
+    if len(result["hits"]["hits"]) > 0:
+        hits_string = json.dumps(result["hits"]["hits"], indent=4, ensure_ascii=False)
+    else:
+        hits_string = "ヒット 0 件"
+
+    history.append({"role": "assistant", "content": f"```\n{hits_string}\n```"})
+    yield history
+
+
+def format_query(query):
+    query_dict = json.loads(query)
+    return json.dumps(query_dict, indent=4, ensure_ascii=False)
 
 
 with gr.Blocks(fill_width=True, fill_height=True) as demo:
-    ui_chat = gr.Chatbot(type="messages", scale=1)
-    with gr.Row(scale=0):
-        with gr.Column():
-            ui_quest_id = gr.Number(1)
-            ui_question_markdown = gr.Markdown()
-        with gr.Column():
+    with gr.Row(equal_height=True, scale=1):
+        with gr.Column(scale=1):
+            ui_chat = gr.Chatbot(type="messages")
+        with gr.Column(scale=1):
             ui_user_query = gr.Textbox(
-                "{}", lines=5, label="ここに答えを書いてください"
+                "{}",
+                lines=20,
+                label="JSON形式でクエリを書いて「採点」ボタンを押してください",
+                scale=5,
             )
-            ui_json_validator = gr.Markdown("🟩 JSON 形式です")
-            ui_submit_button = gr.Button("submit", variant="primary")
-
+            with gr.Column():
+                ui_quest_id = gr.Number(1, label="クエストID選択")
+                ui_json_validator = gr.Markdown(JSON_CHECK_OK)
+                ui_execute_button = gr.Button("▶️  テスト実行 ▶️", variant="secondary")
+                ui_format_button = gr.Button("✨ 自動整形 ✨")
+                ui_submit_button = gr.Button(SUBMIT_BUTTON_TEXT, variant="primary")
+    # select quest
     ui_user_query.change(
         json_check, inputs=[ui_user_query], outputs=[ui_json_validator]
     )
+    # load quest
     gr.on(
-        [demo.load, ui_quest_id.change],
+        [ui_quest_id.change],
         fn=load_quest,
         inputs=[ui_quest_id],
-        outputs=[ui_question_markdown],
+        outputs=[ui_chat],
     )
+    # submit query
     ui_submit_button.click(
         submit_answer,
         inputs=[ui_quest_id, ui_user_query, ui_chat],
         outputs=[ui_chat, ui_submit_button],
+    )
+    # execute query
+    gr.on(
+        [ui_execute_button.click],
+        fn=execute_query,
+        inputs=[ui_user_query, ui_chat],
+        outputs=[ui_chat],
+    )
+    # format query
+    gr.on(
+        [ui_format_button.click],
+        fn=format_query,
+        inputs=[ui_user_query],
+        outputs=[ui_user_query],
     )
 
 
