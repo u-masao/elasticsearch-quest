@@ -331,7 +331,7 @@ def format_query(query):
 
 with gr.Blocks(fill_width=True, fill_height=True) as demo:
     with gr.Row(equal_height=True, scale=1):
-        with gr.Column(scale=1):
+        with gr.Column(scale=2):
             ui_chat = gr.Chatbot(type="messages")
         with gr.Column(scale=1):
             ui_user_query = gr.Textbox(
