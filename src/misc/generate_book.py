@@ -137,12 +137,12 @@ class BookGenerator:
             ができるようにして。
             それぞれの chapter で学習内容を箇条書きで詳しく書いて。
             構文例や問題の例は不要。検索クエリの作り方について学ぶの
-            で、mapping の設定、トラブルシューティング、冗長化、
+            で、mappings の設定、トラブルシューティング、冗長化、
             性能チューニングは不要。
 
             # make sample data
             先程の loadmap に従って演習を行います。
-            演習に必要な sample data と mapping を作って。
+            演習に必要な sample data と mappings を作って。
             テーマは「{exam_theme}」です。実在する情報を使って。
             演習問題で必要になりそうな幅広い種類のカラムを作って。
             dense_vector は 2 次元にして。
@@ -170,7 +170,7 @@ class BookGenerator:
             doc_ids_in_order、doc_ids_in_order に対応しています。
 
             # output
-            loadmap, mapping, sample data, quest を一つの
+            loadmap, mappings, sample data, quest を一つの
             JSONオブジェクトにして出力して下さい。
             絶対に件数を省略せずに、すべての情報を出力して下さい。
             JSON内にはコメントとか説明は一切書かないで、厳格な
