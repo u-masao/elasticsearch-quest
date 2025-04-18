@@ -1,0 +1,37 @@
+{
+  "mappings": {
+    "properties": {
+      "author": {
+        "type": "text"
+      },
+      "isbn": {
+        "type": "keyword"
+      },
+      "metric_vector": {
+        "type": "dense_vector",
+        "dims": 2,
+        "index": true,
+        "similarity": "l2_norm",
+        "index_options": {
+          "type": "hnsw",
+          "m": 16,
+          "ef_construction": 100
+        }
+      },
+      "name": {
+        "type": "text"
+      },
+      "pages": {
+        "type": "integer"
+      },
+      "publisher": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  }
+}
