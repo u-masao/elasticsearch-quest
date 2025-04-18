@@ -156,9 +156,14 @@ class BookGenerator:
             前方一致、完全一致等です。
 
             quest には、quest_id, chapter_id, title, description,
-            query_type_hint, evaluation_method, evaluation_data,
-            hint, difficultry[int] を含めて下さい。
+            query_type_hint, evaluation_method, evaluation_data_raw:[str],
+            hints_raw:Optional[str], difficultry:[int],
+            correct_query_raw:[str], created_at,
+            updated_at を含めて下さい。
             他に必要なカラムがあれば追加して下さい。
+            evaluation_data は evaluation_method に準じた正解を
+            sample data から探し出して、具体的なIDや個数などで入
+            れてください。
             Quest は、Chapter 毎に {quests_par_chapter_size} 個づつ用意して下さい。
 
             評価方法は、result_count、doc_ids_include、
