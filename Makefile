@@ -111,3 +111,6 @@ dump_index:
         -H 'Content-Type: application/json' \
         https://127.0.0.1:9200/$(INDEX_NAME)/_search?pretty
 
+# generate book
+generate_book:
+	 uv run python -m src.misc.generate_book fixtures/book.json
