@@ -113,4 +113,4 @@ dump_index:
 
 # generate book
 generate_book:
-	 uv run python -m src.misc.generate_book fixtures/book.json
+	 uv run python -m src.misc.generate_book fixtures/generated_book.json
