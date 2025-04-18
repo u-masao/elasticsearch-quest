@@ -98,6 +98,7 @@ class BookGenerator:
         """
         with trace(workflow_name="generate book", trace_id=trace_id):
             for prompt in self.prompt_flow():
+                print(f"==== prompt: {prompt}")
                 history += [{"role": "user", "content": prompt}]
                 result = Runner.run_sync(
                     self._make_agent(
@@ -142,7 +143,7 @@ class BookGenerator:
             # make sample data
             先程の loadmap に従って演習を行います。
             演習に必要な sample data と mapping を作って。
-            テーマは「{exam_theme}」です。
+            テーマは「{exam_theme}」です。実在する情報を使って。
             演習問題で必要になりそうな幅広い種類のカラムを作って。
             dense_vector は 2 次元にして。
             件数は{data_size}件ね。
