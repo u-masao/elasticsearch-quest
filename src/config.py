@@ -2,7 +2,7 @@
 from pathlib import Path
 
 from dotenv import load_dotenv
-from pydantic import AnyHttpUrl, Field, FilePath, field_validator, ConfigDict
+from pydantic import AnyHttpUrl, ConfigDict, Field, FilePath, field_validator
 from pydantic_settings import BaseSettings
 
 # .env ファイルをロード (プロジェクトルートにある想定)
@@ -13,8 +13,8 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DATA_DIR = PROJECT_ROOT / "data"
 DEFAULT_DB_FILE_PATH = DEFAULT_DATA_DIR / "quests.db"
 DEFAULT_FIXTURES_DIR = PROJECT_ROOT / "fixtures"
-DEFAULT_SCHEMA_FILE = DEFAULT_FIXTURES_DIR / "create_quests_table.sql"
-DEFAULT_DATA_FILE = DEFAULT_FIXTURES_DIR / "insert_quests.sql"
+# DEFAULT_SCHEMA_FILE = DEFAULT_FIXTURES_DIR / "create_quests_table.sql"
+# DEFAULT_DATA_FILE = DEFAULT_FIXTURES_DIR / "insert_quests.sql"
 DEFAULT_INDEX_NAME = "sample_books"
 
 
@@ -27,8 +27,8 @@ class AppConfig(BaseSettings):
     index_name: str = Field(
         default=DEFAULT_INDEX_NAME, alias="ES_INDEX_NAME"
     )  # 環境変数名を指定
-    schema_file: FilePath = Field(default=DEFAULT_SCHEMA_FILE)
-    data_file: FilePath = Field(default=DEFAULT_DATA_FILE)
+    # schema_file: FilePath = Field(default=DEFAULT_SCHEMA_FILE)
+    # data_file: FilePath = Field(default=DEFAULT_DATA_FILE)
 
     # Elasticsearch接続情報
     elasticsearch_url: AnyHttpUrl | None = Field(
