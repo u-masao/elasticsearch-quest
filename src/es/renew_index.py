@@ -10,10 +10,7 @@ def delete_index(es_client, index_name):
     Elasticsearch からインデックスを削除します。
     インデックスが存在しない場合はエラーを無視します。
     """
-    es_client.options(
-        basic_auth=es_client.transport.kwargs.get("basic_auth"),
-        ignore_status=[400, 404],
-    ).indices.delete(index=index_name)
+    es_client.indices.delete(index=index_name, ignore=[400, 404])
 
 
 def create_index(es_client, index_name, mapping_file):
