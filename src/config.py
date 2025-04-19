@@ -2,7 +2,7 @@
 from pathlib import Path
 
 from dotenv import load_dotenv
-from pydantic import AnyHttpUrl, Field, FilePath, field_validator
+from pydantic import AnyHttpUrl, Field, FilePath, field_validator, ConfigDict
 from pydantic_settings import BaseSettings
 
 # .env ファイルをロード (プロジェクトルートにある想定)
@@ -67,12 +67,7 @@ class AppConfig(BaseSettings):
         v.parent.mkdir(parents=True, exist_ok=True)
         return v
 
-    class Config:
-        # 環境変数名のプレフィックスなどはここで設定可能
-        # env_prefix = 'APP_'
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        extra = "ignore"  # .env や環境変数に未定義のフィールドがあっても無視
+    model_config = ConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
 
 def load_config(
