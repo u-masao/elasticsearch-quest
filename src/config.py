@@ -13,8 +13,6 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DATA_DIR = PROJECT_ROOT / "data"
 DEFAULT_DB_FILE_PATH = DEFAULT_DATA_DIR / "quests.db"
 DEFAULT_FIXTURES_DIR = PROJECT_ROOT / "fixtures"
-# DEFAULT_SCHEMA_FILE = DEFAULT_FIXTURES_DIR / "create_quests_table.sql"
-# DEFAULT_DATA_FILE = DEFAULT_FIXTURES_DIR / "insert_quests.sql"
 DEFAULT_INDEX_NAME = "sample_books"
 
 
@@ -27,8 +25,6 @@ class AppConfig(BaseSettings):
     index_name: str = Field(
         default=DEFAULT_INDEX_NAME, alias="ES_INDEX_NAME"
     )  # 環境変数名を指定
-    # schema_file: FilePath = Field(default=DEFAULT_SCHEMA_FILE)
-    # data_file: FilePath = Field(default=DEFAULT_DATA_FILE)
 
     # Elasticsearch接続情報
     elasticsearch_url: AnyHttpUrl | None = Field(
@@ -75,8 +71,6 @@ class AppConfig(BaseSettings):
 def load_config(
     db_path_override: Path | None = None,
     index_name_override: str | None = None,
-    schema_file_override: Path | None = None,
-    data_file_override: Path | None = None,
 ) -> AppConfig:
     """
     設定をロードし、CLI引数で指定された値で上書きする。
@@ -84,8 +78,6 @@ def load_config(
     Args:
         db_path_override: DBファイルパス (CLI引数).
         index_name_override: Index名 (CLI引数).
-        schema_file_override: スキーマファイルパス (CLI引数).
-        data_file_override: データファイルパス (CLI引数).
 
     Returns:
         ロードされたAppConfigオブジェクト.
@@ -100,10 +92,6 @@ def load_config(
         override_values["db_path"] = db_path_override
     if index_name_override:
         override_values["index_name"] = index_name_override
-    if schema_file_override:
-        override_values["schema_file"] = schema_file_override
-    if data_file_override:
-        override_values["data_file"] = data_file_override
 
     # BaseSettingsを初期化し、上書き値を渡す
     # **override_values で辞書を展開してキーワード引数として渡す
