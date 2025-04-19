@@ -90,6 +90,14 @@ class QuestRepository:
         _ = quest.as_dict()  # 強制的にパースを走らせる。
         return quest
 
+    def _read_quests(self) -> List[dict]:
+        import json
+        if not os.path.exists(self.db_path):
+            raise FileNotFoundError(f"Quest file not found: {self.db_path}")
+        with open(self.db_path, "r", encoding="utf-8") as f:
+            quests_json = json.load(f)
+        return quests_json
+
     async def get_quest_by_id_async(self, quest_id: int) -> Optional[Quest]:
         return self.get_quest_by_id(quest_id)
 
@@ -104,17 +112,14 @@ class QuestRepository:
             Questオブジェクト、または見つからない場合はNone。
         """
         try:
-            with self._get_connection() as conn:
-                cursor = conn.cursor()
-                cursor.execute("SELECT * FROM quests WHERE quest_id = ?", (quest_id,))
-                row = cursor.fetchone()
-                return self._row_to_quest(row)
-        except sqlite3.Error as e:
+            quests = self._read_quests()
+            for row in quests:
+                if row["quest_id"] == quest_id:
+                    return self._row_to_quest(row)
+            return None
+        except Exception as e:
             print(f"Error fetching quest with id {quest_id}: {e}")
-            return None  # エラー時はNoneを返す
-        except ValueError as e:
-            print(f"Error fetching quest with id {quest_id}: {e}")
-            return None  # エラー時はNoneを返す
+            return None
 
     def get_all_quests(self, order_by_difficulty: bool = True) -> List[Quest]:
         """
@@ -126,21 +131,12 @@ class QuestRepository:
         Returns:
             Questオブジェクトのリスト。
         """
-        query = "SELECT * FROM quests"
-        if order_by_difficulty:
-            query += " ORDER BY difficulty ASC, quest_id ASC"  # 難易度が同じ場合はID順
-
-        quests = []
         try:
-            with self._get_connection() as conn:
-                cursor = conn.cursor()
-                cursor.execute(query)
-                rows = cursor.fetchall()
-                for row in rows:
-                    quest = self._row_to_quest(row)
-                    if quest:  # 変換に成功した場合のみ追加
-                        quests.append(quest)
+            quests_data = self._read_quests()
+            quests = [self._row_to_quest(row) for row in quests_data if self._row_to_quest(row) is not None]
+            if order_by_difficulty:
+                quests.sort(key=lambda q: (q.difficulty, q.quest_id))
             return quests
-        except sqlite3.Error as e:
+        except Exception as e:
             print(f"Error fetching all quests: {e}")
-            return []  # エラー時は空リストを返す
+            return []
