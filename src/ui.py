@@ -104,12 +104,6 @@ async def cli(
         quest_service = QuestService(quest_repo, es_client, config.index_name)
         agent_service = AgentService(config, view)  # AgentService も view を使う
 
-        # DIコンテナを使わない場合:
-        # quest_repo = initialize_database(config, view)
-        # es_client = initialize_elasticsearch(config, view)
-        # quest_service = QuestService(quest_repo, es_client, config.index_name)
-        # agent_service = AgentService(config, view)
-
         # 3. メイン処理の実行 (非同期)
         await run_quest_flow(
             view=view,

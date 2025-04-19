@@ -10,9 +10,11 @@ class QuestRepository:
 
     def __init__(self):
         """
-        リポジトリを初期化し、BookRepository を利用してクエストのリストを内部に保持します。
+        リポジトリを初期化し、BookRepository を利用してクエストのリストを内部
+        に保持します。
         """
         from pathlib import Path
+
         from src.db.book_repository import BookRepository
 
         book_json_path = (

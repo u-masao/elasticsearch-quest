@@ -4,13 +4,13 @@ from elasticsearch import Elasticsearch
 from .config import AppConfig
 from .db.quest_repository import QuestRepository
 from .es.client import get_es_client  # 実装は後述
-from .exceptions import DatabaseError, ElasticsearchError
+from .exceptions import ElasticsearchError
 from .view import QuestView
 
 
 async def initialize_database(config: AppConfig, view: QuestView) -> QuestRepository:
     """
-    データベースリポジトリを初期化し、必要であればスキーマとデータをロードする。
+    QuestRepository を取得して返す。
 
     Args:
         config: アプリケーション設定オブジェクト.
@@ -18,12 +18,8 @@ async def initialize_database(config: AppConfig, view: QuestView) -> QuestReposi
 
     Returns:
         初期化されたQuestRepositoryインスタンス.
-
-    Raises:
-        DatabaseError: データベースの初期化や接続に失敗した場合.
     """
-    repo = QuestRepository()
-    return repo
+    return QuestRepository()
 
 
 async def initialize_elasticsearch(config: AppConfig, view: QuestView) -> Elasticsearch:

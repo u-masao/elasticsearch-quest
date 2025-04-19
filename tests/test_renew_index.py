@@ -1,6 +1,6 @@
-import os
 import json
-import pytest
+import os
+
 from src.es import renew_index
 
 
@@ -105,7 +105,8 @@ def test_main(monkeypatch, tmp_path):
 
     monkeypatch.setattr(os.path, "join", fake_join)
 
-    # Override delete_index, create_index, append_documents to record calls instead of performing real actions
+    # Override delete_index, create_index, append_documents to record calls
+    # instead of performing real actions
     deleted = []
     created = []
     appended = []
