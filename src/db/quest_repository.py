@@ -56,18 +56,18 @@ class QuestRepository:
     async def get_quest_by_id_async(self, quest_id: int) -> Optional[Quest]:
         return self.get_quest_by_id(quest_id)
 
-    def get_quest_by_id(self, quest_id: str) -> Optional[Quest]:
+    def get_quest_by_id(self, quest_id) -> Optional[Quest]:
         """
-        指定された文字列のIDのクエストを内部のリストから取得します。
+        指定されたIDのクエストを内部のリストから取得します。
 
         Args:
-            quest_id: 取得するクエストの文字列のID。
+            quest_id: 取得するクエストのID (数値または文字列)。
 
         Returns:
             Questオブジェクト、または見つからない場合はNone。
         """
         for quest in self.quests:
-            if str(quest.quest_id) == quest_id:
+            if str(quest.quest_id) == str(quest_id):
                 return quest
         return None
 
@@ -81,16 +81,7 @@ class QuestRepository:
         Returns:
             Questオブジェクトのリスト。
         """
-        try:
-            quests_data = self._read_quests()
-            quests = [
-                self._row_to_quest(row)
-                for row in quests_data
-                if self._row_to_quest(row) is not None
-            ]
-            if order_by_difficulty:
-                quests.sort(key=lambda q: (q.difficulty, q.quest_id))
-            return quests
-        except Exception as e:
-            print(f"Error fetching all quests: {e}")
-            return []
+        quests = self.quests.copy()
+        if order_by_difficulty:
+            quests.sort(key=lambda q: (q.difficulty, q.quest_id))
+        return quests
