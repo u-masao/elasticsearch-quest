@@ -22,6 +22,10 @@ class BookRepository:
         quests_data = data.get("quests", [])
         quests = []
         for quest_dict in quests_data:
+            if "evaluation_data" in quest_dict:
+                quest_dict["evaluation_data_raw"] = quest_dict.pop("evaluation_data")
+            if "hints" in quest_dict:
+                quest_dict["hints_raw"] = quest_dict.pop("hints")
             quest = Quest(**quest_dict)
             # パース済みプロパティの評価を強制して、パースエラーを発生させる
             _ = quest.evaluation_data
