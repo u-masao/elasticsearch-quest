@@ -19,7 +19,9 @@ def create_index(es_client, index_name, mapping_file):
     """
     with open(mapping_file, encoding="utf-8") as f:
         mapping = json.load(f)
-    es_client.options(ignore_status=[400]).indices.create(index=index_name, body=mapping)
+    es_client.options(ignore_status=[400]).indices.create(
+        index=index_name, body=mapping
+    )
 
 
 def append_documents(es_client, index_name, ndjson_file):
