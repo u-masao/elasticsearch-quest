@@ -13,10 +13,9 @@ class QuestRepository:
         リポジトリを初期化し、クエストのJSONファイルを設定します。
         デフォルトで fixtures/tests/quests.json を使用します。
         """
-        self.quest_file = os.path.join(os.path.dirname(__file__), "..", "fixtures", "tests", "quests.json")
-
-
-
+        self.quest_file = os.path.join(
+            os.path.dirname(__file__), "..", "fixtures", "tests", "quests.json"
+        )
 
     def _row_to_quest(self, row: sqlite3.Row) -> Optional[Quest]:
         """sqlite3.RowをQuestオブジェクトに変換"""
