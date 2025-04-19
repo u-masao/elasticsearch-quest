@@ -92,6 +92,7 @@ class QuestRepository:
 
     def _read_quests(self) -> List[dict]:
         import json
+
         if not os.path.exists(self.db_path):
             raise FileNotFoundError(f"Quest file not found: {self.db_path}")
         with open(self.db_path, "r", encoding="utf-8") as f:
@@ -133,7 +134,11 @@ class QuestRepository:
         """
         try:
             quests_data = self._read_quests()
-            quests = [self._row_to_quest(row) for row in quests_data if self._row_to_quest(row) is not None]
+            quests = [
+                self._row_to_quest(row)
+                for row in quests_data
+                if self._row_to_quest(row) is not None
+            ]
             if order_by_difficulty:
                 quests.sort(key=lambda q: (q.difficulty, q.quest_id))
             return quests
