@@ -10,7 +10,7 @@ def delete_index(es_client, index_name):
     Elasticsearch からインデックスを削除します。
     インデックスが存在しない場合はエラーを無視します。
     """
-    es_client.indices.delete(index=index_name, ignore=[400, 404])
+    es_client.options(ignore_status=[400, 404]).indices.delete(index=index_name)
 
 
 def create_index(es_client, index_name, mapping_file):
@@ -19,7 +19,7 @@ def create_index(es_client, index_name, mapping_file):
     """
     with open(mapping_file, encoding="utf-8") as f:
         mapping = json.load(f)
-    es_client.indices.create(index=index_name, body=mapping, ignore=400)
+    es_client.options(ignore_status=[400]).indices.create(index=index_name, body=mapping)
 
 
 def append_documents(es_client, index_name, ndjson_file):
@@ -32,6 +32,8 @@ def append_documents(es_client, index_name, ndjson_file):
             line = line.strip()
             if line:
                 doc = json.loads(line)
+                if "_index" not in doc:
+                    doc["_index"] = index_name
                 actions.append(doc)
     if actions:
         bulk(es_client, actions)
