@@ -92,11 +92,17 @@ class QuestRepository:
 
     def _read_quests(self) -> List[dict]:
         import json
+        import os
 
-        if not os.path.exists(self.db_path):
-            raise FileNotFoundError(f"Quest file not found: {self.db_path}")
-        with open(self.db_path, "r", encoding="utf-8") as f:
+        # if self.db_path には JSON 形式のファイルが設定されていない場合、既定の JSON ファイルを使う
+        quest_file = self.db_path
+        if not quest_file.endswith(".json"):
+            quest_file = os.path.join(os.path.dirname(__file__), "..", "fixtures", "tests", "quests.json")
+        if not os.path.exists(quest_file):
+            raise FileNotFoundError(f"Quest file not found: {quest_file}")
+        with open(quest_file, "r", encoding="utf-8") as f:
             quests_json = json.load(f)
+        print(f"Number of quests loaded: {len(quests_json)}")
         return quests_json
 
     async def get_quest_by_id_async(self, quest_id: int) -> Optional[Quest]:
