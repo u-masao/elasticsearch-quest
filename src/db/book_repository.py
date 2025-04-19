@@ -20,4 +20,11 @@ class BookRepository:
         with self.json_path.open("r", encoding="utf-8") as f:
             data = json.load(f)
         quests_data = data.get("quests", [])
-        return [Quest(**quest) for quest in quests_data]
+        quests = []
+        for quest_dict in quests_data:
+            quest = Quest(**quest_dict)
+            # パース済みプロパティの評価を強制して、パースエラーを発生させる
+            _ = quest.evaluation_data
+            _ = quest.hints
+            quests.append(quest)
+        return quests
