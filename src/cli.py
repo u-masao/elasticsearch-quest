@@ -123,8 +123,8 @@ async def main_wrapper(
         # 例: async def quest_repository(self): -> await container.quest_repository()
         # 例: @property async def quest_repository(self):
         #       -> await container.quest_repository
-        quest_repo = await container.quest_repository
-        es_client = await container.es_client
+        quest_repo = await container.quest_repository()
+        es_client = await container.es_client()
 
         # --- サービスのインスタンス化 ---
         quest_service = QuestService(quest_repo, es_client, config.index_name)
