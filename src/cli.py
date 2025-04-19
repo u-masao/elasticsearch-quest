@@ -8,10 +8,8 @@ import click
 
 from .bootstrap import AppContainer  # DIコンテナ
 from .config import (  # 設定関連
-    DEFAULT_DATA_FILE,
     DEFAULT_DB_FILE_PATH,
     DEFAULT_INDEX_NAME,
-    DEFAULT_SCHEMA_FILE,
     load_config,
 )
 from .exceptions import QuestCliError  # アプリケーション例外
@@ -188,20 +186,6 @@ async def main_wrapper(
     help=f"Elasticsearchインデックス名 (デフォルト: {DEFAULT_INDEX_NAME})",
 )
 @click.option(
-    "--schema_file",
-    type=click.Path(
-        exists=True, dir_okay=False, readable=True, resolve_path=True, path_type=Path
-    ),
-    help=f"DBスキーマSQLファイルパス (デフォルト: {DEFAULT_SCHEMA_FILE})",
-)
-@click.option(
-    "--data_file",
-    type=click.Path(
-        exists=True, dir_okay=False, readable=True, resolve_path=True, path_type=Path
-    ),
-    help=f"DB初期データSQLファイルパス (デフォルト: {DEFAULT_DATA_FILE})",
-)
-@click.option(
     "--skip_agent",
     is_flag=True,
     default=False,
@@ -213,8 +197,6 @@ def cli(
     query_file: Path | None,
     db_path: Path | None,
     index_name: str | None,
-    schema_file: Path | None,
-    data_file: Path | None,
     skip_agent: bool,
 ):
     """
@@ -232,8 +214,6 @@ def cli(
         config = load_config(
             db_path_override=db_path,
             index_name_override=index_name,
-            schema_file_override=schema_file,
-            data_file_override=data_file,
         )
 
         # 2. 非同期処理の実行 (初期化は main_wrapper 内で行う)
