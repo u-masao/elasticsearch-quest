@@ -67,7 +67,9 @@ class AppConfig(BaseSettings):
         v.parent.mkdir(parents=True, exist_ok=True)
         return v
 
-    model_config = ConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = ConfigDict(
+        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+    )
 
 
 def load_config(
