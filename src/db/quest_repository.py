@@ -10,12 +10,13 @@ class QuestRepository:
 
     def __init__(self):
         """
-        リポジトリを初期化し、クエストのJSONファイルを設定します。
-        デフォルトで fixtures/tests/quests.json を使用します。
+        リポジトリを初期化し、BookRepository を利用してクエストのリストを内部に保持します。
         """
-        self.quest_file = os.path.join(
-            os.path.dirname(__file__), "..", "fixtures", "tests", "quests.json"
-        )
+        from pathlib import Path
+        from src.db.book_repository import BookRepository
+        book_json_path = Path(__file__).parent.joinpath("..", "fixtures", "tests", "quests.json").resolve()
+        self.book_repo = BookRepository(book_json_path)
+        self.quests = self.book_repo.load_quests()
 
     def _row_to_quest(self, row: dict) -> Optional[Quest]:
         """辞書をQuestオブジェクトに変換"""
@@ -50,25 +51,20 @@ class QuestRepository:
     async def get_quest_by_id_async(self, quest_id: int) -> Optional[Quest]:
         return self.get_quest_by_id(quest_id)
 
-    def get_quest_by_id(self, quest_id: int) -> Optional[Quest]:
+    def get_quest_by_id(self, quest_id: str) -> Optional[Quest]:
         """
-        指定されたIDのクエストを取得します。
+        指定された文字列のIDのクエストを内部のリストから取得します。
 
         Args:
-            quest_id: 取得するクエストのID。
+            quest_id: 取得するクエストの文字列のID。
 
         Returns:
             Questオブジェクト、または見つからない場合はNone。
         """
-        try:
-            quests = self._read_quests()
-            for row in quests:
-                if row["quest_id"] == quest_id:
-                    return self._row_to_quest(row)
-            return None
-        except Exception as e:
-            print(f"Error fetching quest with id {quest_id}: {e}")
-            return None
+        for quest in self.quests:
+            if str(quest.quest_id) == quest_id:
+                return quest
+        return None
 
     def get_all_quests(self, order_by_difficulty: bool = True) -> List[Quest]:
         """
