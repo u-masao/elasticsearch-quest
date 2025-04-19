@@ -1,7 +1,5 @@
 # src/db/quest_repository.py
 import os
-import sqlite3
-from contextlib import contextmanager
 from typing import List, Optional
 
 from src.models.quest import Quest
@@ -10,66 +8,15 @@ from src.models.quest import Quest
 class QuestRepository:
     """クエストテーブルを操作するためのリポジトリクラス"""
 
-    def __init__(self, db_path: str):
+    def __init__(self):
         """
-        リポジトリを初期化し、データベースパスを設定します。
+        リポジトリを初期化し、クエストのJSONファイルを設定します。
+        デフォルトで fixtures/tests/quests.json を使用します。
+        """
+        self.quest_file = os.path.join(os.path.dirname(__file__), "..", "fixtures", "tests", "quests.json")
 
-        Args:
-            db_path: SQLiteデータベースファイルのパス。
-        """
-        if not db_path:
-            raise ValueError("db_path が空です。ファイル名を指定してください。")
-        self.db_path = db_path
 
-    @contextmanager
-    def _get_connection(self):
-        """データベース接続を管理するコンテキストマネージャ"""
-        conn = None
-        try:
-            conn = sqlite3.connect(self.db_path)
-            conn.row_factory = sqlite3.Row  # カラム名でアクセスできるようにする
-            yield conn
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
-            # エラーハンドリング: 必要に応じてログ出力や再試行など
-            raise  # エラーを再送出
-        finally:
-            if conn:
-                conn.close()
 
-    def initialize_schema(self, schema_file: str):
-        """
-        指定されたSQLファイルを実行してデータベーススキーマを初期化します。
-        テーブルが存在する場合は実行しないなどの考慮も可能。
-        """
-        if not os.path.exists(schema_file):
-            raise FileNotFoundError(f"Schema file not found: {schema_file}")
-        with open(schema_file, "r", encoding="utf-8") as f:
-            schema_sql = f.read()
-        try:
-            with self._get_connection() as conn:
-                conn.executescript(schema_sql)
-                conn.commit()
-        except sqlite3.Error as e:
-            print(f"Failed to initialize schema from {schema_file}: {e}")
-            raise
-
-    def load_data(self, data_file: str):
-        """
-        指定されたSQLファイルを実行してデータをロードします。
-        データの重複挿入を防ぐ考慮が必要な場合がある。
-        """
-        if not os.path.exists(data_file):
-            raise FileNotFoundError(f"Data file not found: {data_file}")
-        with open(data_file, "r", encoding="utf-8") as f:
-            data_sql = f.read()
-        try:
-            with self._get_connection() as conn:
-                conn.executescript(data_sql)
-                conn.commit()
-        except sqlite3.Error as e:
-            print(f"Failed to load data from {data_file}: {e}")
-            raise
 
     def _row_to_quest(self, row: sqlite3.Row) -> Optional[Quest]:
         """sqlite3.RowをQuestオブジェクトに変換"""
@@ -92,14 +39,8 @@ class QuestRepository:
 
     def _read_quests(self) -> List[dict]:
         import json
-        import os
 
-        # if self.db_path には JSON 形式のファイルが設定されていない場合、既定の JSON ファイルを使う
-        quest_file = self.db_path
-        if not quest_file.endswith(".json"):
-            quest_file = os.path.join(
-                os.path.dirname(__file__), "..", "fixtures", "tests", "quests.json"
-            )
+        quest_file = self.quest_file
         if not os.path.exists(quest_file):
             raise FileNotFoundError(f"Quest file not found: {quest_file}")
         with open(quest_file, "r", encoding="utf-8") as f:
