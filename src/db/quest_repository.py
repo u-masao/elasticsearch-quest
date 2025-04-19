@@ -17,7 +17,7 @@ class QuestRepository:
 
         book_json_path = (
             Path(__file__)
-            .parent.joinpath("..", "fixtures", "tests", "quests.json")
+            .parent.joinpath("..", "..", "fixtures", "tests", "book.json")
             .resolve()
         )
         self.book_repo = BookRepository(book_json_path)
