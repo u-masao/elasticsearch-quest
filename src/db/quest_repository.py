@@ -14,7 +14,12 @@ class QuestRepository:
         """
         from pathlib import Path
         from src.db.book_repository import BookRepository
-        book_json_path = Path(__file__).parent.joinpath("..", "fixtures", "tests", "quests.json").resolve()
+
+        book_json_path = (
+            Path(__file__)
+            .parent.joinpath("..", "fixtures", "tests", "quests.json")
+            .resolve()
+        )
         self.book_repo = BookRepository(book_json_path)
         self.quests = self.book_repo.load_quests()
 
