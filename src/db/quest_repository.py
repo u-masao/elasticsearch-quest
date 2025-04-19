@@ -17,8 +17,8 @@ class QuestRepository:
             os.path.dirname(__file__), "..", "fixtures", "tests", "quests.json"
         )
 
-    def _row_to_quest(self, row: sqlite3.Row) -> Optional[Quest]:
-        """sqlite3.RowをQuestオブジェクトに変換"""
+    def _row_to_quest(self, row: dict) -> Optional[Quest]:
+        """辞書をQuestオブジェクトに変換"""
         if not row:
             return None
         quest = Quest(
