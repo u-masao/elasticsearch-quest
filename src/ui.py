@@ -76,8 +76,6 @@ async def cli(
     query_file: Path | None = None,
     db_path: Path | None = None,
     index_name: str | None = None,
-    schema_file: Path | None = None,
-    data_file: Path | None = None,
     skip_agent: bool = False,
 ):
     """
@@ -92,8 +90,6 @@ async def cli(
         config = load_config(
             db_path_override=db_path,
             index_name_override=index_name,
-            schema_file_override=schema_file,
-            data_file_override=data_file,
         )
 
         # 2. 依存関係の初期化とサービスの準備
@@ -241,8 +237,8 @@ async def submit_answer(quest_id, query, history):
 
 
 def json_check(query):
-    if query is None or query == "":
-        return JSON_CHECK_NG
+    # if query is None or query == "":
+    # return JSON_CHECK_NG
     try:
         _ = json.loads(query)
         return JSON_CHECK_OK
@@ -319,8 +315,14 @@ async def execute_query(query, history):
 
 
 def format_query(query):
-    query_dict = json.loads(query)
-    return json.dumps(query_dict, indent=4, ensure_ascii=False)
+    """
+    クエリーをフォーマットします。
+    """
+    try:
+        query_dict = json.loads(query)
+        return json.dumps(query_dict, indent=4, ensure_ascii=False)
+    except json.JSONDecodeError:
+        raise gr.Erorr("クエリーを整形できません。正しいJSON形式で書いて下さい。")
 
 
 with gr.Blocks(fill_width=True, fill_height=True) as demo:
@@ -343,8 +345,11 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
                 ui_submit_button = gr.Button(SUBMIT_BUTTON_TEXT, variant="primary")
 
     # select quest
-    ui_user_query.change(
-        json_check, inputs=[ui_user_query], outputs=[ui_json_validator]
+    gr.on(
+        [ui_user_query.change],
+        fn=json_check,
+        inputs=[ui_user_query],
+        outputs=[ui_json_validator],
     )
 
     # load quest
