@@ -14,7 +14,7 @@ DEFAULT_DATA_DIR = PROJECT_ROOT / "data"
 DEFAULT_DB_FILE_PATH = DEFAULT_DATA_DIR / "quests.db"
 DEFAULT_FIXTURES_DIR = PROJECT_ROOT / "fixtures"
 DEFAULT_INDEX_NAME = "sample_books"
-DEFAULT_BOOK_FILE = DEFAULT_FIXTURES_DIR / "default_book.json"
+DEFAULT_BOOK_FILE = DEFAULT_FIXTURES_DIR / "books" / "default.json"
 
 
 # --- 設定クラス ---
