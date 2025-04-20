@@ -14,6 +14,7 @@ DEFAULT_DATA_DIR = PROJECT_ROOT / "data"
 DEFAULT_DB_FILE_PATH = DEFAULT_DATA_DIR / "quests.db"
 DEFAULT_FIXTURES_DIR = PROJECT_ROOT / "fixtures"
 DEFAULT_INDEX_NAME = "sample_books"
+DEFAULT_BOOK_FILE = DEFAULT_FIXTURES_DIR / "default_book.json"
 
 
 # --- 設定クラス ---
@@ -22,6 +23,7 @@ class AppConfig(BaseSettings):
 
     project_root: Path = Field(default=PROJECT_ROOT)
     db_path: Path = Field(default=DEFAULT_DB_FILE_PATH)
+    book_path: Path = Field(default=DEFAULT_BOOK_FILE)
     index_name: str = Field(
         default=DEFAULT_INDEX_NAME, alias="ES_INDEX_NAME"
     )  # 環境変数名を指定
@@ -71,6 +73,7 @@ class AppConfig(BaseSettings):
 def load_config(
     db_path_override: Path | None = None,
     index_name_override: str | None = None,
+    book_path_override: Path | None = None,
 ) -> AppConfig:
     """
     設定をロードし、CLI引数で指定された値で上書きする。
@@ -78,6 +81,7 @@ def load_config(
     Args:
         db_path_override: DBファイルパス (CLI引数).
         index_name_override: Index名 (CLI引数).
+        book_path_override: Book ファイルパス (CLI引数).
 
     Returns:
         ロードされたAppConfigオブジェクト.
@@ -92,6 +96,8 @@ def load_config(
         override_values["db_path"] = db_path_override
     if index_name_override:
         override_values["index_name"] = index_name_override
+    if book_path_override:
+        override_values["book_path"] = book_path_override
 
     # BaseSettingsを初期化し、上書き値を渡す
     # **override_values で辞書を展開してキーワード引数として渡す
