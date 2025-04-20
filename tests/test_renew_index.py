@@ -1,5 +1,6 @@
 import json
 import os
+
 from src.es import renew_index
 
 
@@ -81,7 +82,7 @@ def test_create_index(tmp_path):
 def test_main(monkeypatch, tmp_path):
     # Setup temporary book.json with mappings and sample_data
     data = {
-        "mappings": {"mappings": {"settings": {"number_of_shards": 1}}},
+        "mappings": {"settings": {"number_of_shards": 1}},
         "sample_data": [{"field": "value1"}, {"field": "value2"}],
     }
     book_file = tmp_path / "book.json"
