@@ -50,7 +50,7 @@ def main():
 
     # インデックス名、入力 JSON ファイルの取得 (fixters/tests/book.json)
     index_name = os.environ.get("INDEX_NAME", "sample_books")
-    input_file = os.path.join("fixters", "tests", "book.json")
+    input_file = os.path.join("fixters", "tests/book.json")
 
     with open(input_file, encoding="utf-8") as f:
         data = json.load(f)
