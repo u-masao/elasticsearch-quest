@@ -55,10 +55,10 @@ def test_delete_index():
 
 def test_create_index(tmp_path):
     mapping = {"mappings":{"settings": {"number_of_shards": 1}}}
-    mapping_file = tmp_path / "mapping_book.json"
-    mapping_file.write_text(json.dumps(mapping))
+    book_file = tmp_path / "book.json"
+    book_file.write_text(json.dumps(mapping))
     es_client = FakeEsClient()
-    renew_index.create_index(es_client, "test_index", str(mapping_file))
+    renew_index.create_index(es_client, "test_index", str(book_file))
     call = es_client.indices.called_methods[0]
     assert call[0] == "create"
     assert call[1] == "test_index"
@@ -66,14 +66,12 @@ def test_create_index(tmp_path):
 
 
 def test_append_documents(monkeypatch, tmp_path):
-    docs = {"sample_data":[{"field": "value1"}, {"field": "value2", "_index": "custom_index"}]}
-    ndjson_file = tmp_path / "sample_data_book.json"
-    with ndjson_file.open("w") as f:
-        for doc in docs:
-            f.write(json.dumps(doc) + "\n")
+    data = {"sample_data": [{"field": "value1"}, {"field": "value2", "_index": "custom_index"}]}
+    book_file = tmp_path / "book.json"
+    book_file.write_text(json.dumps(data))
     es_client = FakeEsClient()
     monkeypatch.setattr(renew_index, "bulk", fake_bulk)
-    renew_index.append_documents(es_client, "test_index", str(ndjson_file))
+    renew_index.append_documents(es_client, "test_index", str(book_file))
     actions = es_client.bulk_called
     assert actions[0]["_index"] == "test_index"
     assert actions[0]["field"] == "value1"
@@ -82,25 +80,23 @@ def test_append_documents(monkeypatch, tmp_path):
 
 
 def test_main(monkeypatch, tmp_path):
-    # Setup temporary mapping and ndjson files
-    mapping = {"mappings":{"settings": {"number_of_shards": 1}}}
-    mapping_file = tmp_path / "mappings_book.json"
-    mapping_file.write_text(json.dumps(mapping))
-    docs = {"sampled_data":[{"field": "value1"}, {"field": "value2"}]}
-    ndjson_file = tmp_path / "sample_data_book.json"
-    with ndjson_file.open("w") as f:
-        for doc in docs:
-            f.write(json.dumps(doc) + "\n")
+    # Setup temporary book.json with mappings and sample_data
+    data = {
+        "mappings": {"mappings": {"settings": {"number_of_shards": 1}}},
+        "sample_data": [{"field": "value1"}, {"field": "value2"}]
+    }
+    book_file = tmp_path / "book.json"
+    book_file.write_text(json.dumps(data))
     fake_es = FakeEsClient()
     monkeypatch.setattr(renew_index, "get_es_client", lambda config: fake_es)
     monkeypatch.setenv("INDEX_NAME", "test_index")
 
-    # Override os.path.join to use our tmp_path when "fixtures" is the base directory
+    # Override os.path.join to return our book file when fetching fixtures/tests/book.json
     original_join = os.path.join
 
     def fake_join(a, b):
-        if a == "fixtures":
-            return str(tmp_path / b)
+        if a == "fixtures" and b == "tests/book.json":
+            return str(book_file)
         return original_join(a, b)
 
     monkeypatch.setattr(os.path, "join", fake_join)
