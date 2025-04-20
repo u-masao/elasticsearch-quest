@@ -2,12 +2,14 @@ import json
 import os
 from src.es import renew_index
 
+
 class DummySpan:
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
+
 
 class DummyOtel:
     def helpers_span(self, span_name):
