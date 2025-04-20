@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 import gradio as gr
+from elasticsearch.helpers import bulk
 
 from src.bootstrap import AppContainer  # DIコンテナを使用する場合
 
@@ -325,6 +326,66 @@ def format_query(query):
         raise gr.Erorr("クエリーを整形できません。正しいJSON形式で書いて下さい。")
 
 
+async def init_elasticsearch_index(history):
+    # ユーザーメッセージ
+    history.append(
+        {"role": "user", "content": "Elasticsearch のインデックスを初期化して"}
+    )
+    yield history
+
+    # AppConfig から設定を読み込み Elasticsearch クライアントを初期化
+    view = QueuedQuestView()
+    config = load_config()
+    container = AppContainer(config, view)
+    es_client = await container.es_client  # ここで初期化が走る
+
+    # インデックス名を取得
+    index_name = config.index_name
+
+    # 入力 JSON ファイルの取得 (fixters/tests/book.json)
+    with open(config.book_path, encoding="utf-8") as f:
+        data = json.load(f)
+
+    # データ取得
+    mapping = data["mappings"]
+    sample_data = data["sample_data"]
+
+    # インデックス削除
+    history.append({"role": "assistant", "content": "### Elasticsearch の更新"})
+    history.append({"role": "assistant", "content": "  - インデックスを削除します"})
+    yield history
+    es_client.options(ignore_status=[400, 404]).indices.delete(index=index_name)
+
+    # インデックス作成
+    history.append(
+        {"role": "assistant", "content": "  - インデックスとマッピングを作成"}
+    )
+    yield history
+    es_client.options(ignore_status=[400]).indices.create(
+        index=index_name, body=mapping
+    )
+
+    # データ追加
+    history.append({"role": "assistant", "content": "  - インデックスにデータを追加"})
+    yield history
+    actions = []
+    for doc in sample_data:
+        if "_index" not in doc:
+            doc["_index"] = index_name
+        actions.append(doc)
+    if actions:
+        bulk(es_client, actions)
+
+    # 完了メッセージ
+    history.append(
+        {
+            "role": "assistant",
+            "content": f"  - {len(actions)} 件追加\n  - インデックスを再構築しました",
+        }
+    )
+    yield history
+
+
 with gr.Blocks(fill_width=True, fill_height=True) as demo:
     with gr.Row(equal_height=True, scale=1):
         with gr.Column(scale=2):
@@ -343,6 +404,7 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
                 ui_format_button = gr.Button("✨ 自動整形 ✨")
                 ui_mapping_button = gr.Button("マッピング取得")
                 ui_submit_button = gr.Button(SUBMIT_BUTTON_TEXT, variant="primary")
+                ui_renew_index_button = gr.Button("(インデックス再構築)")
 
     # select quest
     gr.on(
@@ -387,6 +449,14 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
     gr.on(
         [ui_mapping_button.click],
         fn=get_mapping,
+        inputs=[ui_chat],
+        outputs=[ui_chat],
+    )
+
+    # reset elasticsearch index
+    gr.on(
+        [ui_renew_index_button.click],
+        fn=init_elasticsearch_index,
         inputs=[ui_chat],
         outputs=[ui_chat],
     )
