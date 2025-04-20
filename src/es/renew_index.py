@@ -1,10 +1,10 @@
 import json
+import os
 
 from elasticsearch.helpers import bulk
 
 from src.config import load_config
 from src.es.client import get_es_client
-import os
 
 
 def delete_index(es_client, index_name):
