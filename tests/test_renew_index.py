@@ -99,10 +99,10 @@ def test_main(monkeypatch, tmp_path):
     # Override os.path.join to return our book file when fetching fixtures/tests/book.json
     original_join = os.path.join
 
-    def fake_join(a, b):
-        if a == "fixtures" and b == "tests/book.json":
+    def fake_join(*args):
+        if args[0] == "fixtures" and len(args) > 1 and args[1] == "tests/book.json":
             return str(book_file)
-        return original_join(a, b)
+        return original_join(*args)
 
     monkeypatch.setattr(os.path, "join", fake_join)
 
