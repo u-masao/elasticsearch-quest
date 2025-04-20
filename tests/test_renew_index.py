@@ -1,5 +1,6 @@
 import json
-
+import os
+from src.es import renew_index
 
 class DummySpan:
     def __enter__(self):
@@ -8,15 +9,9 @@ class DummySpan:
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
 
-
 class DummyOtel:
     def helpers_span(self, span_name):
         return DummySpan()
-
-
-import os
-
-from src.es import renew_index
 
 
 class FakeIndices:
@@ -93,7 +88,7 @@ def test_main(monkeypatch, tmp_path):
     monkeypatch.setattr(renew_index, "get_es_client", lambda config: fake_es)
     monkeypatch.setenv("INDEX_NAME", "test_index")
 
-    # Override os.path.join to return our book file when fetching fixtures/tests/book.json
+    # Override os.path.join to return our book file for fixtures/tests/book.json
     original_join = os.path.join
 
     def fake_join(*args):
@@ -103,11 +98,8 @@ def test_main(monkeypatch, tmp_path):
 
     monkeypatch.setattr(os.path, "join", fake_join)
 
-    # Override delete_index, create_index, append_documents to record calls
-    # instead of performing real actions
+    # Override delete_index to record calls instead of performing real actions
     deleted = []
-    created = []
-    appended = []
     monkeypatch.setattr(
         renew_index, "delete_index", lambda es, idx: deleted.append(idx)
     )
