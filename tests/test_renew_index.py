@@ -1,4 +1,14 @@
 import json
+
+class DummySpan:
+    def __enter__(self):
+        return self
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+class DummyOtel:
+    def helpers_span(self, span_name):
+        return DummySpan()
 import os
 
 from src.es import renew_index
@@ -33,6 +43,7 @@ class FakeEsClient:
     def __init__(self):
         self._indices = FakeIndices()
         self.bulk_called = None
+        self._otel = DummyOtel()
 
     def options(self, **kwargs):
         return FakeOptions(self._indices)
@@ -78,10 +89,11 @@ def test_append_documents(monkeypatch, tmp_path):
     monkeypatch.setattr(renew_index, "bulk", fake_bulk)
     renew_index.append_documents(es_client, "test_index", str(book_file))
     actions = es_client.bulk_called
-    assert actions[0]["_index"] == "test_index"
-    assert actions[0]["field"] == "value1"
-    assert actions[1]["_index"] == "custom_index"
-    assert actions[1]["field"] == "value2"
+    expected = [
+        {"field": "value1", "_index": "test_index"},
+        {"field": "value2", "_index": "custom_index"}
+    ]
+    assert actions == expected
 
 
 def test_main(monkeypatch, tmp_path):
