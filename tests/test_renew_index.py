@@ -81,8 +81,6 @@ def test_create_index(tmp_path):
     assert call[2] == mapping
 
 
-
-
 def test_main(monkeypatch, tmp_path):
     # Setup temporary book.json with mappings and sample_data
     data = {
