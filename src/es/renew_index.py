@@ -48,19 +48,29 @@ def main():
     config = AppConfig()
     es = get_es_client(config)
 
-    # インデックス名、マッピングファイル、ndjson ファイルの取得
+    # インデックス名、入力 JSON ファイルの取得 (fixters/tests/book.json)
     index_name = os.environ.get("INDEX_NAME", "sample_books")
-    mapping_file = os.path.join("fixtures", "sample_books_mapping.json")
-    ndjson_file = os.path.join("fixtures", "sample_books.ndjson")
+    input_file = os.path.join("fixters", "tests", "book.json")
+
+    with open(input_file, encoding="utf-8") as f:
+        data = json.load(f)
+    mapping = data["mappings"]
+    sample_data = data["sample_data"]
 
     print(f"Deleting index: {index_name}")
     delete_index(es, index_name)
 
     print(f"Creating index: {index_name}")
-    create_index(es, index_name, mapping_file)
+    es.options(ignore_status=[400]).indices.create(index=index_name, body=mapping)
 
-    print(f"Appending documents from: {ndjson_file}")
-    append_documents(es, index_name, ndjson_file)
+    print("Appending documents from input file")
+    actions = []
+    for doc in sample_data:
+        if "_index" not in doc:
+            doc["_index"] = index_name
+        actions.append(doc)
+    if actions:
+        bulk(es, actions)
 
     print("Setup ES index complete.")
 
