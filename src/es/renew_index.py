@@ -26,9 +26,7 @@ def create_index(es_client, index_name, book_file):
         raise e
 
     # クエリ発行
-    es_client.options(ignore_status=[400]).indices.create(
-        index=index_name, body=book
-    )
+    es_client.options(ignore_status=[400]).indices.create(index=index_name, body=book)
 
 
 def main():
