@@ -4,6 +4,7 @@ from elasticsearch.helpers import bulk
 
 from src.config import load_config
 from src.es.client import get_es_client
+import os
 
 
 def delete_index(es_client, index_name):
@@ -26,7 +27,7 @@ def create_index(es_client, index_name, book_file):
 
     # クエリ発行
     es_client.options(ignore_status=[400]).indices.create(
-        index=index_name, body=book.get("mappings", {})
+        index=index_name, body=book
     )
 
 
@@ -36,7 +37,7 @@ def main():
     es = get_es_client(config)
 
     # インデックス名を取得
-    index_name = config.index_name
+    index_name = os.environ.get("INDEX_NAME", config.index_name)
 
     # 入力 JSON ファイルの取得 (fixters/tests/book.json)
     with open(config.book_path, encoding="utf-8") as f:
