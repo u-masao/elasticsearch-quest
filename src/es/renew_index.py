@@ -1,9 +1,8 @@
 import json
-import os
 
 from elasticsearch.helpers import bulk
 
-from src.config import AppConfig
+from src.config import load_config
 from src.es.client import get_es_client
 
 
@@ -15,45 +14,34 @@ def delete_index(es_client, index_name):
     es_client.options(ignore_status=[400, 404]).indices.delete(index=index_name)
 
 
-def create_index(es_client, index_name, mapping_file):
+def create_index(es_client, index_name, book_file):
     """
     マッピングファイルを用いて Elasticsearch にインデックスを作成します。
     """
-    with open(mapping_file, encoding="utf-8") as f:
-        mapping = json.load(f)
+    try:
+        with open(book_file, encoding="utf-8") as f:
+            book = json.load(f)
+    except Exception as e:
+        raise e
+
+    # クエリ発行
     es_client.options(ignore_status=[400]).indices.create(
-        index=index_name, body=mapping
+        index=index_name, body=book.get("mappings", {})
     )
-
-
-def append_documents(es_client, index_name, ndjson_file):
-    """
-    ndjson ファイルから読み込んだデータを bulk API を使って Elasticsearch に登録します。
-    """
-    actions = []
-    with open(ndjson_file, encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                doc = json.loads(line)
-                if "_index" not in doc:
-                    doc["_index"] = index_name
-                actions.append(doc)
-    if actions:
-        bulk(es_client, actions)
 
 
 def main():
     # AppConfig から設定を読み込み Elasticsearch クライアントを初期化
-    config = AppConfig()
+    config = load_config()
     es = get_es_client(config)
 
-    # インデックス名、入力 JSON ファイルの取得 (fixters/tests/book.json)
-    index_name = os.environ.get("INDEX_NAME", "sample_books")
-    input_file = os.path.join("fixters/tests", "book.json")
+    # インデックス名を取得
+    index_name = config.index_name
 
-    with open(input_file, encoding="utf-8") as f:
+    # 入力 JSON ファイルの取得 (fixters/tests/book.json)
+    with open(config.book_path, encoding="utf-8") as f:
         data = json.load(f)
+
     mapping = data["mappings"]
     sample_data = data["sample_data"]
 
