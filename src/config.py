@@ -2,7 +2,7 @@
 from pathlib import Path
 
 from dotenv import load_dotenv
-from pydantic import AnyHttpUrl, Field, FilePath, field_validator
+from pydantic import AnyHttpUrl, ConfigDict, Field, FilePath, field_validator
 from pydantic_settings import BaseSettings
 
 # .env ファイルをロード (プロジェクトルートにある想定)
@@ -13,9 +13,8 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DATA_DIR = PROJECT_ROOT / "data"
 DEFAULT_DB_FILE_PATH = DEFAULT_DATA_DIR / "quests.db"
 DEFAULT_FIXTURES_DIR = PROJECT_ROOT / "fixtures"
-DEFAULT_SCHEMA_FILE = DEFAULT_FIXTURES_DIR / "create_quests_table.sql"
-DEFAULT_DATA_FILE = DEFAULT_FIXTURES_DIR / "insert_quests.sql"
 DEFAULT_INDEX_NAME = "sample_books"
+DEFAULT_BOOK_FILE = DEFAULT_FIXTURES_DIR / "books" / "default.json"
 
 
 # --- 設定クラス ---
@@ -24,11 +23,10 @@ class AppConfig(BaseSettings):
 
     project_root: Path = Field(default=PROJECT_ROOT)
     db_path: Path = Field(default=DEFAULT_DB_FILE_PATH)
+    book_path: Path = Field(default=DEFAULT_BOOK_FILE)
     index_name: str = Field(
         default=DEFAULT_INDEX_NAME, alias="ES_INDEX_NAME"
     )  # 環境変数名を指定
-    schema_file: FilePath = Field(default=DEFAULT_SCHEMA_FILE)
-    data_file: FilePath = Field(default=DEFAULT_DATA_FILE)
 
     # Elasticsearch接続情報
     elasticsearch_url: AnyHttpUrl | None = Field(
@@ -67,19 +65,15 @@ class AppConfig(BaseSettings):
         v.parent.mkdir(parents=True, exist_ok=True)
         return v
 
-    class Config:
-        # 環境変数名のプレフィックスなどはここで設定可能
-        # env_prefix = 'APP_'
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        extra = "ignore"  # .env や環境変数に未定義のフィールドがあっても無視
+    model_config = ConfigDict(
+        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+    )
 
 
 def load_config(
     db_path_override: Path | None = None,
     index_name_override: str | None = None,
-    schema_file_override: Path | None = None,
-    data_file_override: Path | None = None,
+    book_path_override: Path | None = None,
 ) -> AppConfig:
     """
     設定をロードし、CLI引数で指定された値で上書きする。
@@ -87,8 +81,7 @@ def load_config(
     Args:
         db_path_override: DBファイルパス (CLI引数).
         index_name_override: Index名 (CLI引数).
-        schema_file_override: スキーマファイルパス (CLI引数).
-        data_file_override: データファイルパス (CLI引数).
+        book_path_override: Book ファイルパス (CLI引数).
 
     Returns:
         ロードされたAppConfigオブジェクト.
@@ -103,10 +96,8 @@ def load_config(
         override_values["db_path"] = db_path_override
     if index_name_override:
         override_values["index_name"] = index_name_override
-    if schema_file_override:
-        override_values["schema_file"] = schema_file_override
-    if data_file_override:
-        override_values["data_file"] = data_file_override
+    if book_path_override:
+        override_values["book_path"] = book_path_override
 
     # BaseSettingsを初期化し、上書き値を渡す
     # **override_values で辞書を展開してキーワード引数として渡す

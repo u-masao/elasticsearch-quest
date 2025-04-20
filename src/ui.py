@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 import gradio as gr
+from elasticsearch.helpers import bulk
 
 from src.bootstrap import AppContainer  # DIコンテナを使用する場合
 
@@ -69,15 +70,41 @@ async def handle_exception(view: QuestView, e: Exception):
     # sys.exit(1)
 
 
+async def get_services(
+    view: QueuedQuestView | None = None,
+    db_path_override: Path | None = None,
+    index_name_override: str | None = None,
+    book_path_override: Path | None = None,
+):
+    if view is None:
+        view = QueuedQuestView()
+
+    # 1. 設定のロード (CLI引数でオーバーライド)
+    # ValidationError が発生する可能性あり
+    config = load_config(
+        db_path_override=db_path_override,
+        index_name_override=index_name_override,
+        book_path_override=book_path_override,
+    )
+
+    # 2. 依存関係の初期化とサービスの準備
+    # DIコンテナを使う場合:
+    container = AppContainer(config, view)
+    quest_repo = await container.quest_repository  # ここで初期化が走る
+    es_client = await container.es_client  # ここで初期化が走る
+    quest_service = QuestService(quest_repo, es_client, config.index_name)
+    agent_service = AgentService(config, view)  # AgentService も view を使う
+
+    return config, quest_repo, es_client, quest_service, agent_service
+
+
 async def cli(
-    view: QueuedQuestView,
     quest_id: int,
+    view: QueuedQuestView | None = None,
     query: str | None = None,
     query_file: Path | None = None,
     db_path: Path | None = None,
     index_name: str | None = None,
-    schema_file: Path | None = None,
-    data_file: Path | None = None,
     skip_agent: bool = False,
 ):
     """
@@ -87,28 +114,17 @@ async def cli(
     """
 
     try:
-        # 1. 設定のロード (CLI引数でオーバーライド)
-        # ValidationError が発生する可能性あり
-        config = load_config(
+        (
+            config,
+            quest_repo,
+            es_client,
+            quest_service,
+            agent_service,
+        ) = await get_services(
+            view=view,
             db_path_override=db_path,
             index_name_override=index_name,
-            schema_file_override=schema_file,
-            data_file_override=data_file,
         )
-
-        # 2. 依存関係の初期化とサービスの準備
-        # DIコンテナを使う場合:
-        container = AppContainer(config, view)
-        quest_repo = await container.quest_repository  # ここで初期化が走る
-        es_client = await container.es_client  # ここで初期化が走る
-        quest_service = QuestService(quest_repo, es_client, config.index_name)
-        agent_service = AgentService(config, view)  # AgentService も view を使う
-
-        # DIコンテナを使わない場合:
-        # quest_repo = initialize_database(config, view)
-        # es_client = initialize_elasticsearch(config, view)
-        # quest_service = QuestService(quest_repo, es_client, config.index_name)
-        # agent_service = AgentService(config, view)
 
         # 3. メイン処理の実行 (非同期)
         await run_quest_flow(
@@ -207,10 +223,14 @@ async def run_quest_flow(
 
 
 async def load_quest(quest_id):
-    view = QueuedQuestView()  # View は最初に初期化
-    config = load_config()
-    container = AppContainer(config, view)
-    quest_repo = await container.quest_repository  # ここで初期化が走る
+    (
+        config,
+        quest_repo,
+        es_client,
+        quest_service,
+        agent_service,
+    ) = await get_services()
+
     quest = quest_repo.get_quest_by_id(quest_id)
     if quest is None:
         return [
@@ -232,7 +252,7 @@ async def submit_answer(quest_id, query, history):
     view = QueuedQuestView()
 
     # 実行
-    quest_task = asyncio.create_task(cli(view=view, quest_id=quest_id, query=query))
+    quest_task = asyncio.create_task(cli(quest_id=quest_id, view=view, query=query))
 
     # メッセージを受信
     async for message in view.receive_messages():
@@ -247,8 +267,8 @@ async def submit_answer(quest_id, query, history):
 
 
 def json_check(query):
-    if query is None or query == "":
-        return JSON_CHECK_NG
+    # if query is None or query == "":
+    # return JSON_CHECK_NG
     try:
         _ = json.loads(query)
         return JSON_CHECK_OK
@@ -257,6 +277,14 @@ def json_check(query):
 
 
 async def get_mapping(history):
+    (
+        config,
+        quest_repo,
+        es_client,
+        quest_service,
+        agent_service,
+    ) = await get_services()
+
     history.append(
         {
             "role": "user",
@@ -264,11 +292,6 @@ async def get_mapping(history):
         }
     )
     yield history
-
-    view = QueuedQuestView()
-    config = load_config()
-    container = AppContainer(config, view)
-    es_client = await container.es_client
 
     result = es_client.indices.get_mapping(index=config.index_name)
     formatted_mapping = json.dumps(result.body, indent=4, ensure_ascii=False)
@@ -283,7 +306,15 @@ async def get_mapping(history):
 
 
 async def execute_query(query, history):
-    print(f"query: {query}")
+    # AppConfig から設定を読み込み Elasticsearch クライアントを初期化
+    (
+        config,
+        quest_repo,
+        es_client,
+        quest_service,
+        agent_service,
+    ) = await get_services()
+
     try:
         formatted_query = json.dumps(json.loads(query), indent=4, ensure_ascii=False)
     except json.JSONDecodeError:
@@ -309,11 +340,6 @@ async def execute_query(query, history):
         }
     )
     yield history
-
-    view = QueuedQuestView()
-    config = load_config()
-    container = AppContainer(config, view)
-    es_client = await container.es_client
     result = core_logic_execute_query(es_client, config.index_name, query)
     if len(result["hits"]["hits"]) > 0:
         hits_string = json.dumps(result["hits"]["hits"], indent=4, ensure_ascii=False)
@@ -325,8 +351,79 @@ async def execute_query(query, history):
 
 
 def format_query(query):
-    query_dict = json.loads(query)
-    return json.dumps(query_dict, indent=4, ensure_ascii=False)
+    """
+    クエリーをフォーマットします。
+    """
+    try:
+        query_dict = json.loads(query)
+        return json.dumps(query_dict, indent=4, ensure_ascii=False)
+    except json.JSONDecodeError:
+        raise gr.Erorr("クエリーを整形できません。正しいJSON形式で書いて下さい。")
+
+
+async def init_elasticsearch_index(history):
+    # AppConfig から設定を読み込み Elasticsearch クライアントを初期化
+    (
+        config,
+        quest_repo,
+        es_client,
+        quest_service,
+        agent_service,
+    ) = await get_services()
+    # ユーザーメッセージ
+    history.append(
+        {"role": "user", "content": "Elasticsearch のインデックスを初期化して"}
+    )
+    yield history
+
+    # インデックス名を取得
+    index_name = config.index_name
+
+    # 入力 JSON ファイルの取得 (fixters/tests/book.json)
+    history.append({"role": "assistant", "content": f"load: {config.book_path}"})
+    yield history
+    with open(config.book_path, encoding="utf-8") as f:
+        data = json.load(f)
+
+    # データ取得
+    mapping = data["mappings"]
+    sample_data = data["sample_data"]
+
+    # インデックス削除
+    history.append({"role": "assistant", "content": "### Elasticsearch の更新"})
+    history.append({"role": "assistant", "content": "  - インデックスを削除します"})
+    yield history
+    es_client.options(ignore_status=[400, 404]).indices.delete(index=index_name)
+
+    # インデックス作成
+    history.append(
+        {"role": "assistant", "content": "  - インデックスとマッピングを作成"}
+    )
+    yield history
+    es_client.options(ignore_status=[400]).indices.create(
+        index=index_name, body=mapping
+    )
+
+    # データ追加
+    history.append({"role": "assistant", "content": "  - インデックスにデータを追加"})
+    yield history
+    actions = []
+    for doc_index, doc in enumerate(sample_data):
+        if "_index" not in doc:
+            doc["_index"] = index_name
+            doc["_id"] = doc_index + 1
+        actions.append(doc)
+    if actions:
+        bulk(es_client, actions)
+
+    # 完了メッセージ
+    history.append(
+        {
+            "role": "assistant",
+            "content": f"  - {len(actions)} 件追加\n  - インデックスを再構築しました",
+        }
+    )
+    yield history
 
 
 with gr.Blocks(fill_width=True, fill_height=True) as demo:
@@ -347,10 +444,24 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
                 ui_format_button = gr.Button("✨ 自動整形 ✨")
                 ui_mapping_button = gr.Button("マッピング取得")
                 ui_submit_button = gr.Button(SUBMIT_BUTTON_TEXT, variant="primary")
+                ui_renew_index_button = gr.Button("(インデックス再構築)")
+                ui_book_select = gr.Dropdown(
+                    ["default.json", "part2.json"], interactive=True
+                )
+
+    # onload
+    demo.load(
+        load_quest,
+        inputs=[ui_quest_id],
+        outputs=[ui_chat],
+    )
 
     # select quest
-    ui_user_query.change(
-        json_check, inputs=[ui_user_query], outputs=[ui_json_validator]
+    gr.on(
+        [ui_user_query.change],
+        fn=json_check,
+        inputs=[ui_user_query],
+        outputs=[ui_json_validator],
     )
 
     # load quest
@@ -362,8 +473,9 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
     )
 
     # submit query
-    ui_submit_button.click(
-        submit_answer,
+    gr.on(
+        [ui_submit_button.click],
+        fn=submit_answer,
         inputs=[ui_quest_id, ui_user_query, ui_chat],
         outputs=[ui_chat, ui_submit_button],
     )
@@ -388,6 +500,14 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
     gr.on(
         [ui_mapping_button.click],
         fn=get_mapping,
+        inputs=[ui_chat],
+        outputs=[ui_chat],
+    )
+
+    # reset elasticsearch index
+    gr.on(
+        [ui_renew_index_button.click],
+        fn=init_elasticsearch_index,
         inputs=[ui_chat],
         outputs=[ui_chat],
     )

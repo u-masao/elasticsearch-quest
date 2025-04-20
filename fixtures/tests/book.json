@@ -1,0 +1,362 @@
+{
+  "loadmap": [
+    {
+      "chapter_id": 1,
+      "title": "基本的なクエリ構文と完全一致検索",
+      "learning_points": [
+        "Elasticsearchクエリの基本構文を理解する",
+        "完全一致検索の概念と使い方を学ぶ",
+        "シンプルな検索結果の取得方法を体験する"
+      ]
+    },
+    {
+      "chapter_id": 2,
+      "title": "前方一致検索と部分一致の基礎",
+      "learning_points": [
+        "前方一致検索の仕組みを理解する",
+        "部分一致検索の違いと用途を把握する",
+        "ワイルドカードやプレースホルダーの使い方を学ぶ"
+      ]
+    },
+    {
+      "chapter_id": 3,
+      "title": "ブールクエリと複合クエリの活用",
+      "learning_points": [
+        "論理演算子（AND, OR, NOT）の利用方法を理解する",
+        "ブールクエリの組み合わせによる検索精度向上",
+        "複合クエリの基本的な記述方法を習得する"
+      ]
+    }
+  ],
+  "mappings": {
+    "properties": {
+      "author": {
+        "type": "text"
+      },
+      "isbn": {
+        "type": "keyword"
+      },
+      "metric_vector": {
+        "type": "dense_vector",
+        "dims": 2,
+        "index": true,
+        "similarity": "l2_norm",
+        "index_options": {
+          "type": "hnsw",
+          "m": 16,
+          "ef_construction": 100
+        }
+      },
+      "name": {
+        "type": "text"
+      },
+      "pages": {
+        "type": "integer"
+      },
+      "publisher": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  },
+  "sample_data": [
+    {
+      "name": "統計学入門 (基礎統計学Ⅰ)",
+      "author": "東京大学教養学部統計学教室 (編)",
+      "publisher": "東京大学出版会",
+      "isbn": "978-4130420655",
+      "pages": 304,
+      "metric_vector": [
+        3,
+        8
+      ]
+    },
+    {
+      "name": "効果検証入門〜正しい比較のための因果推論／計量経済学の基礎",
+      "author": "安井 翔太, 株式会社ホクソエム",
+      "publisher": "技術評論社",
+      "isbn": "978-4297108328",
+      "pages": 312,
+      "metric_vector": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Pythonによるあたらしいデータ分析の教科書",
+      "author": "寺田 学, 辻 真吾, 鈴木 たかのり, 福島 真太朗",
+      "publisher": "翔泳社",
+      "isbn": "978-4798169307",
+      "pages": 432,
+      "metric_vector": [
+        8,
+        4
+      ]
+    },
+    {
+      "name": "データサイエンスのための統計学入門",
+      "author": "Peter Bruce, Andrew Bruce, Peter Gedeck (著), 黒川 利明 (訳)",
+      "publisher": "オライリー・ジャパン",
+      "isbn": "978-4873119208",
+      "pages": 424,
+      "metric_vector": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "Pythonではじめる機械学習 ―scikit-learn、scipy、numpy、pandas、matplotlibを使ったデータ分析",
+      "author": "Andreas C. Müller, Sarah Guido (著), 中田 秀基 (訳)",
+      "publisher": "オライリー・ジャパン",
+      "isbn": "978-4873117983",
+      "pages": 400,
+      "metric_vector": [
+        8,
+        5
+      ]
+    },
+    {
+      "name": "ゼロから作るDeep Learning ―Pythonで学ぶディープラーニングの理論と実装",
+      "author": "斎藤 康毅",
+      "publisher": "オライリー・ジャパン",
+      "isbn": "978-4873117587",
+      "pages": 304,
+      "metric_vector": [
+        8,
+        6
+      ]
+    },
+    {
+      "name": "ゼロから作るDeep Learning ❷ ―自然言語処理編",
+      "author": "斎藤 康毅",
+      "publisher": "オライリー・ジャパン",
+      "isbn": "978-4873118362",
+      "pages": 432,
+      "metric_vector": [
+        8,
+        7
+      ]
+    },
+    {
+      "name": "ゼロから作るDeep Learning ❸ ―フレームワーク編",
+      "author": "斎藤 康毅",
+      "publisher": "オライリー・ジャパン",
+      "isbn": "978-4873119062",
+      "pages": 600,
+      "metric_vector": [
+        9,
+        7
+      ]
+    },
+    {
+      "name": "仕事ではじめる機械学習 第2版",
+      "author": "有賀 友紀, 中山 心太, 西田 貴紀, 他",
+      "publisher": "オライリー・ジャパン",
+      "isbn": "978-4873118218",
+      "pages": 272,
+      "metric_vector": [
+        7,
+        4
+      ]
+    },
+    {
+      "name": "前処理大全［データ分析のためのSQL/Python/R実践テクニック］",
+      "author": "本橋 智光",
+      "publisher": "技術評論社",
+      "isbn": "978-4297130350",
+      "pages": 704,
+      "metric_vector": [
+        9,
+        1
+      ]
+    },
+    {
+      "name": "データ分析のためのSQL入門",
+      "author": "NTTコム オンライン・マーケティング・ソリューション株式会社",
+      "publisher": "ソシム",
+      "isbn": "978-4802613353",
+      "pages": 256,
+      "metric_vector": [
+        9,
+        1
+      ]
+    },
+    {
+      "name": "機械学習のエッセンス -実装しながら学ぶPython,数学,アルゴリズム-",
+      "author": "加藤 公一",
+      "publisher": "SBクリエイティブ",
+      "isbn": "978-4797398236",
+      "pages": 352,
+      "metric_vector": [
+        7,
+        7
+      ]
+    },
+    {
+      "name": "Python機械学習プログラミング 達人データサイエンティストによる理論と実践 第4版",
+      "author": "Sebastian Raschka, Vahid Mirjalili (著), 株式会社クイープ (訳)",
+      "publisher": "インプレス",
+      "isbn": "978-4295015241",
+      "pages": 768,
+      "metric_vector": [
+        8,
+        6
+      ]
+    },
+    {
+      "name": "統計的学習の基礎 ―データマイニング・推論・予測―",
+      "author": "Trevor Hastie, Robert Tibshirani, Jerome Friedman (著), 杉山 将, 井手 剛, 神嶌 敏弘, 栗田 多喜夫, 前田 英作, 井尻 善久, 岩田 具治, 金森 敬文, 兼村 厚範, 烏山 昌幸, 小西 嘉一郎, 酒井 昭宏, 清水 伸幸, 瀬々 潤, 竹内 一郎, 竹内 純一, 田中 譲, 出口 大輔, 中島 伸夫, 林 浩平, 藤巻 遼平, 前田 新一, 持橋 大地, 森長 誠, 山田 誠二, 吉田 亮 (訳)",
+      "publisher": "共立出版",
+      "isbn": "978-4320123625",
+      "pages": 788,
+      "metric_vector": [
+        5,
+        9
+      ]
+    },
+    {
+      "name": "パターン認識と機械学習 上",
+      "author": "C.M. ビショップ (著), 元田 浩, 栗田 多喜夫, 樋口 知之, 松本 裕治, 村田 昇 (監訳)",
+      "publisher": "丸善出版",
+      "isbn": "978-4621083300",
+      "pages": 400,
+      "metric_vector": [
+        4,
+        9
+      ]
+    },
+    {
+      "name": "パターン認識と機械学習 下",
+      "author": "C.M. ビショップ (著), 元田 浩, 栗田 多喜夫, 樋口 知之, 松本 裕治, 村田 昇 (監訳)",
+      "publisher": "丸善出版",
+      "isbn": "978-4621083317",
+      "pages": 430,
+      "metric_vector": [
+        4,
+        9
+      ]
+    },
+    {
+      "name": "kaggleで勝つデータ分析の技術",
+      "author": "門脇 大輔, 阪田 隆司, 保坂 桂佑, 平松 雄司",
+      "publisher": "技術評論社",
+      "isbn": "978-4297108434",
+      "pages": 512,
+      "metric_vector": [
+        9,
+        5
+      ]
+    },
+    {
+      "name": "実践的データ基盤への処方箋〜データ分析の信頼性とスピードを高めるデータ品質／データガバナンス／データカタログ",
+      "author": "ゆずたそ, 伊藤 徹郎, wataru.oyama",
+      "publisher": "技術評論社",
+      "isbn": "978-4297131883",
+      "pages": 464,
+      "metric_vector": [
+        8,
+        2
+      ]
+    },
+    {
+      "name": "AI・データ分析プロジェクトのすべて――ビジネス力×技術力=価値創出",
+      "author": "巣籠 悠輔",
+      "publisher": "技術評論社",
+      "isbn": "978-4297130787",
+      "pages": 352,
+      "metric_vector": [
+        6,
+        3
+      ]
+    },
+    {
+      "name": "データ分析力を上げるための8つの必須スキル 実務で使えるデータ分析サイクル構築法",
+      "author": "株式会社データミックス",
+      "publisher": "翔泳社",
+      "isbn": "978-4798169079",
+      "pages": 304,
+      "metric_vector": [
+        7,
+        4
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "quest_id": 1,
+      "title": "書籍名検索 (Match)",
+      "description": "書籍名 (`name`) に 'Deep Learning' という単語が含まれる本を検索してください。",
+      "difficulty": 1,
+      "query_type_hint": "match",
+      "evaluation_type": "result_count",
+      "evaluation_data": "3",
+      "hints": "[\"`match` クエリは、指定されたテキストを解析し、一致するドキュメントを検索します。\",\"基本的な構文: `query: { match: { field_name: \\\"search_term\\\" } }`\"]",
+      "created_at": "2025-04-13 05:55:42",
+      "updated_at": "2025-04-13 05:55:42"
+    },
+    {
+      "quest_id": 2,
+      "title": "出版社検索 (Term)",
+      "description": "出版社 (`publisher`) が 'オライリー・ジャパン' である本を検索してください。完全一致で検索するには `.keyword` フィールドを使います。",
+      "difficulty": 1,
+      "query_type_hint": "term",
+      "evaluation_type": "result_count",
+      "evaluation_data": "6",
+      "hints": "[\"完全一致検索には `term` クエリを使います。\",\"テキストフィールドの完全一致検索では、マッピングで定義された `.keyword` サブフィールドを指定するのが一般的です。\",\"構文: `query: { term: { \\\"publisher.keyword\\\": \\\"オライリー・ジャパン\\\" } }`\"]",
+      "created_at": "2025-04-13 05:55:42",
+      "updated_at": "2025-04-13 05:55:42"
+    },
+    {
+      "quest_id": 3,
+      "title": "ページ数検索 (Range)",
+      "description": "ページ数 (`pages`) が 500ページ以上 の本を検索してください。",
+      "difficulty": 2,
+      "query_type_hint": "range",
+      "evaluation_type": "result_count",
+      "evaluation_data": "5",
+      "hints": "[\"数値の範囲を指定するには `range` クエリを使います。\",\"「以上」を指定するには `gte` (Greater Than or Equal to) を使います。\",\"構文: `query: { range: { pages: { \\\"gte\\\": 500 } } }`\"]",
+      "created_at": "2025-04-13 05:55:42",
+      "updated_at": "2025-04-13 05:55:42"
+    },
+    {
+      "quest_id": 4,
+      "title": "複数条件検索 (Bool)",
+      "description": "出版社 (`publisher.keyword`) が '技術評論社' であり、かつページ数 (`pages`) が 400ページ以上 の本を検索してください。",
+      "difficulty": 2,
+      "query_type_hint": "bool, term, range",
+      "evaluation_type": "result_count",
+      "evaluation_data": "3",
+      "hints": "[\"複数の条件を組み合わせるには `bool` クエリを使います。\",\"すべての条件を満たす必要がある場合、`must` 句または `filter` 句を使います。スコア計算に関係ない場合は `filter` が効率的です。\",\"`filter` 句の中に `term` クエリと `range` クエリを入れてみましょう。\"]",
+      "created_at": "2025-04-13 05:55:42",
+      "updated_at": "2025-04-13 05:55:42"
+    },
+    {
+      "quest_id": 5,
+      "title": "ベクトル要素アクセス (Script)",
+      "description": "Technical score (`metric_vector[0]`) が 8 以上で、かつ Mathematical score (`metric_vector[1]`) が 6 以上 の本を検索してください。ベクトル要素へのアクセスには `script` クエリを使います。",
+      "difficulty": 3,
+      "query_type_hint": "bool, script",
+      "evaluation_type": "result_count",
+      "evaluation_data": "4",
+      "hints": "[\"`script` クエリを使うと、ドキュメントのフィールド値に基づいてカスタム条件でフィルタリングできます。\",\"`bool` クエリの `filter` 句の中で `script` クエリを2つ使い、それぞれの条件を記述します。\",\"スクリプト内でのベクトル要素へのアクセスは `doc['metric_vector'][0]` や `doc['metric_vector'].value[0]` のように行います（マッピングによります）。Painless言語のドキュメントも参考にしましょう。\"]",
+      "created_at": "2025-04-13 05:55:42",
+      "updated_at": "2025-04-13 05:55:42"
+    },
+    {
+      "quest_id": 6,
+      "title": "ベクトル類似検索 (kNN)",
+      "description": "ベクトル `[9, 1]` (Technical寄り) にベクトル空間上で最も近い本を上位3件検索してください。Elasticsearch 8.x以降の `knn` オプションを使います。(L2距離)",
+      "difficulty": 3,
+      "query_type_hint": "knn",
+      "evaluation_type": "doc_ids_in_order",
+      "evaluation_data": "[\"10\",\"11\",\"18\"]",
+      "hints": "[\"`knn` 検索は、クエリベクトルに最も近いベクトルを持つドキュメントを効率的に検索します。マッピングで `dense_vector` フィールドの `index: true` が必要です。\",\"クエリのトップレベルに `knn` オプションを指定します。`field`, `query_vector`, `k`, `num_candidates` が主要なパラメータです。\",\"`query_vector` に `[9, 1]` を、`k` に取得したい件数(3)、`num_candidates` に `k` より大きい値(例: 10)を指定します。\"]",
+      "created_at": "2025-04-13 05:55:42",
+      "updated_at": "2025-04-13 05:55:42"
+    }
+  ]
+}

@@ -1,0 +1,2087 @@
+{
+  "loadmap": [
+    {
+      "chapter_id": 1,
+      "title": "基本的なクエリ構文と完全一致検索",
+      "learning_points": [
+        "Elasticsearchクエリの基本構文を理解する",
+        "完全一致検索の概念と使い方を学ぶ",
+        "シンプルな検索結果の取得方法を体験する"
+      ]
+    },
+    {
+      "chapter_id": 2,
+      "title": "前方一致検索と部分一致の基礎",
+      "learning_points": [
+        "前方一致検索の仕組みを理解する",
+        "部分一致検索の違いと用途を把握する",
+        "ワイルドカードやプレースホルダーの使い方を学ぶ"
+      ]
+    },
+    {
+      "chapter_id": 3,
+      "title": "ブールクエリと複合クエリの活用",
+      "learning_points": [
+        "論理演算子（AND, OR, NOT）の利用方法を理解する",
+        "ブールクエリの組み合わせによる検索精度向上",
+        "複合クエリの基本的な記述方法を習得する"
+      ]
+    },
+    {
+      "chapter_id": 4,
+      "title": "数値や範囲を対象とした検索",
+      "learning_points": [
+        "数値フィールドに対する検索方法を学ぶ",
+        "範囲指定（レンジクエリ）の基本概念を理解する",
+        "数値フィールドのフィルタリングの実践演習"
+      ]
+    },
+    {
+      "chapter_id": 5,
+      "title": "日付検索とタイムスタンプの利用",
+      "learning_points": [
+        "日付フィールドの検索方法を理解する",
+        "日付レンジクエリの記述方法を学ぶ",
+        "特定期間のドキュメント抽出の実践演習"
+      ]
+    },
+    {
+      "chapter_id": 6,
+      "title": "ブール演算と論理フィルタの応用",
+      "learning_points": [
+        "ブール演算子による複雑な条件設定を学ぶ",
+        "複数条件の論理的な組み合わせの考え方",
+        "検索結果の精度向上のための条件構築を体験する"
+      ]
+    },
+    {
+      "chapter_id": 7,
+      "title": "論理演算子と多条件検索の実践",
+      "learning_points": [
+        "複数フィールドを跨る検索の記述方法を理解する",
+        "AND/OR/NOTを駆使したクエリ作成の実例",
+        "検索結果のフィルタリング技術を学ぶ"
+      ]
+    },
+    {
+      "chapter_id": 8,
+      "title": "ベクトル検索の基本と類似度計算",
+      "learning_points": [
+        "dense_vectorフィールドを用いた検索の基本",
+        "ベクトル間の類似度計算方法を理解する",
+        "ベクトル検索の書き方と利用シーンを体験する"
+      ]
+    },
+    {
+      "chapter_id": 9,
+      "title": "ハイブリッド検索：テキストとベクトルの融合",
+      "learning_points": [
+        "テキスト検索とベクトル検索の組み合わせ方法",
+        "ハイブリッド検索クエリの構築方法を学ぶ",
+        "検索結果の統合と評価の考え方の習得"
+      ]
+    },
+    {
+      "chapter_id": 10,
+      "title": "キーワードマッチ検索と実践演習",
+      "learning_points": [
+        "matchクエリを用いた検索の基本を理解する",
+        "キーワードマッチ検索の書き方と評価方法",
+        "総合演習としての実践的な検索クエリ作成"
+      ]
+    }
+  ],
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "keyword"
+      },
+      "title": {
+        "type": "text"
+      },
+      "author": {
+        "type": "text"
+      },
+      "publisher": {
+        "type": "keyword"
+      },
+      "publication_date": {
+        "type": "date",
+        "format": "yyyy-MM-dd"
+      },
+      "description": {
+        "type": "text"
+      },
+      "category": {
+        "type": "keyword"
+      },
+      "rating": {
+        "type": "float"
+      },
+      "review_count": {
+        "type": "integer"
+      },
+      "price": {
+        "type": "float"
+      },
+      "feature_vector": {
+        "type": "dense_vector",
+        "dims": 2
+      }
+    }
+  },
+  "sample_data": [
+    {
+      "id": "book1",
+      "title": "Pythonによるデータ分析入門",
+      "author": "Wes McKinney",
+      "publisher": "オライリー",
+      "publication_date": "2010-01-02",
+      "description": "この本はデータサイエンスの重要な概念を解説しています。",
+      "category": "データサイエンス",
+      "rating": 3.5,
+      "review_count": 10,
+      "price": 3000,
+      "feature_vector": [0.1, 0.2]
+    },
+    {
+      "id": "book2",
+      "title": "ゼロから始める機械学習",
+      "author": "Andrew Ng",
+      "publisher": "日経BP",
+      "publication_date": "2011-02-03",
+      "description": "この本は機械学習の基本を初心者向けにわかりやすく解説しています。",
+      "category": "機械学習",
+      "rating": 3.6,
+      "review_count": 20,
+      "price": 3500,
+      "feature_vector": [0.2, 0.4]
+    },
+    {
+      "id": "book3",
+      "title": "Deep Learning実践",
+      "author": "Ian Goodfellow",
+      "publisher": "技術評論社",
+      "publication_date": "2012-03-04",
+      "description": "ディープラーニングの理論と実践的な実装方法について詳述しています。",
+      "category": "人工知能",
+      "rating": 3.7,
+      "review_count": 30,
+      "price": 4000,
+      "feature_vector": [0.30000000000000004, 0.6000000000000001]
+    },
+    {
+      "id": "book4",
+      "title": "統計学の基礎",
+      "author": "統計太郎",
+      "publisher": "翔泳社",
+      "publication_date": "2013-04-05",
+      "description": "統計学の基本概念とデータ解析手法の入門書。",
+      "category": "統計学",
+      "rating": 3.8,
+      "review_count": 40,
+      "price": 4500,
+      "feature_vector": [0.4, 0.8]
+    },
+    {
+      "id": "book5",
+      "title": "実践データサイエンス",
+      "author": "データ花子",
+      "publisher": "KADOKAWA",
+      "publication_date": "2014-05-06",
+      "description": "実務に即したデータサイエンスの技法と事例を紹介。",
+      "category": "データサイエンス",
+      "rating": 3.9,
+      "review_count": 50,
+      "price": 3000,
+      "feature_vector": [0.5, 1.0]
+    },
+    {
+      "id": "book6",
+      "title": "データ可視化の原則",
+      "author": "可視化一郎",
+      "publisher": "オライリー",
+      "publication_date": "2015-06-07",
+      "description": "データを効果的に可視化するための基本原則とテクニック。",
+      "category": "データサイエンス",
+      "rating": 3.6,
+      "review_count": 60,
+      "price": 3500,
+      "feature_vector": [0.6000000000000001, 1.2]
+    },
+    {
+      "id": "book7",
+      "title": "ビッグデータ時代の解析手法",
+      "author": "解析二郎",
+      "publisher": "日経BP",
+      "publication_date": "2016-07-08",
+      "description": "ビッグデータ環境下での解析手法とツールの使い方を解説。",
+      "category": "機械学習",
+      "rating": 3.7,
+      "review_count": 70,
+      "price": 4000,
+      "feature_vector": [0.7000000000000001, 1.4]
+    },
+    {
+      "id": "book8",
+      "title": "Rによる統計解析",
+      "author": "R子",
+      "publisher": "技術評論社",
+      "publication_date": "2017-08-09",
+      "description": "R言語を用いた統計解析の手法と実例を解説する入門書。",
+      "category": "統計学",
+      "rating": 3.8,
+      "review_count": 80,
+      "price": 4500,
+      "feature_vector": [0.8, 1.6]
+    },
+    {
+      "id": "book9",
+      "title": "SQLで学ぶデータ操作",
+      "author": "SQL雄",
+      "publisher": "翔泳社",
+      "publication_date": "2018-09-10",
+      "description": "SQLを利用したデータベース操作とクエリの基本を学ぶ。",
+      "category": "プログラミング",
+      "rating": 3.9,
+      "review_count": 90,
+      "price": 5000,
+      "feature_vector": [0.9, 1.8]
+    },
+    {
+      "id": "book10",
+      "title": "人工知能入門",
+      "author": "AI博士",
+      "publisher": "KADOKAWA",
+      "publication_date": "2019-10-11",
+      "description": "人工知能の歴史と基本技術について解説する入門書。",
+      "category": "人工知能",
+      "rating": 3.5,
+      "review_count": 100,
+      "price": 3000,
+      "feature_vector": [1.0, 2.0]
+    },
+    {
+      "id": "book11",
+      "title": "Pythonによるデータ分析入門 11",
+      "author": "Wes McKinney",
+      "publisher": "オライリー",
+      "publication_date": "2010-11-12",
+      "description": "この本はデータサイエンスの重要な概念を解説しています。",
+      "category": "データサイエンス",
+      "rating": 3.5,
+      "review_count": 110,
+      "price": 3500,
+      "feature_vector": [1.1, 2.2]
+    },
+    {
+      "id": "book12",
+      "title": "ゼロから始める機械学習 12",
+      "author": "Andrew Ng",
+      "publisher": "日経BP",
+      "publication_date": "2011-12-13",
+      "description": "この本は機械学習の基本を初心者向けにわかりやすく解説しています。",
+      "category": "機械学習",
+      "rating": 3.6,
+      "review_count": 120,
+      "price": 4000,
+      "feature_vector": [1.2, 2.4]
+    },
+    {
+      "id": "book13",
+      "title": "Deep Learning実践 13",
+      "author": "Ian Goodfellow",
+      "publisher": "技術評論社",
+      "publication_date": "2012-01-14",
+      "description": "ディープラーニングの理論と実践的な実装方法について詳述しています。",
+      "category": "人工知能",
+      "rating": 3.7,
+      "review_count": 130,
+      "price": 4500,
+      "feature_vector": [1.3, 2.6]
+    },
+    {
+      "id": "book14",
+      "title": "統計学の基礎 14",
+      "author": "統計太郎",
+      "publisher": "翔泳社",
+      "publication_date": "2013-02-15",
+      "description": "統計学の基本概念とデータ解析手法の入門書。",
+      "category": "統計学",
+      "rating": 3.8,
+      "review_count": 140,
+      "price": 5000,
+      "feature_vector": [1.4, 2.8]
+    },
+    {
+      "id": "book15",
+      "title": "実践データサイエンス 15",
+      "author": "データ花子",
+      "publisher": "KADOKAWA",
+      "publication_date": "2014-03-16",
+      "description": "実務に即したデータサイエンスの技法と事例を紹介。",
+      "category": "データサイエンス",
+      "rating": 3.9,
+      "review_count": 150,
+      "price": 3000,
+      "feature_vector": [1.5, 3.0]
+    },
+    {
+      "id": "book16",
+      "title": "データ可視化の原則 16",
+      "author": "可視化一郎",
+      "publisher": "オライリー",
+      "publication_date": "2015-04-17",
+      "description": "データを効果的に可視化するための基本原則とテクニック。",
+      "category": "データサイエンス",
+      "rating": 3.6,
+      "review_count": 160,
+      "price": 3500,
+      "feature_vector": [1.6, 3.2]
+    },
+    {
+      "id": "book17",
+      "title": "ビッグデータ時代の解析手法 17",
+      "author": "解析二郎",
+      "publisher": "日経BP",
+      "publication_date": "2016-05-18",
+      "description": "ビッグデータ環境下での解析手法とツールの使い方を解説。",
+      "category": "機械学習",
+      "rating": 3.7,
+      "review_count": 170,
+      "price": 4000,
+      "feature_vector": [1.7000000000000002, 3.4]
+    },
+    {
+      "id": "book18",
+      "title": "Rによる統計解析 18",
+      "author": "R子",
+      "publisher": "技術評論社",
+      "publication_date": "2017-06-19",
+      "description": "R言語を用いた統計解析の手法と実例を解説する入門書。",
+      "category": "統計学",
+      "rating": 3.8,
+      "review_count": 180,
+      "price": 4500,
+      "feature_vector": [1.8, 3.6]
+    },
+    {
+      "id": "book19",
+      "title": "SQLで学ぶデータ操作 19",
+      "author": "SQL雄",
+      "publisher": "翔泳社",
+      "publication_date": "2018-07-20",
+      "description": "SQLを利用したデータベース操作とクエリの基本を学ぶ。",
+      "category": "プログラミング",
+      "rating": 3.9,
+      "review_count": 190,
+      "price": 5000,
+      "feature_vector": [1.9, 3.8]
+    },
+    {
+      "id": "book20",
+      "title": "人工知能入門 20",
+      "author": "AI博士",
+      "publisher": "KADOKAWA",
+      "publication_date": "2019-08-21",
+      "description": "人工知能の歴史と基本技術について解説する入門書。",
+      "category": "人工知能",
+      "rating": 3.5,
+      "review_count": 200,
+      "price": 3000,
+      "feature_vector": [2.0, 4.0]
+    },
+    {
+      "id": "book21",
+      "title": "Pythonによるデータ分析入門 21",
+      "author": "Wes McKinney",
+      "publisher": "オライリー",
+      "publication_date": "2010-09-22",
+      "description": "この本はデータサイエンスの重要な概念を解説しています。",
+      "category": "データサイエンス",
+      "rating": 3.5,
+      "review_count": 210,
+      "price": 3500,
+      "feature_vector": [2.1, 4.2]
+    },
+    {
+      "id": "book22",
+      "title": "ゼロから始める機械学習 22",
+      "author": "Andrew Ng",
+      "publisher": "日経BP",
+      "publication_date": "2011-10-23",
+      "description": "この本は機械学習の基本を初心者向けにわかりやすく解説しています。",
+      "category": "機械学習",
+      "rating": 3.6,
+      "review_count": 220,
+      "price": 4000,
+      "feature_vector": [2.2, 4.4]
+    },
+    {
+      "id": "book23",
+      "title": "Deep Learning実践 23",
+      "author": "Ian Goodfellow",
+      "publisher": "技術評論社",
+      "publication_date": "2012-11-24",
+      "description": "ディープラーニングの理論と実践的な実装方法について詳述しています。",
+      "category": "人工知能",
+      "rating": 3.7,
+      "review_count": 230,
+      "price": 4500,
+      "feature_vector": [2.3, 4.6]
+    },
+    {
+      "id": "book24",
+      "title": "統計学の基礎 24",
+      "author": "統計太郎",
+      "publisher": "翔泳社",
+      "publication_date": "2013-12-25",
+      "description": "統計学の基本概念とデータ解析手法の入門書。",
+      "category": "統計学",
+      "rating": 3.8,
+      "review_count": 240,
+      "price": 5000,
+      "feature_vector": [2.4, 4.8]
+    },
+    {
+      "id": "book25",
+      "title": "実践データサイエンス 25",
+      "author": "データ花子",
+      "publisher": "KADOKAWA",
+      "publication_date": "2014-01-26",
+      "description": "実務に即したデータサイエンスの技法と事例を紹介。",
+      "category": "データサイエンス",
+      "rating": 3.9,
+      "review_count": 250,
+      "price": 3000,
+      "feature_vector": [2.5, 5.0]
+    },
+    {
+      "id": "book26",
+      "title": "データ可視化の原則 26",
+      "author": "可視化一郎",
+      "publisher": "オライリー",
+      "publication_date": "2015-02-27",
+      "description": "データを効果的に可視化するための基本原則とテクニック。",
+      "category": "データサイエンス",
+      "rating": 3.6,
+      "review_count": 260,
+      "price": 3500,
+      "feature_vector": [2.6, 5.2]
+    },
+    {
+      "id": "book27",
+      "title": "ビッグデータ時代の解析手法 27",
+      "author": "解析二郎",
+      "publisher": "日経BP",
+      "publication_date": "2016-03-28",
+      "description": "ビッグデータ環境下での解析手法とツールの使い方を解説。",
+      "category": "機械学習",
+      "rating": 3.7,
+      "review_count": 270,
+      "price": 4000,
+      "feature_vector": [2.7000000000000002, 5.4]
+    },
+    {
+      "id": "book28",
+      "title": "Rによる統計解析 28",
+      "author": "R子",
+      "publisher": "技術評論社",
+      "publication_date": "2017-04-29",
+      "description": "R言語を用いた統計解析の手法と実例を解説する入門書。",
+      "category": "統計学",
+      "rating": 3.8,
+      "review_count": 280,
+      "price": 4500,
+      "feature_vector": [2.8, 5.6]
+    },
+    {
+      "id": "book29",
+      "title": "SQLで学ぶデータ操作 29",
+      "author": "SQL雄",
+      "publisher": "翔泳社",
+      "publication_date": "2018-05-30",
+      "description": "SQLを利用したデータベース操作とクエリの基本を学ぶ。",
+      "category": "プログラミング",
+      "rating": 3.9,
+      "review_count": 290,
+      "price": 5000,
+      "feature_vector": [2.9, 5.8]
+    },
+    {
+      "id": "book30",
+      "title": "人工知能入門 30",
+      "author": "AI博士",
+      "publisher": "KADOKAWA",
+      "publication_date": "2019-06-01",
+      "description": "人工知能の歴史と基本技術について解説する入門書。",
+      "category": "人工知能",
+      "rating": 3.5,
+      "review_count": 300,
+      "price": 3000,
+      "feature_vector": [3.0, 6.0]
+    },
+    {
+      "id": "book31",
+      "title": "Pythonによるデータ分析入門 31",
+      "author": "Wes McKinney",
+      "publisher": "オライリー",
+      "publication_date": "2010-07-02",
+      "description": "この本はデータサイエンスの重要な概念を解説しています。",
+      "category": "データサイエンス",
+      "rating": 3.5,
+      "review_count": 310,
+      "price": 3500,
+      "feature_vector": [3.1, 6.2]
+    },
+    {
+      "id": "book32",
+      "title": "ゼロから始める機械学習 32",
+      "author": "Andrew Ng",
+      "publisher": "日経BP",
+      "publication_date": "2011-08-03",
+      "description": "この本は機械学習の基本を初心者向けにわかりやすく解説しています。",
+      "category": "機械学習",
+      "rating": 3.6,
+      "review_count": 320,
+      "price": 4000,
+      "feature_vector": [3.2, 6.4]
+    },
+    {
+      "id": "book33",
+      "title": "Deep Learning実践 33",
+      "author": "Ian Goodfellow",
+      "publisher": "技術評論社",
+      "publication_date": "2012-09-04",
+      "description": "ディープラーニングの理論と実践的な実装方法について詳述しています。",
+      "category": "人工知能",
+      "rating": 3.7,
+      "review_count": 330,
+      "price": 4500,
+      "feature_vector": [3.3, 6.6]
+    },
+    {
+      "id": "book34",
+      "title": "統計学の基礎 34",
+      "author": "統計太郎",
+      "publisher": "翔泳社",
+      "publication_date": "2013-10-05",
+      "description": "統計学の基本概念とデータ解析手法の入門書。",
+      "category": "統計学",
+      "rating": 3.8,
+      "review_count": 340,
+      "price": 5000,
+      "feature_vector": [3.4, 6.8]
+    },
+    {
+      "id": "book35",
+      "title": "実践データサイエンス 35",
+      "author": "データ花子",
+      "publisher": "KADOKAWA",
+      "publication_date": "2014-11-06",
+      "description": "実務に即したデータサイエンスの技法と事例を紹介。",
+      "category": "データサイエンス",
+      "rating": 3.9,
+      "review_count": 350,
+      "price": 3000,
+      "feature_vector": [3.5, 7.0]
+    },
+    {
+      "id": "book36",
+      "title": "データ可視化の原則 36",
+      "author": "可視化一郎",
+      "publisher": "オライリー",
+      "publication_date": "2015-12-07",
+      "description": "データを効果的に可視化するための基本原則とテクニック。",
+      "category": "データサイエンス",
+      "rating": 3.6,
+      "review_count": 360,
+      "price": 3500,
+      "feature_vector": [3.6, 7.2]
+    },
+    {
+      "id": "book37",
+      "title": "ビッグデータ時代の解析手法 37",
+      "author": "解析二郎",
+      "publisher": "日経BP",
+      "publication_date": "2016-01-08",
+      "description": "ビッグデータ環境下での解析手法とツールの使い方を解説。",
+      "category": "機械学習",
+      "rating": 3.7,
+      "review_count": 370,
+      "price": 4000,
+      "feature_vector": [3.7, 7.4]
+    },
+    {
+      "id": "book38",
+      "title": "Rによる統計解析 38",
+      "author": "R子",
+      "publisher": "技術評論社",
+      "publication_date": "2017-02-09",
+      "description": "R言語を用いた統計解析の手法と実例を解説する入門書。",
+      "category": "統計学",
+      "rating": 3.8,
+      "review_count": 380,
+      "price": 4500,
+      "feature_vector": [3.8, 7.6]
+    },
+    {
+      "id": "book39",
+      "title": "SQLで学ぶデータ操作 39",
+      "author": "SQL雄",
+      "publisher": "翔泳社",
+      "publication_date": "2018-03-10",
+      "description": "SQLを利用したデータベース操作とクエリの基本を学ぶ。",
+      "category": "プログラミング",
+      "rating": 3.9,
+      "review_count": 390,
+      "price": 5000,
+      "feature_vector": [3.9, 7.8]
+    },
+    {
+      "id": "book40",
+      "title": "人工知能入門 40",
+      "author": "AI博士",
+      "publisher": "KADOKAWA",
+      "publication_date": "2019-04-11",
+      "description": "人工知能の歴史と基本技術について解説する入門書。",
+      "category": "人工知能",
+      "rating": 3.5,
+      "review_count": 400,
+      "price": 3000,
+      "feature_vector": [4.0, 8.0]
+    },
+    {
+      "id": "book41",
+      "title": "Pythonによるデータ分析入門 41",
+      "author": "Wes McKinney",
+      "publisher": "オライリー",
+      "publication_date": "2010-05-12",
+      "description": "この本はデータサイエンスの重要な概念を解説しています。",
+      "category": "データサイエンス",
+      "rating": 3.5,
+      "review_count": 410,
+      "price": 3500,
+      "feature_vector": [4.1, 8.2]
+    },
+    {
+      "id": "book42",
+      "title": "ゼロから始める機械学習 42",
+      "author": "Andrew Ng",
+      "publisher": "日経BP",
+      "publication_date": "2011-06-13",
+      "description": "この本は機械学習の基本を初心者向けにわかりやすく解説しています。",
+      "category": "機械学習",
+      "rating": 3.6,
+      "review_count": 420,
+      "price": 4000,
+      "feature_vector": [4.2, 8.4]
+    },
+    {
+      "id": "book43",
+      "title": "Deep Learning実践 43",
+      "author": "Ian Goodfellow",
+      "publisher": "技術評論社",
+      "publication_date": "2012-07-14",
+      "description": "ディープラーニングの理論と実践的な実装方法について詳述しています。",
+      "category": "人工知能",
+      "rating": 3.7,
+      "review_count": 430,
+      "price": 4500,
+      "feature_vector": [4.3, 8.6]
+    },
+    {
+      "id": "book44",
+      "title": "統計学の基礎 44",
+      "author": "統計太郎",
+      "publisher": "翔泳社",
+      "publication_date": "2013-08-15",
+      "description": "統計学の基本概念とデータ解析手法の入門書。",
+      "category": "統計学",
+      "rating": 3.8,
+      "review_count": 440,
+      "price": 5000,
+      "feature_vector": [4.4, 8.8]
+    },
+    {
+      "id": "book45",
+      "title": "実践データサイエンス 45",
+      "author": "データ花子",
+      "publisher": "KADOKAWA",
+      "publication_date": "2014-09-16",
+      "description": "実務に即したデータサイエンスの技法と事例を紹介。",
+      "category": "データサイエンス",
+      "rating": 3.9,
+      "review_count": 450,
+      "price": 3000,
+      "feature_vector": [4.5, 9.0]
+    },
+    {
+      "id": "book46",
+      "title": "データ可視化の原則 46",
+      "author": "可視化一郎",
+      "publisher": "オライリー",
+      "publication_date": "2015-10-17",
+      "description": "データを効果的に可視化するための基本原則とテクニック。",
+      "category": "データサイエンス",
+      "rating": 3.6,
+      "review_count": 460,
+      "price": 3500,
+      "feature_vector": [4.6, 9.2]
+    },
+    {
+      "id": "book47",
+      "title": "ビッグデータ時代の解析手法 47",
+      "author": "解析二郎",
+      "publisher": "日経BP",
+      "publication_date": "2016-11-18",
+      "description": "ビッグデータ環境下での解析手法とツールの使い方を解説。",
+      "category": "機械学習",
+      "rating": 3.7,
+      "review_count": 470,
+      "price": 4000,
+      "feature_vector": [4.7, 9.4]
+    },
+    {
+      "id": "book48",
+      "title": "Rによる統計解析 48",
+      "author": "R子",
+      "publisher": "技術評論社",
+      "publication_date": "2017-12-19",
+      "description": "R言語を用いた統計解析の手法と実例を解説する入門書。",
+      "category": "統計学",
+      "rating": 3.8,
+      "review_count": 480,
+      "price": 4500,
+      "feature_vector": [4.8, 9.6]
+    },
+    {
+      "id": "book49",
+      "title": "SQLで学ぶデータ操作 49",
+      "author": "SQL雄",
+      "publisher": "翔泳社",
+      "publication_date": "2018-10-20",
+      "description": "SQLを利用したデータベース操作とクエリの基本を学ぶ。",
+      "category": "プログラミング",
+      "rating": 3.9,
+      "review_count": 490,
+      "price": 5000,
+      "feature_vector": [4.9, 9.8]
+    },
+    {
+      "id": "book50",
+      "title": "人工知能入門 50",
+      "author": "AI博士",
+      "publisher": "KADOKAWA",
+      "publication_date": "2019-11-21",
+      "description": "人工知能の歴史と基本技術について解説する入門書。",
+      "category": "人工知能",
+      "rating": 3.5,
+      "review_count": 500,
+      "price": 3000,
+      "feature_vector": [5.0, 10.0]
+    }
+  ],
+  "quests": [
+    {
+      "quest_id": "c1_q1",
+      "chapter_id": 1,
+      "title": "Chapter 1 Quest 1",
+      "description": "このクエストでは、フィールド「title」に対して、完全一致検索を用いて「Pythonによるデータ分析入門」を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "完全一致検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "フィールド名と検索文字列を正確に指定しましょう。",
+      "difficultry": 1
+    },
+    {
+      "quest_id": "c1_q2",
+      "chapter_id": 1,
+      "title": "Chapter 1 Quest 2",
+      "description": "このクエストでは、フィールド「title」に対して、完全一致検索を用いて「ゼロから始める機械学習」を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "完全一致検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "大文字小文字の区別に注意してください。",
+      "difficultry": 2
+    },
+    {
+      "quest_id": "c1_q3",
+      "chapter_id": 1,
+      "title": "Chapter 1 Quest 3",
+      "description": "このクエストでは、フィールド「title」に対して、完全一致検索を用いて「Deep Learning実践」を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "完全一致検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "正確なフレーズを入力してください。",
+      "difficultry": 3
+    },
+    {
+      "quest_id": "c1_q4",
+      "chapter_id": 1,
+      "title": "Chapter 1 Quest 4",
+      "description": "このクエストでは、フィールド「title」に対して、完全一致検索を用いて「統計学の基礎」を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "完全一致検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "入力ミスがないか確認しましょう。",
+      "difficultry": 4
+    },
+    {
+      "quest_id": "c1_q5",
+      "chapter_id": 1,
+      "title": "Chapter 1 Quest 5",
+      "description": "このクエストでは、フィールド「title」に対して、完全一致検索を用いて「実践データサイエンス」を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "完全一致検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "検索語句をそのまま指定してください。",
+      "difficultry": 5
+    },
+    {
+      "quest_id": "c1_q6",
+      "chapter_id": 1,
+      "title": "Chapter 1 Quest 6",
+      "description": "このクエストでは、フィールド「title」に対して、完全一致検索を用いて「データ可視化の原則」を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "完全一致検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "完全一致のため、スペルミスに注意してください。",
+      "difficultry": 6
+    },
+    {
+      "quest_id": "c1_q7",
+      "chapter_id": 1,
+      "title": "Chapter 1 Quest 7",
+      "description": "このクエストでは、フィールド「title」に対して、完全一致検索を用いて「ビッグデータ時代の解析手法」を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "完全一致検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "シノニムの可能性も考慮せずに検索しましょう。",
+      "difficultry": 7
+    },
+    {
+      "quest_id": "c1_q8",
+      "chapter_id": 1,
+      "title": "Chapter 1 Quest 8",
+      "description": "このクエストでは、フィールド「title」に対して、完全一致検索を用いて「Rによる統計解析」を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "完全一致検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "入力内容がマッピングと一致しているか確認してください。",
+      "difficultry": 8
+    },
+    {
+      "quest_id": "c1_q9",
+      "chapter_id": 1,
+      "title": "Chapter 1 Quest 9",
+      "description": "このクエストでは、フィールド「title」に対して、完全一致検索を用いて「SQLで学ぶデータ操作」を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "完全一致検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "検索語を正確に入力することが重要です。",
+      "difficultry": 9
+    },
+    {
+      "quest_id": "c1_q10",
+      "chapter_id": 1,
+      "title": "Chapter 1 Quest 10",
+      "description": "このクエストでは、フィールド「title」に対して、完全一致検索を用いて「人工知能入門」を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "完全一致検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "正確なキーワードを用いることで、期待した結果が得られます。",
+      "difficultry": 10
+    },
+    {
+      "quest_id": "c2_q1",
+      "chapter_id": 2,
+      "title": "Chapter 2 Quest 1",
+      "description": "このクエストでは、フィールド「title」に対して、前方一致検索を用いて「Python」を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "前方一致検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "検索語の先頭部分を指定してみましょう。",
+      "difficultry": 1
+    },
+    {
+      "quest_id": "c2_q2",
+      "chapter_id": 2,
+      "title": "Chapter 2 Quest 2",
+      "description": "このクエストでは、フィールド「title」に対して、前方一致検索を用いて「ゼロから」を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "前方一致検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "部分一致とは異なり、先頭からの一致に注目。",
+      "difficultry": 2
+    },
+    {
+      "quest_id": "c2_q3",
+      "chapter_id": 2,
+      "title": "Chapter 2 Quest 3",
+      "description": "このクエストでは、フィールド「title」に対して、前方一致検索を用いて「Deep」を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "前方一致検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "文字列の開始部分を利用した検索を行います。",
+      "difficultry": 3
+    },
+    {
+      "quest_id": "c2_q4",
+      "chapter_id": 2,
+      "title": "Chapter 2 Quest 4",
+      "description": "このクエストでは、フィールド「title」に対して、前方一致検索を用いて「統計」を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "前方一致検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "フィールドの前方が対象となることを確認してください。",
+      "difficultry": 4
+    },
+    {
+      "quest_id": "c2_q5",
+      "chapter_id": 2,
+      "title": "Chapter 2 Quest 5",
+      "description": "このクエストでは、フィールド「title」に対して、前方一致検索を用いて「実践」を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "前方一致検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "検索語が文頭にあるかチェックしてください。",
+      "difficultry": 5
+    },
+    {
+      "quest_id": "c2_q6",
+      "chapter_id": 2,
+      "title": "Chapter 2 Quest 6",
+      "description": "このクエストでは、フィールド「title」に対して、前方一致検索を用いて「可視化」を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "前方一致検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "検索対象の先頭部分を正確に入力してください。",
+      "difficultry": 6
+    },
+    {
+      "quest_id": "c2_q7",
+      "chapter_id": 2,
+      "title": "Chapter 2 Quest 7",
+      "description": "このクエストでは、フィールド「title」に対して、前方一致検索を用いて「SQL」で始まる語を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "前方一致検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "前方部分のマッチを意識して検索しましょう。",
+      "difficultry": 7
+    },
+    {
+      "quest_id": "c2_q8",
+      "chapter_id": 2,
+      "title": "Chapter 2 Quest 8",
+      "description": "このクエストでは、フィールド「title」に対して、前方一致検索を用いて「人工」を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "前方一致検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "指定された文字列で始まるドキュメントを探します。",
+      "difficultry": 8
+    },
+    {
+      "quest_id": "c2_q9",
+      "chapter_id": 2,
+      "title": "Chapter 2 Quest 9",
+      "description": "このクエストでは、フィールド「title」に対して、前方一致検索を用いて「Deep Learning」を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "前方一致検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "前方一致の特徴を活かして、正しい語句を入力してください。",
+      "difficultry": 9
+    },
+    {
+      "quest_id": "c2_q10",
+      "chapter_id": 2,
+      "title": "Chapter 2 Quest 10",
+      "description": "このクエストでは、フィールド「title」に対して、前方一致検索を用いて「統計学」を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "前方一致検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "文字列の初めの部分でフィルタリングを行います。",
+      "difficultry": 10
+    },
+    {
+      "quest_id": "c3_q1",
+      "chapter_id": 3,
+      "title": "Chapter 3 Quest 1",
+      "description": "このクエストでは、フィールド「title」に対して、部分一致検索を用いて「入門」を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "部分一致検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "全文中の一致箇所を捉えて検索しましょう。",
+      "difficultry": 1
+    },
+    {
+      "quest_id": "c3_q2",
+      "chapter_id": 3,
+      "title": "Chapter 3 Quest 2",
+      "description": "このクエストでは、フィールド「title」に対して、部分一致検索を用いて「実践」を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "部分一致検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "検索語が文章内のどこに現れているか確認してください。",
+      "difficultry": 2
+    },
+    {
+      "quest_id": "c3_q3",
+      "chapter_id": 3,
+      "title": "Chapter 3 Quest 3",
+      "description": "このクエストでは、フィールド「title」に対して、部分一致検索を用いて「データ」を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "部分一致検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "部分文字列のマッチングを意識して検索してください。",
+      "difficultry": 3
+    },
+    {
+      "quest_id": "c3_q4",
+      "chapter_id": 3,
+      "title": "Chapter 3 Quest 4",
+      "description": "このクエストでは、フィールド「title」に対して、部分一致検索を用いて「機械学習」を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "部分一致検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "文章中の任意の位置で一致を検出する検索を試みてください。",
+      "difficultry": 4
+    },
+    {
+      "quest_id": "c3_q5",
+      "chapter_id": 3,
+      "title": "Chapter 3 Quest 5",
+      "description": "このクエストでは、フィールド「title」に対して、部分一致検索を用いて「Deep Learning」を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "部分一致検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "検索ワードの一部を抜き出して試しましょう。",
+      "difficultry": 5
+    },
+    {
+      "quest_id": "c3_q6",
+      "chapter_id": 3,
+      "title": "Chapter 3 Quest 6",
+      "description": "このクエストでは、フィールド「title」に対して、部分一致検索を用いて「統計学」を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "部分一致検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "キーワードが文章内に散在している場合もヒットします。",
+      "difficultry": 6
+    },
+    {
+      "quest_id": "c3_q7",
+      "chapter_id": 3,
+      "title": "Chapter 3 Quest 7",
+      "description": "このクエストでは、フィールド「title」に対して、部分一致検索を用いて「可視化」を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "部分一致検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "検索語が文中に含まれているかを確認してください。",
+      "difficultry": 7
+    },
+    {
+      "quest_id": "c3_q8",
+      "chapter_id": 3,
+      "title": "Chapter 3 Quest 8",
+      "description": "このクエストでは、フィールド「title」に対して、部分一致検索を用いて「入門書」を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "部分一致検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "語句の一部が一致する場合を想定してください。",
+      "difficultry": 8
+    },
+    {
+      "quest_id": "c3_q9",
+      "chapter_id": 3,
+      "title": "Chapter 3 Quest 9",
+      "description": "このクエストでは、フィールド「title」に対して、部分一致検索を用いて「実践データ」を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "部分一致検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "入力した部分文字列が複数箇所で出現する場合に注目。",
+      "difficultry": 9
+    },
+    {
+      "quest_id": "c3_q10",
+      "chapter_id": 3,
+      "title": "Chapter 3 Quest 10",
+      "description": "このクエストでは、フィールド「title」に対して、部分一致検索を用いて「解析手法」を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "部分一致検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "語句の部分一致の動作を確認しましょう。",
+      "difficultry": 10
+    },
+    {
+      "quest_id": "c4_q1",
+      "chapter_id": 4,
+      "title": "Chapter 4 Quest 1",
+      "description": "このクエストでは、フィールド「review_count」に対して、数値範囲検索を用いて100から200の間の値を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "数値範囲検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "数値範囲を正しく指定して検索しましょう。",
+      "difficultry": 1
+    },
+    {
+      "quest_id": "c4_q2",
+      "chapter_id": 4,
+      "title": "Chapter 4 Quest 2",
+      "description": "このクエストでは、フィールド「review_count」に対して、数値範囲検索を用いて50から150の間の値を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "数値範囲検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "指定する数値の下限と上限に注意してください。",
+      "difficultry": 2
+    },
+    {
+      "quest_id": "c4_q3",
+      "chapter_id": 4,
+      "title": "Chapter 4 Quest 3",
+      "description": "このクエストでは、フィールド「review_count」に対して、数値範囲検索を用いて200から300の間の値を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "数値範囲検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "数値範囲の設定ミスを防ぎましょう。",
+      "difficultry": 3
+    },
+    {
+      "quest_id": "c4_q4",
+      "chapter_id": 4,
+      "title": "Chapter 4 Quest 4",
+      "description": "このクエストでは、フィールド「review_count」に対して、数値範囲検索を用いて150から250の間の値を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "数値範囲検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "数値指定の正確さをチェックしてください。",
+      "difficultry": 4
+    },
+    {
+      "quest_id": "c4_q5",
+      "chapter_id": 4,
+      "title": "Chapter 4 Quest 5",
+      "description": "このクエストでは、フィールド「review_count」に対して、数値範囲検索を用いて80から180の間の値を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "数値範囲検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "境界値の確認を怠らないこと。",
+      "difficultry": 5
+    },
+    {
+      "quest_id": "c4_q6",
+      "chapter_id": 4,
+      "title": "Chapter 4 Quest 6",
+      "description": "このクエストでは、フィールド「review_count」に対して、数値範囲検索を用いて120から220の間の値を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "数値範囲検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "数値の開始・終了を正確に入力してください。",
+      "difficultry": 6
+    },
+    {
+      "quest_id": "c4_q7",
+      "chapter_id": 4,
+      "title": "Chapter 4 Quest 7",
+      "description": "このクエストでは、フィールド「review_count」に対して、数値範囲検索を用いて90から190の間の値を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "数値範囲検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "指定した範囲内の数値のみを対象にします。",
+      "difficultry": 7
+    },
+    {
+      "quest_id": "c4_q8",
+      "chapter_id": 4,
+      "title": "Chapter 4 Quest 8",
+      "description": "このクエストでは、フィールド「review_count」に対して、数値範囲検索を用いて70から170の間の値を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "数値範囲検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "範囲指定した数値の前後を確認しましょう。",
+      "difficultry": 8
+    },
+    {
+      "quest_id": "c4_q9",
+      "chapter_id": 4,
+      "title": "Chapter 4 Quest 9",
+      "description": "このクエストでは、フィールド「review_count」に対して、数値範囲検索を用いて110から210の間の値を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "数値範囲検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "数値の範囲を正しく理解して検索しましょう。",
+      "difficultry": 9
+    },
+    {
+      "quest_id": "c4_q10",
+      "chapter_id": 4,
+      "title": "Chapter 4 Quest 10",
+      "description": "このクエストでは、フィールド「review_count」に対して、数値範囲検索を用いて130から230の間の値を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "数値範囲検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "数値の上限・下限を確認してください。",
+      "difficultry": 10
+    },
+    {
+      "quest_id": "c5_q1",
+      "chapter_id": 5,
+      "title": "Chapter 5 Quest 1",
+      "description": "このクエストでは、フィールド「publication_date」に対して、日付範囲検索を用いて「2010-01-01」から「2012-12-31」の間を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "日付範囲検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "日付フォーマット（yyyy-MM-dd）に注意して指定しましょう。",
+      "difficultry": 1
+    },
+    {
+      "quest_id": "c5_q2",
+      "chapter_id": 5,
+      "title": "Chapter 5 Quest 2",
+      "description": "このクエストでは、フィールド「publication_date」に対して、日付範囲検索を用いて「2013-01-01」から「2015-12-31」の間を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "日付範囲検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "開始日と終了日を正確に入力してください。",
+      "difficultry": 2
+    },
+    {
+      "quest_id": "c5_q3",
+      "chapter_id": 5,
+      "title": "Chapter 5 Quest 3",
+      "description": "このクエストでは、フィールド「publication_date」に対して、日付範囲検索を用いて「2016-01-01」から「2018-12-31」の間を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "日付範囲検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "正しい日付形式での検索を心がけてください。",
+      "difficultry": 3
+    },
+    {
+      "quest_id": "c5_q4",
+      "chapter_id": 5,
+      "title": "Chapter 5 Quest 4",
+      "description": "このクエストでは、フィールド「publication_date」に対して、日付範囲検索を用いて「2019-01-01」から「2020-12-31」の間を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "日付範囲検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "日付の境界値もチェックしましょう。",
+      "difficultry": 4
+    },
+    {
+      "quest_id": "c5_q5",
+      "chapter_id": 5,
+      "title": "Chapter 5 Quest 5",
+      "description": "このクエストでは、フィールド「publication_date」に対して、日付範囲検索を用いて「2010-01-01」から「2010-12-31」の間を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "日付範囲検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "同じ年の範囲内での検索結果を確認してください。",
+      "difficultry": 5
+    },
+    {
+      "quest_id": "c5_q6",
+      "chapter_id": 5,
+      "title": "Chapter 5 Quest 6",
+      "description": "このクエストでは、フィールド「publication_date」に対して、日付範囲検索を用いて「2011-01-01」から「2013-12-31」の間を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "日付範囲検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "検索期間を正しく設定しましょう。",
+      "difficultry": 6
+    },
+    {
+      "quest_id": "c5_q7",
+      "chapter_id": 5,
+      "title": "Chapter 5 Quest 7",
+      "description": "このクエストでは、フィールド「publication_date」に対して、日付範囲検索を用いて「2014-01-01」から「2016-12-31」の間を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "日付範囲検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "指定した期間内のデータに注目してください。",
+      "difficultry": 7
+    },
+    {
+      "quest_id": "c5_q8",
+      "chapter_id": 5,
+      "title": "Chapter 5 Quest 8",
+      "description": "このクエストでは、フィールド「publication_date」に対して、日付範囲検索を用いて「2017-01-01」から「2017-12-31」の間を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "日付範囲検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "特定年の検索結果をよく確認してください。",
+      "difficultry": 8
+    },
+    {
+      "quest_id": "c5_q9",
+      "chapter_id": 5,
+      "title": "Chapter 5 Quest 9",
+      "description": "このクエストでは、フィールド「publication_date」に対して、日付範囲検索を用いて「2018-01-01」から「2018-12-31」の間を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "日付範囲検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "日付形式が合っているか再確認しましょう。",
+      "difficultry": 9
+    },
+    {
+      "quest_id": "c5_q10",
+      "chapter_id": 5,
+      "title": "Chapter 5 Quest 10",
+      "description": "このクエストでは、フィールド「publication_date」に対して、日付範囲検索を用いて「2019-01-01」から「2019-12-31」の間を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "日付範囲検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "該当する年のデータの存在を確認しましょう。",
+      "difficultry": 10
+    },
+    {
+      "quest_id": "c6_q1",
+      "chapter_id": 6,
+      "title": "Chapter 6 Quest 1",
+      "description": "このクエストでは、フィールド「price」に対して、ブール検索を用いて3000円の商品を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "ブール検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "数値条件と論理演算子を正しく組み合わせましょう。",
+      "difficultry": 1
+    },
+    {
+      "quest_id": "c6_q2",
+      "chapter_id": 6,
+      "title": "Chapter 6 Quest 2",
+      "description": "このクエストでは、フィールド「price」に対して、ブール検索を用いて3500円以上の商品を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "ブール検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "数値条件をAND条件で組み合わせて試します。",
+      "difficultry": 2
+    },
+    {
+      "quest_id": "c6_q3",
+      "chapter_id": 6,
+      "title": "Chapter 6 Quest 3",
+      "description": "このクエストでは、フィールド「price」に対して、ブール検索を用いて3000円または3500円の商品を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "ブール検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "OR条件の利用例です。",
+      "difficultry": 3
+    },
+    {
+      "quest_id": "c6_q4",
+      "chapter_id": 6,
+      "title": "Chapter 6 Quest 4",
+      "description": "このクエストでは、フィールド「price」に対して、ブール検索を用いて3000円未満の商品を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "ブール検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "否定条件を含めた検索を実施してください。",
+      "difficultry": 4
+    },
+    {
+      "quest_id": "c6_q5",
+      "chapter_id": 6,
+      "title": "Chapter 6 Quest 5",
+      "description": "このクエストでは、フィールド「price」に対して、ブール検索を用いて4000円以上かつ5000円以下の商品を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "ブール検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "複数条件をANDで組み合わせて検索しましょう。",
+      "difficultry": 5
+    },
+    {
+      "quest_id": "c6_q6",
+      "chapter_id": 6,
+      "title": "Chapter 6 Quest 6",
+      "description": "このクエストでは、フィールド「price」に対して、ブール検索を用いて3000円以下または5000円以上の商品を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "ブール検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "否定と肯定の条件をORで正しく記述してください。",
+      "difficultry": 6
+    },
+    {
+      "quest_id": "c6_q7",
+      "chapter_id": 6,
+      "title": "Chapter 6 Quest 7",
+      "description": "このクエストでは、フィールド「price」に対して、ブール検索を用いて3000円以上の商品かつ3500円未満の商品を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "ブール検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "AND条件で範囲を指定してください。",
+      "difficultry": 7
+    },
+    {
+      "quest_id": "c6_q8",
+      "chapter_id": 6,
+      "title": "Chapter 6 Quest 8",
+      "description": "このクエストでは、フィールド「price」に対して、ブール検索を用いて3500円以下の商品を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "ブール検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "条件に適合する商品のみを抽出してください。",
+      "difficultry": 8
+    },
+    {
+      "quest_id": "c6_q9",
+      "chapter_id": 6,
+      "title": "Chapter 6 Quest 9",
+      "description": "このクエストでは、フィールド「price」に対して、ブール検索を用いて3000円〜4000円の商品を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "ブール検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "範囲検索とブール条件を組み合わせましょう。",
+      "difficultry": 9
+    },
+    {
+      "quest_id": "c6_q10",
+      "chapter_id": 6,
+      "title": "Chapter 6 Quest 10",
+      "description": "このクエストでは、フィールド「price」に対して、ブール検索を用いて任意の価格で検索し、特定の価格帯の結果が存在するか確認します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "ブール検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "複数条件の組み合わせで検索結果を制御しましょう。",
+      "difficultry": 10
+    },
+    {
+      "quest_id": "c7_q1",
+      "chapter_id": 7,
+      "title": "Chapter 7 Quest 1",
+      "description": "このクエストでは、フィールド「author」に対して、論理演算子検索を用いて「Wes McKinney」を含むドキュメントを検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "論理演算子検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "AND/OR/NOTを活用して正確な検索条件を設定してください。",
+      "difficultry": 1
+    },
+    {
+      "quest_id": "c7_q2",
+      "chapter_id": 7,
+      "title": "Chapter 7 Quest 2",
+      "description": "このクエストでは、フィールド「author」に対して、論理演算子検索を用いて「Andrew Ng」または「Ian Goodfellow」を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "論理演算子検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "OR条件を正しく記述してください。",
+      "difficultry": 2
+    },
+    {
+      "quest_id": "c7_q3",
+      "chapter_id": 7,
+      "title": "Chapter 7 Quest 3",
+      "description": "このクエストでは、フィールド「author」に対して、論理演算子検索を用いて「統計太郎」を除外して検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "論理演算子検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "NOT演算子を利用して除外条件を設定してください。",
+      "difficultry": 3
+    },
+    {
+      "quest_id": "c7_q4",
+      "chapter_id": 7,
+      "title": "Chapter 7 Quest 4",
+      "description": "このクエストでは、フィールド「author」に対して、論理演算子検索を用いて「データ花子」と「可視化一郎」の両方を含むドキュメントを検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "論理演算子検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "AND条件を用いた複合検索を試行してください。",
+      "difficultry": 4
+    },
+    {
+      "quest_id": "c7_q5",
+      "chapter_id": 7,
+      "title": "Chapter 7 Quest 5",
+      "description": "このクエストでは、フィールド「author」に対して、論理演算子検索を用いて「SQL雄」または「AI博士」を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "論理演算子検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "OR条件で複数の条件を組み合わせましょう。",
+      "difficultry": 5
+    },
+    {
+      "quest_id": "c7_q6",
+      "chapter_id": 7,
+      "title": "Chapter 7 Quest 6",
+      "description": "このクエストでは、フィールド「author」に対して、論理演算子検索を用いて「Wes McKinney」を含むが「Andrew Ng」を除外する検索を行います。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "論理演算子検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "ANDとNOTを組み合わせた検索を試みてください。",
+      "difficultry": 6
+    },
+    {
+      "quest_id": "c7_q7",
+      "chapter_id": 7,
+      "title": "Chapter 7 Quest 7",
+      "description": "このクエストでは、フィールド「author」に対して、論理演算子検索を用いて「Ian Goodfellow」を含むか、もしくは「統計太郎」を含むドキュメントを検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "論理演算子検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "OR条件を活用して幅広く検索しましょう。",
+      "difficultry": 7
+    },
+    {
+      "quest_id": "c7_q8",
+      "chapter_id": 7,
+      "title": "Chapter 7 Quest 8",
+      "description": "このクエストでは、フィールド「author」に対して、論理演算子検索を用いて「Andrew Ng」と「Ian Goodfellow」のいずれかを含むドキュメントを検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "論理演算子検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "複数条件のOR検索を行ってください。",
+      "difficultry": 8
+    },
+    {
+      "quest_id": "c7_q9",
+      "chapter_id": 7,
+      "title": "Chapter 7 Quest 9",
+      "description": "このクエストでは、フィールド「author」に対して、論理演算子検索を用いて「可視化一郎」を含むが「SQL雄」を除外する検索を行います。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "論理演算子検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "ANDとNOTを駆使して対象を絞り込みます。",
+      "difficultry": 9
+    },
+    {
+      "quest_id": "c7_q10",
+      "chapter_id": 7,
+      "title": "Chapter 7 Quest 10",
+      "description": "このクエストでは、フィールド「author」に対して、論理演算子検索を用いて「データ花子」と「R子」を同時に含むドキュメントを検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "論理演算子検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "AND条件で複数の著者を指定してください。",
+      "difficultry": 10
+    },
+    {
+      "quest_id": "c8_q1",
+      "chapter_id": 8,
+      "title": "Chapter 8 Quest 1",
+      "description": "このクエストでは、フィールド「feature_vector」に対して、ベクトル類似検索を用いてクエリベクトル[0.1, 0.2]に最も近い書籍を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "ベクトル類似検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "dense_vectorの距離計算を理解して検索しましょう。",
+      "difficultry": 1
+    },
+    {
+      "quest_id": "c8_q2",
+      "chapter_id": 8,
+      "title": "Chapter 8 Quest 2",
+      "description": "このクエストでは、フィールド「feature_vector」に対して、ベクトル類似検索を用いてクエリベクトル[0.2, 0.4]に最も近い書籍を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "ベクトル類似検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "ベクトルの値を正しく指定してください。",
+      "difficultry": 2
+    },
+    {
+      "quest_id": "c8_q3",
+      "chapter_id": 8,
+      "title": "Chapter 8 Quest 3",
+      "description": "このクエストでは、フィールド「feature_vector」に対して、ベクトル類似検索を用いてクエリベクトル[0.3, 0.6]に最も近い書籍を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "ベクトル類似検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "クエリベクトルの近傍を探る設定に注意しましょう。",
+      "difficultry": 3
+    },
+    {
+      "quest_id": "c8_q4",
+      "chapter_id": 8,
+      "title": "Chapter 8 Quest 4",
+      "description": "このクエストでは、フィールド「feature_vector」に対して、ベクトル類似検索を用いてクエリベクトル[0.4, 0.8]に近い書籍を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "ベクトル類似検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "ベクトル検索では距離計算が鍵となります。",
+      "difficultry": 4
+    },
+    {
+      "quest_id": "c8_q5",
+      "chapter_id": 8,
+      "title": "Chapter 8 Quest 5",
+      "description": "このクエストでは、フィールド「feature_vector」に対して、ベクトル類似検索を用いてクエリベクトル[0.5, 1.0]に近い書籍を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "ベクトル類似検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "query vectorとアイテムのベクトル距離を確認してください。",
+      "difficultry": 5
+    },
+    {
+      "quest_id": "c8_q6",
+      "chapter_id": 8,
+      "title": "Chapter 8 Quest 6",
+      "description": "このクエストでは、フィールド「feature_vector」に対して、ベクトル類似検索を用いてクエリベクトル[0.6, 1.2]に最も近い書籍を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "ベクトル類似検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "ベクトルのスケールに注意して検索条件を設定してください。",
+      "difficultry": 6
+    },
+    {
+      "quest_id": "c8_q7",
+      "chapter_id": 8,
+      "title": "Chapter 8 Quest 7",
+      "description": "このクエストでは、フィールド「feature_vector」に対して、ベクトル類似検索を用いてクエリベクトル[0.7, 1.4]に最も近い書籍を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "ベクトル類似検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "クエリベクトルの方向性を考慮して検索してください。",
+      "difficultry": 7
+    },
+    {
+      "quest_id": "c8_q8",
+      "chapter_id": 8,
+      "title": "Chapter 8 Quest 8",
+      "description": "このクエストでは、フィールド「feature_vector」に対して、ベクトル類似検索を用いてクエリベクトル[0.8, 1.6]に最も近い書籍を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "ベクトル類似検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "ベクトル値の変更が結果に与える影響を検証してください。",
+      "difficultry": 8
+    },
+    {
+      "quest_id": "c8_q9",
+      "chapter_id": 8,
+      "title": "Chapter 8 Quest 9",
+      "description": "このクエストでは、フィールド「feature_vector」に対して、ベクトル類似検索を用いてクエリベクトル[0.9, 1.8]に近い書籍を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "ベクトル類似検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "計算結果の四捨五入などに注意してください。",
+      "difficultry": 9
+    },
+    {
+      "quest_id": "c8_q10",
+      "chapter_id": 8,
+      "title": "Chapter 8 Quest 10",
+      "description": "このクエストでは、フィールド「feature_vector」に対して、ベクトル類似検索を用いてクエリベクトル[1.0, 2.0]に最も近い書籍を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "ベクトル類似検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "query vectorの設定を再確認し、正しい結果を得ます。",
+      "difficultry": 10
+    },
+    {
+      "quest_id": "c9_q1",
+      "chapter_id": 9,
+      "title": "Chapter 9 Quest 1",
+      "description": "このクエストでは、フィールド「category」に対して、ハイブリッド検索を用いて「データサイエンス」とテキスト検索とベクトル検索の両方を組み合わせて検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "ハイブリッド検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "テキストとベクトル両方の条件を統合して検索しましょう。",
+      "difficultry": 1
+    },
+    {
+      "quest_id": "c9_q2",
+      "chapter_id": 9,
+      "title": "Chapter 9 Quest 2",
+      "description": "このクエストでは、フィールド「category」に対して、ハイブリッド検索を用いて「機械学習」とテキストとベクトル検索を組み合わせて検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "ハイブリッド検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "両方の検索条件が結果に反映されるようにしてください。",
+      "difficultry": 2
+    },
+    {
+      "quest_id": "c9_q3",
+      "chapter_id": 9,
+      "title": "Chapter 9 Quest 3",
+      "description": "このクエストでは、フィールド「category」に対して、ハイブリッド検索を用いて「統計学」とテキストとベクトル検索を組み合わせて検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "ハイブリッド検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "両方の手法が正しく動作しているか確認してください。",
+      "difficultry": 3
+    },
+    {
+      "quest_id": "c9_q4",
+      "chapter_id": 9,
+      "title": "Chapter 9 Quest 4",
+      "description": "このクエストでは、フィールド「category」に対して、ハイブリッド検索を用いて「人工知能」とテキストとベクトル検索を組み合わせて検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "ハイブリッド検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "両方の検索条件の統合方法を確認してください。",
+      "difficultry": 4
+    },
+    {
+      "quest_id": "c9_q5",
+      "chapter_id": 9,
+      "title": "Chapter 9 Quest 5",
+      "description": "このクエストでは、フィールド「category」に対して、ハイブリッド検索を用いて「プログラミング」とテキストとベクトル検索を組み合わせて検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "ハイブリッド検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "指定したカテゴリーが両方でマッチするか確認を。",
+      "difficultry": 5
+    },
+    {
+      "quest_id": "c9_q6",
+      "chapter_id": 9,
+      "title": "Chapter 9 Quest 6",
+      "description": "このクエストでは、フィールド「category」に対して、ハイブリッド検索を用いて「機械学習」と「統計学」を同時に検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "ハイブリッド検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "複数キーワードを組み合わせた検索条件を設定してください。",
+      "difficultry": 6
+    },
+    {
+      "quest_id": "c9_q7",
+      "chapter_id": 9,
+      "title": "Chapter 9 Quest 7",
+      "description": "このクエストでは、フィールド「category」に対して、ハイブリッド検索を用いて「データサイエンス」と「人工知能」を対象に検索し、結果の順序が評価されます。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "ハイブリッド検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "検索結果の順序が期待通りか確認してください。",
+      "difficultry": 7
+    },
+    {
+      "quest_id": "c9_q8",
+      "chapter_id": 9,
+      "title": "Chapter 9 Quest 8",
+      "description": "このクエストでは、フィールド「category」に対して、ハイブリッド検索を用いて「統計学」を対象にテキストとベクトルで検索し、結果の順序が評価されます。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "ハイブリッド検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "複合検索条件が順序にどう影響するかを検証してください。",
+      "difficultry": 8
+    },
+    {
+      "quest_id": "c9_q9",
+      "chapter_id": 9,
+      "title": "Chapter 9 Quest 9",
+      "description": "このクエストでは、フィールド「category」に対して、ハイブリッド検索を用いて「プログラミング」と「人工知能」を対象に検索し、結果の順序が評価されます。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "ハイブリッド検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "指定した条件での順序付けに注意してください。",
+      "difficultry": 9
+    },
+    {
+      "quest_id": "c9_q10",
+      "chapter_id": 9,
+      "title": "Chapter 9 Quest 10",
+      "description": "このクエストでは、フィールド「category」に対して、ハイブリッド検索を用いて「機械学習」と「データサイエンス」を対象に検索し、結果が意図した順序となるかを評価します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "ハイブリッド検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "結果の件数と順序に注目して条件を見直してください。",
+      "difficultry": 10
+    },
+    {
+      "quest_id": "c10_q1",
+      "chapter_id": 10,
+      "title": "Chapter 10 Quest 1",
+      "description": "このクエストでは、フィールド「publisher」に対して、キーワードマッチ検索を用いて「オライリー」を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "キーワードマッチ検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "matchクエリによる検索を試してみましょう。",
+      "difficultry": 1
+    },
+    {
+      "quest_id": "c10_q2",
+      "chapter_id": 10,
+      "title": "Chapter 10 Quest 2",
+      "description": "このクエストでは、フィールド「publisher」に対して、キーワードマッチ検索を用いて「日経BP」を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "キーワードマッチ検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "キーワードマッチがどのように動作するか確認してください。",
+      "difficultry": 2
+    },
+    {
+      "quest_id": "c10_q3",
+      "chapter_id": 10,
+      "title": "Chapter 10 Quest 3",
+      "description": "このクエストでは、フィールド「publisher」に対して、キーワードマッチ検索を用いて「技術評論社」を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "キーワードマッチ検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "キーワードの一致度に注目して検索しましょう。",
+      "difficultry": 3
+    },
+    {
+      "quest_id": "c10_q4",
+      "chapter_id": 10,
+      "title": "Chapter 10 Quest 4",
+      "description": "このクエストでは、フィールド「publisher」に対して、キーワードマッチ検索を用いて「翔泳社」を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "キーワードマッチ検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "検索対象のテキストが正確に指定されているか確認してください。",
+      "difficultry": 4
+    },
+    {
+      "quest_id": "c10_q5",
+      "chapter_id": 10,
+      "title": "Chapter 10 Quest 5",
+      "description": "このクエストでは、フィールド「publisher」に対して、キーワードマッチ検索を用いて「KADOKAWA」を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "キーワードマッチ検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "指定したキーワードが正しくマッチするか確認しましょう。",
+      "difficultry": 5
+    },
+    {
+      "quest_id": "c10_q6",
+      "chapter_id": 10,
+      "title": "Chapter 10 Quest 6",
+      "description": "このクエストでは、フィールド「publisher」に対して、キーワードマッチ検索を用いて「SBクリエイティブ」を検索します。期待される結果は、件数が5件で、doc_ids_includeに基づき評価されます。",
+      "query_type_hint": "キーワードマッチ検索",
+      "evaluation_method": "doc_ids_include",
+      "evaluation_data": {
+        "expected_ids": ["book2", "book4", "book6"]
+      },
+      "hint": "正確なキーワード入力で一致させましょう。",
+      "difficultry": 6
+    },
+    {
+      "quest_id": "c10_q7",
+      "chapter_id": 10,
+      "title": "Chapter 10 Quest 7",
+      "description": "このクエストでは、フィールド「publisher」に対して、キーワードマッチ検索を用いて「インプレス」を検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "キーワードマッチ検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "検索条件が正しく適用されるか注意深く確認してください。",
+      "difficultry": 7
+    },
+    {
+      "quest_id": "c10_q8",
+      "chapter_id": 10,
+      "title": "Chapter 10 Quest 8",
+      "description": "このクエストでは、フィールド「publisher」に対して、キーワードマッチ検索を用いて「秀和システム」を検索します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "キーワードマッチ検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "キーワードの入力ミスがないか再確認しましょう。",
+      "difficultry": 8
+    },
+    {
+      "quest_id": "c10_q9",
+      "chapter_id": 10,
+      "title": "Chapter 10 Quest 9",
+      "description": "このクエストでは、フィールド「publisher」に対して、キーワードマッチ検索を用いて「技術評論社」と「オライリー」を同時に検索します。期待される結果は、件数が5件で、doc_ids_in_orderに基づき評価されます。",
+      "query_type_hint": "キーワードマッチ検索",
+      "evaluation_method": "doc_ids_in_order",
+      "evaluation_data": {
+        "expected_ids": ["book1", "book3", "book5", "book7"]
+      },
+      "hint": "複数のキーワードを適切に組み合わせましょう。",
+      "difficultry": 9
+    },
+    {
+      "quest_id": "c10_q10",
+      "chapter_id": 10,
+      "title": "Chapter 10 Quest 10",
+      "description": "このクエストでは、フィールド「publisher」に対して、キーワードマッチ検索を用いて「日経BP」と「KADOKAWA」を対象に検索し、結果の件数で評価します。期待される結果は、件数が5件で、result_countに基づき評価されます。",
+      "query_type_hint": "キーワードマッチ検索",
+      "evaluation_method": "result_count",
+      "evaluation_data": {
+        "expected_count": 5
+      },
+      "hint": "複数キーワードの組み合わせによる検索条件の効果を確認してください。",
+      "difficultry": 10
+    }
+  ]
+}

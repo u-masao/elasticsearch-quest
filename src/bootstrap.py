@@ -4,13 +4,13 @@ from elasticsearch import Elasticsearch
 from .config import AppConfig
 from .db.quest_repository import QuestRepository
 from .es.client import get_es_client  # 実装は後述
-from .exceptions import DatabaseError, ElasticsearchError
+from .exceptions import ElasticsearchError
 from .view import QuestView
 
 
 async def initialize_database(config: AppConfig, view: QuestView) -> QuestRepository:
     """
-    データベースリポジトリを初期化し、必要であればスキーマとデータをロードする。
+    QuestRepository を取得して返す。
 
     Args:
         config: アプリケーション設定オブジェクト.
@@ -18,30 +18,8 @@ async def initialize_database(config: AppConfig, view: QuestView) -> QuestReposi
 
     Returns:
         初期化されたQuestRepositoryインスタンス.
-
-    Raises:
-        DatabaseError: データベースの初期化や接続に失敗した場合.
     """
-    try:
-        repo = QuestRepository(str(config.db_path))
-
-        # DBファイルが存在しないか空の場合、初期化処理を実行
-        # ファイルの存在チェックは config の FilePath Validator が行う
-        # ここではファイルサイズで空かどうかをチェック
-        if not config.db_path.exists() or config.db_path.stat().st_size == 0:
-            await view.display_info(
-                f"データベースファイル '{config.db_path}' が存在しないか"
-                "空のため初期化します..."
-            )
-            repo.initialize_schema(str(config.schema_file))
-            repo.load_data(str(config.data_file))
-            await view.display_info("データベースの初期化が完了しました。")
-        else:
-            await view.display_info(f"データベース '{config.db_path}' を使用します。")
-        return repo
-    except Exception as e:
-        # QuestRepository 内で発生したエラーも含む
-        raise DatabaseError(f"データベース初期化中にエラーが発生しました: {e}") from e
+    return QuestRepository()
 
 
 async def initialize_elasticsearch(config: AppConfig, view: QuestView) -> Elasticsearch:
