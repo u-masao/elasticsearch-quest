@@ -1,14 +1,19 @@
 import json
 
+
 class DummySpan:
     def __enter__(self):
         return self
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
+
 
 class DummyOtel:
     def helpers_span(self, span_name):
         return DummySpan()
+
+
 import os
 
 from src.es import renew_index
@@ -91,7 +96,7 @@ def test_append_documents(monkeypatch, tmp_path):
     actions = es_client.bulk_called
     expected = [
         {"field": "value1", "_index": "test_index"},
-        {"field": "value2", "_index": "custom_index"}
+        {"field": "value2", "_index": "custom_index"},
     ]
     assert actions == expected
 
