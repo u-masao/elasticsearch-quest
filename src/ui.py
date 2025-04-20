@@ -380,6 +380,8 @@ async def init_elasticsearch_index(history):
     index_name = config.index_name
 
     # 入力 JSON ファイルの取得 (fixters/tests/book.json)
+    history.append({"role": "assistant", "content": f"load: {config.book_path}"})
+    yield history
     with open(config.book_path, encoding="utf-8") as f:
         data = json.load(f)
 
