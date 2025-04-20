@@ -54,8 +54,8 @@ def test_delete_index():
 
 
 def test_create_index(tmp_path):
-    mapping = {"settings": {"number_of_shards": 1}}
-    mapping_file = tmp_path / "mapping.json"
+    mapping = {"mappings":{"settings": {"number_of_shards": 1}}}
+    mapping_file = tmp_path / "mapping_book.json"
     mapping_file.write_text(json.dumps(mapping))
     es_client = FakeEsClient()
     renew_index.create_index(es_client, "test_index", str(mapping_file))
@@ -66,8 +66,8 @@ def test_create_index(tmp_path):
 
 
 def test_append_documents(monkeypatch, tmp_path):
-    docs = [{"field": "value1"}, {"field": "value2", "_index": "custom_index"}]
-    ndjson_file = tmp_path / "docs.ndjson"
+    docs = {"sample_data":[{"field": "value1"}, {"field": "value2", "_index": "custom_index"}]}
+    ndjson_file = tmp_path / "sample_data_book.json"
     with ndjson_file.open("w") as f:
         for doc in docs:
             f.write(json.dumps(doc) + "\n")
@@ -83,11 +83,11 @@ def test_append_documents(monkeypatch, tmp_path):
 
 def test_main(monkeypatch, tmp_path):
     # Setup temporary mapping and ndjson files
-    mapping = {"settings": {"number_of_shards": 1}}
-    mapping_file = tmp_path / "sample_books_mapping.json"
+    mapping = {"mappings":{"settings": {"number_of_shards": 1}}}
+    mapping_file = tmp_path / "mappings_book.json"
     mapping_file.write_text(json.dumps(mapping))
-    docs = [{"field": "value1"}, {"field": "value2"}]
-    ndjson_file = tmp_path / "sample_books.ndjson"
+    docs = {"sampled_data":[{"field": "value1"}, {"field": "value2"}]}
+    ndjson_file = tmp_path / "sample_data_book.json"
     with ndjson_file.open("w") as f:
         for doc in docs:
             f.write(json.dumps(doc) + "\n")
