@@ -94,10 +94,13 @@ def test_append_documents(monkeypatch, tmp_path):
     monkeypatch.setattr(renew_index, "bulk", fake_bulk)
     renew_index.append_documents(es_client, "test_index", str(book_file))
     actions = es_client.bulk_called
-    expected = [
-        {"field": "value1", "_index": "test_index"},
-        {"field": "value2", "_index": "custom_index"},
-    ]
+    expected = [{
+        "_index": "test_index",
+        "sample_data": [
+            {"field": "value1", "_index": "test_index"},
+            {"field": "value2", "_index": "custom_index"},
+        ]
+    }]
     assert actions == expected
 
 
@@ -141,6 +144,7 @@ def test_main(monkeypatch, tmp_path):
         "append_documents",
         lambda es, idx, ndjson_file: appended.append((idx, ndjson_file)),
     )
+    monkeypatch.setattr(renew_index, "bulk", fake_bulk)
 
     renew_index.main()
 
