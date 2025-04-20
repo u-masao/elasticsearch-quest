@@ -1,5 +1,4 @@
 # src/db/quest_repository.py
-import os
 from typing import List, Optional
 
 from src.models.quest import Quest
@@ -43,20 +42,6 @@ class QuestRepository:
         )
         _ = quest.as_dict()  # 強制的にパースを走らせる。
         return quest
-
-    def _read_quests(self) -> List[dict]:
-        import json
-
-        quest_file = self.quest_file
-        if not os.path.exists(quest_file):
-            raise FileNotFoundError(f"Quest file not found: {quest_file}")
-        with open(quest_file, "r", encoding="utf-8") as f:
-            quests_json = json.load(f)
-        print(f"Number of quests loaded: {len(quests_json)}")
-        return quests_json
-
-    async def get_quest_by_id_async(self, quest_id: int) -> Optional[Quest]:
-        return self.get_quest_by_id(quest_id)
 
     def get_quest_by_id(self, quest_id) -> Optional[Quest]:
         """
