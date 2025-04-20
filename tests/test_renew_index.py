@@ -54,7 +54,7 @@ def test_delete_index():
 
 
 def test_create_index(tmp_path):
-    mapping = {"mappings":{"settings": {"number_of_shards": 1}}}
+    mapping = {"mappings": {"settings": {"number_of_shards": 1}}}
     book_file = tmp_path / "book.json"
     book_file.write_text(json.dumps(mapping))
     es_client = FakeEsClient()
@@ -66,7 +66,12 @@ def test_create_index(tmp_path):
 
 
 def test_append_documents(monkeypatch, tmp_path):
-    data = {"sample_data": [{"field": "value1"}, {"field": "value2", "_index": "custom_index"}]}
+    data = {
+        "sample_data": [
+            {"field": "value1"},
+            {"field": "value2", "_index": "custom_index"},
+        ]
+    }
     book_file = tmp_path / "book.json"
     book_file.write_text(json.dumps(data))
     es_client = FakeEsClient()
@@ -83,7 +88,7 @@ def test_main(monkeypatch, tmp_path):
     # Setup temporary book.json with mappings and sample_data
     data = {
         "mappings": {"mappings": {"settings": {"number_of_shards": 1}}},
-        "sample_data": [{"field": "value1"}, {"field": "value2"}]
+        "sample_data": [{"field": "value1"}, {"field": "value2"}],
     }
     book_file = tmp_path / "book.json"
     book_file.write_text(json.dumps(data))
