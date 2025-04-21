@@ -12,9 +12,39 @@ from src.exceptions import QuestCliError
 from src.services.agent_service import AgentService
 from src.services.core_logic import execute_query as core_logic_execute_query
 from src.services.quest_service import QuestService
+from src.ui_asset import SUBMIT_BUTTON_TEXT
+
+# リファクタリングで分割・作成したモジュールをインポート
 from src.utils.query_loader import load_query_from_source
 from src.view import EndOfMessage, QuestView
-from src.ui import SUBMIT_BUTTON_TEXT, JSON_CHECK_OK, JSON_CHECK_NG, QueuedQuestView
+
+
+class QueuedQuestView(QuestView):
+    """非同期メッセージキューを持つQuestViewの拡張クラス"""
+
+    def __init__(self):
+        super().__init__()
+        self.message_queue = asyncio.Queue()  # 非同期メッセージキューを追加
+        self.custom_echo = self.send_message
+
+    async def send_message(self, message: str | EndOfMessage, **kwargs: Dict[str, Any]):
+        """非同期にメッセージをキューに送信する"""
+        await self.message_queue.put(message)
+
+    async def receive_messages(self):
+        """キューからメッセージを取り出して処理する非同期メソッド"""
+        while True:
+            message = await self.message_queue.get()
+            self.message_queue.task_done()
+            if isinstance(message, EndOfMessage):
+                break
+            elif isinstance(message, str):
+                yield message
+            else:
+                raise ValueError(
+                    f"receive_messages で予期しない型を受け取りました: {type(message)}"
+                )
+
 
 async def handle_exception(view: QuestView, e: Exception):
     """集約的な例外ハンドリング"""
@@ -26,6 +56,7 @@ async def handle_exception(view: QuestView, e: Exception):
         await view.display_error(
             f"予期せぬエラーが発生しました: {type(e).__name__}: {e}"
         )
+
 
 async def get_services(
     view: QueuedQuestView | None = None,
@@ -46,6 +77,7 @@ async def get_services(
     quest_service = QuestService(quest_repo, es_client, config.index_name)
     agent_service = AgentService(config, view)
     return config, quest_repo, es_client, quest_service, agent_service
+
 
 async def cli(
     quest_id: int,
@@ -83,6 +115,7 @@ async def cli(
         await handle_exception(view, e)
     except Exception as e:
         await handle_exception(view, e)
+
 
 async def run_quest_flow(
     view: QuestView,
@@ -128,6 +161,7 @@ async def run_quest_flow(
         await view.display_retry_message()
     await view.close()
 
+
 async def load_quest(quest_id):
     (
         config,
@@ -147,6 +181,7 @@ async def load_quest(quest_id):
         """
     return [{"role": "assistant", "content": question}]
 
+
 async def submit_answer(quest_id, query, history):
     history.append({"role": "user", "content": f"これでどう？\n\n{query}"})
     yield history, gr.Button(SUBMIT_BUTTON_TEXT, interactive=False)
@@ -157,6 +192,7 @@ async def submit_answer(quest_id, query, history):
         yield history, gr.Button(SUBMIT_BUTTON_TEXT, interactive=False)
     await quest_task
     yield history, gr.Button(SUBMIT_BUTTON_TEXT, interactive=True, variant="primary")
+
 
 async def get_mapping(history):
     (
@@ -183,6 +219,7 @@ async def get_mapping(history):
         }
     )
     yield history
+
 
 async def execute_query(query, history):
     (
@@ -224,6 +261,7 @@ async def execute_query(query, history):
     history.append({"role": "assistant", "content": f"```\n{hits_string}\n```"})
     yield history
 
+
 async def init_elasticsearch_index(history):
     (
         config,
@@ -251,7 +289,9 @@ async def init_elasticsearch_index(history):
         {"role": "assistant", "content": "  - インデックスとマッピングを作成"}
     )
     yield history
-    es_client.options(ignore_status=[400]).indices.create(index=index_name, body=mapping)
+    es_client.options(ignore_status=[400]).indices.create(
+        index=index_name, body=mapping
+    )
     history.append({"role": "assistant", "content": "  - インデックスにデータを追加"})
     yield history
     actions = []
@@ -269,3 +309,14 @@ async def init_elasticsearch_index(history):
         }
     )
     yield history
+
+
+async def format_query(query):
+    """
+    クエリーをフォーマットします。
+    """
+    try:
+        query_dict = json.loads(query)
+        return json.dumps(query_dict, indent=4, ensure_ascii=False)
+    except json.JSONDecodeError:
+        raise gr.Erorr("クエリーを整形できません。正しいJSON形式で書いて下さい。")

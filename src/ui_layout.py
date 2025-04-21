@@ -1,6 +1,6 @@
 import gradio as gr
 
-from src.ui import JSON_CHECK_OK, SUBMIT_BUTTON_TEXT
+from src.ui_asset import JSON_CHECK_OK, SUBMIT_BUTTON_TEXT
 from src.ui_async_actions import (
     execute_query,
     format_query,
@@ -89,7 +89,8 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
         outputs=[ui_chat],
     )
 
-    # reset elasticsearch index - using async action: init_elasticsearch_index from src/ui_async_actions
+    # reset elasticsearch index - using async action:
+    # init_elasticsearch_index from src/ui_async_actions
     gr.on(
         [ui_renew_index_button.click],
         fn=init_elasticsearch_index,
