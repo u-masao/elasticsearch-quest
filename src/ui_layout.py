@@ -1,14 +1,15 @@
 import gradio as gr
+
 from src.ui import (
-    load_quest,
-    json_check,
-    submit_answer,
+    JSON_CHECK_OK,
+    SUBMIT_BUTTON_TEXT,
     execute_query,
     format_query,
     get_mapping,
     init_elasticsearch_index,
-    SUBMIT_BUTTON_TEXT,
-    JSON_CHECK_OK,
+    json_check,
+    load_quest,
+    submit_answer,
 )
 
 with gr.Blocks(fill_width=True, fill_height=True) as demo:

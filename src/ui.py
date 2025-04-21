@@ -15,6 +15,7 @@ from src.exceptions import QuestCliError  # キャッチするベース例外
 from src.services.agent_service import AgentService
 from src.services.core_logic import execute_query as core_logic_execute_query
 from src.services.quest_service import QuestService
+from src.ui_layout import demo
 from src.utils.query_loader import load_query_from_source
 from src.view import EndOfMessage, QuestView
 
@@ -424,9 +425,6 @@ async def init_elasticsearch_index(history):
         }
     )
     yield history
-
-
-from src.ui_layout import demo
 
 
 if __name__ == "__main__":
