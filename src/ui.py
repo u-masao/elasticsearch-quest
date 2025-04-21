@@ -267,6 +267,17 @@ async def submit_answer(quest_id, query, history):
     yield history, gr.Button(SUBMIT_BUTTON_TEXT, interactive=True, variant="primary")
 
 
+from src.ui_async_actions import (
+    handle_exception,
+    get_services,
+    cli,
+    run_quest_flow,
+    load_quest,
+    submit_answer,
+    get_mapping,
+    execute_query,
+    init_elasticsearch_index,
+)
 def json_check(query):
     # if query is None or query == "":
     # return JSON_CHECK_NG
