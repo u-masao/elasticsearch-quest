@@ -8,7 +8,7 @@ from src.ui import (
     get_mapping,
     init_elasticsearch_index,
     SUBMIT_BUTTON_TEXT,
-    JSON_CHECK_OK
+    JSON_CHECK_OK,
 )
 
 from src.ui_layout import demo
