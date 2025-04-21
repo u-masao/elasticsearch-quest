@@ -18,6 +18,7 @@ from src.ui_asset import JSON_CHECK_NG, JSON_CHECK_OK, SUBMIT_BUTTON_TEXT
 from src.utils.query_loader import load_query_from_source
 from src.view import EndOfMessage, QuestView
 
+
 def append_and_yield(history, message):
     history.append(message)
     return history
@@ -221,11 +222,14 @@ async def get_mapping(history):
     yield history
     result = es_client.indices.get_mapping(index=config.index_name)
     formatted_mapping = json.dumps(result.body, indent=4, ensure_ascii=False)
-    yield append_and_yield(history, {
+    yield append_and_yield(
+        history,
+        {
             "role": "assistant",
             "content": "マッピングは以下のとおりです。\n"
             f"```json\n{formatted_mapping}\n```",
-        })
+        },
+    )
 
 
 async def execute_query(query, history):
@@ -239,11 +243,14 @@ async def execute_query(query, history):
     try:
         formatted_query = await format_query(query)
     except gr.Error:
-        yield append_and_yield(history, {
+        yield append_and_yield(
+            history,
+            {
                 "role": "assistant",
                 "content": "----\nクエリは JSON 形式にしてください:\n"
                 f"```\n{query}\n```",
-            })
+            },
+        )
         return
     history.append(
         {
@@ -279,7 +286,9 @@ async def init_elasticsearch_index(history):
     )
     yield history
     index_name = config.index_name
-    yield append_and_yield(history, {"role": "assistant", "content": f"load: {config.book_path}"})
+    yield append_and_yield(
+        history, {"role": "assistant", "content": f"load: {config.book_path}"}
+    )
     with open(config.book_path, encoding="utf-8") as f:
         data = json.load(f)
     mapping = data["mappings"]
