@@ -12,7 +12,7 @@ from src.exceptions import QuestCliError
 from src.services.agent_service import AgentService
 from src.services.core_logic import execute_query as core_logic_execute_query
 from src.services.quest_service import QuestService
-from src.ui_asset import SUBMIT_BUTTON_TEXT
+from src.ui_asset import JSON_CHECK_NG, JSON_CHECK_OK, SUBMIT_BUTTON_TEXT
 
 # リファクタリングで分割・作成したモジュールをインポート
 from src.utils.query_loader import load_query_from_source
@@ -320,3 +320,13 @@ async def format_query(query):
         return json.dumps(query_dict, indent=4, ensure_ascii=False)
     except json.JSONDecodeError:
         raise gr.Erorr("クエリーを整形できません。正しいJSON形式で書いて下さい。")
+
+
+async def json_check(query):
+    # if query is None or query == "":
+    # return JSON_CHECK_NG
+    try:
+        _ = json.loads(query)
+        return JSON_CHECK_OK
+    except json.JSONDecodeError:
+        return JSON_CHECK_NG
