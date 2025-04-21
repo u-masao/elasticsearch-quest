@@ -19,11 +19,6 @@ from src.utils.query_loader import load_query_from_source
 from src.view import EndOfMessage, QuestView
 
 
-def append_message(history, role, content):
-    history.append({"role": role, "content": content})
-    return history
-
-
 class QueuedQuestView(QuestView):
     """非同期メッセージキューを持つQuestViewの拡張クラス"""
 
@@ -171,6 +166,11 @@ async def run_quest_flow(
     else:
         await view.display_retry_message()
     await view.close()
+
+
+def append_message(history, role, content):
+    history.append({"role": role, "content": content})
+    return history
 
 
 async def load_quest(quest_id):
