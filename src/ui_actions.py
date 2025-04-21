@@ -19,8 +19,8 @@ from src.utils.query_loader import load_query_from_source
 from src.view import EndOfMessage, QuestView
 
 
-def append_and_yield(history, message):
-    history.append(message)
+def append_message(history, role, content):
+    history.append({"role": role, "content": content})
     return history
 
 
