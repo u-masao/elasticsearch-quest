@@ -18,6 +18,10 @@ from src.ui_asset import JSON_CHECK_NG, JSON_CHECK_OK, SUBMIT_BUTTON_TEXT
 from src.utils.query_loader import load_query_from_source
 from src.view import EndOfMessage, QuestView
 
+def append_and_yield(history, message):
+    history.append(message)
+    return history
+
 
 class QueuedQuestView(QuestView):
     """非同期メッセージキューを持つQuestViewの拡張クラス"""
