@@ -48,14 +48,11 @@ class QueuedQuestView(QuestView):
 
 async def handle_exception(view: QuestView, e: Exception):
     """集約的な例外ハンドリング"""
-    if isinstance(e, QuestCliError):
-        await view.display_error(str(e))
-    elif isinstance(e, FileNotFoundError):
-        await view.display_error(f"必要なファイルが見つかりません: {e}")
+    if isinstance(e, (QuestCliError, FileNotFoundError)):
+        msg = str(e) if isinstance(e, QuestCliError) else f"必要なファイルが見つかりません: {e}"
+        await view.display_error(msg)
     else:
-        await view.display_error(
-            f"予期せぬエラーが発生しました: {type(e).__name__}: {e}"
-        )
+        await view.display_error(f"予期せぬエラーが発生しました: {type(e).__name__}: {e}")
 
 
 async def get_services(
@@ -233,8 +230,8 @@ async def execute_query(query, history):
         agent_service,
     ) = await get_services()
     try:
-        formatted_query = json.dumps(json.loads(query), indent=4, ensure_ascii=False)
-    except json.JSONDecodeError:
+        formatted_query = await format_query(query)
+    except gr.Error:
         history.append(
             {
                 "role": "assistant",
