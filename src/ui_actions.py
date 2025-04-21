@@ -63,7 +63,10 @@ async def get_services(
     db_path_override: Path | None = None,
     index_name_override: str | None = None,
     book_path_override: Path | None = None,
-):
+) -> Tuple[Any, Any, Any, QuestService, AgentService]:
+    """
+    サービス初期化を行い、関連インスタンスを返すヘルパー関数。
+    """
     if view is None:
         view = QueuedQuestView()
     config = load_config(
@@ -73,7 +76,7 @@ async def get_services(
     )
     container = AppContainer(config, view)
     quest_repo = await container.quest_repository
-    es_client = await container.es_client
+    es_client = container.es_client
     quest_service = QuestService(quest_repo, es_client, config.index_name)
     agent_service = AgentService(config, view)
     return config, quest_repo, es_client, quest_service, agent_service
@@ -313,13 +316,13 @@ async def init_elasticsearch_index(history):
 
 async def format_query(query):
     """
-    クエリーをフォーマットします。
+    クエリを整形する
     """
     try:
         query_dict = json.loads(query)
         return json.dumps(query_dict, indent=4, ensure_ascii=False)
     except json.JSONDecodeError:
-        raise gr.Erorr("クエリーを整形できません。正しいJSON形式で書いて下さい。")
+        raise gr.Error("クエリを整形できません。正しいJSON形式で書いてください。")
 
 
 async def json_check(query):
