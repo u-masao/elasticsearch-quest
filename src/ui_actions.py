@@ -49,10 +49,16 @@ class QueuedQuestView(QuestView):
 async def handle_exception(view: QuestView, e: Exception):
     """集約的な例外ハンドリング"""
     if isinstance(e, (QuestCliError, FileNotFoundError)):
-        msg = str(e) if isinstance(e, QuestCliError) else f"必要なファイルが見つかりません: {e}"
+        msg = (
+            str(e)
+            if isinstance(e, QuestCliError)
+            else f"必要なファイルが見つかりません: {e}"
+        )
         await view.display_error(msg)
     else:
-        await view.display_error(f"予期せぬエラーが発生しました: {type(e).__name__}: {e}")
+        await view.display_error(
+            f"予期せぬエラーが発生しました: {type(e).__name__}: {e}"
+        )
 
 
 async def get_services(
