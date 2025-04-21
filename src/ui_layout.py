@@ -1,8 +1,6 @@
 import gradio as gr
 
-from src.ui import (
-    JSON_CHECK_OK,
-    SUBMIT_BUTTON_TEXT,
+from src.ui_async_actions import (
     execute_query,
     format_query,
     get_mapping,
@@ -11,6 +9,7 @@ from src.ui import (
     load_quest,
     submit_answer,
 )
+from src.ui import JSON_CHECK_OK, SUBMIT_BUTTON_TEXT
 
 with gr.Blocks(fill_width=True, fill_height=True) as demo:
     with gr.Row(equal_height=True, scale=1):
