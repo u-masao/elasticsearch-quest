@@ -194,13 +194,17 @@ async def load_quest(quest_id):
 
 
 async def submit_answer(quest_id, query, history):
-    history.append({"role": "user", "content": f"これでどう？\n\n{query}"})
-    yield history, gr.Button(SUBMIT_BUTTON_TEXT, interactive=False)
+    yield (
+        append_message(history, "user", f"これでどう？\n\n{query}"),
+        gr.Button(SUBMIT_BUTTON_TEXT, interactive=False),
+    )
     view = QueuedQuestView()
     quest_task = asyncio.create_task(cli(quest_id=quest_id, view=view, query=query))
     async for message in view.receive_messages():
-        history.append({"role": "assistant", "content": message})
-        yield history, gr.Button(SUBMIT_BUTTON_TEXT, interactive=False)
+        yield (
+            append_message(history, "assistant", message),
+            gr.Button(SUBMIT_BUTTON_TEXT, interactive=False),
+        )
     await quest_task
     yield history, gr.Button(SUBMIT_BUTTON_TEXT, interactive=True, variant="primary")
 
@@ -213,22 +217,13 @@ async def get_mapping(history):
         quest_service,
         agent_service,
     ) = await get_services()
-    history.append(
-        {
-            "role": "user",
-            "content": "マッピングを取得して。",
-        }
-    )
-    yield history
+    yield append_message(history, "user", "マッピングを取得して。")
     result = es_client.indices.get_mapping(index=config.index_name)
     formatted_mapping = json.dumps(result.body, indent=4, ensure_ascii=False)
-    yield append_and_yield(
+    yield append_message(
         history,
-        {
-            "role": "assistant",
-            "content": "マッピングは以下のとおりです。\n"
-            f"```json\n{formatted_mapping}\n```",
-        },
+        "assistant",
+        f"マッピングは以下のとおりです。\n```json\n{formatted_mapping}\n```",
     )
 
 
@@ -243,34 +238,28 @@ async def execute_query(query, history):
     try:
         formatted_query = await format_query(query)
     except gr.Error:
-        yield append_and_yield(
+        yield append_message(
             history,
-            {
-                "role": "assistant",
-                "content": "----\nクエリは JSON 形式にしてください:\n"
-                f"```\n{query}\n```",
-            },
+            "assistant",
+            f"----\nクエリは JSON 形式にしてください:\n```\n{query}\n```",
         )
         return
-    history.append(
-        {
-            "role": "user",
-            "content": f"""
+    yield append_message(
+        history,
+        "user",
+        f"""
         Elasticsearch に直接クエリを投げます。
         ```
         {formatted_query}
         ```
         """,
-        }
     )
-    yield history
     result = core_logic_execute_query(es_client, config.index_name, query)
     if len(result["hits"]["hits"]) > 0:
         hits_string = json.dumps(result["hits"]["hits"], indent=4, ensure_ascii=False)
     else:
         hits_string = "ヒット 0 件"
-    history.append({"role": "assistant", "content": f"```\n{hits_string}\n```"})
-    yield history
+    yield append_message(history, "assistant", f"```\n{hits_string}\n```")
 
 
 async def init_elasticsearch_index(history):
@@ -281,31 +270,22 @@ async def init_elasticsearch_index(history):
         quest_service,
         agent_service,
     ) = await get_services()
-    history.append(
-        {"role": "user", "content": "Elasticsearch のインデックスを初期化して"}
-    )
-    yield history
+    yield append_message(history, "user", "Elasticsearch のインデックスを初期化して")
     index_name = config.index_name
-    yield append_and_yield(
-        history, {"role": "assistant", "content": f"load: {config.book_path}"}
-    )
+    yield append_message(history, "assistant", f"load: {config.book_path}")
     with open(config.book_path, encoding="utf-8") as f:
         data = json.load(f)
     mapping = data["mappings"]
     sample_data = data["sample_data"]
-    history.append({"role": "assistant", "content": "### Elasticsearch の更新"})
-    history.append({"role": "assistant", "content": "  - インデックスを削除します"})
-    yield history
+    yield append_message(history, "assistant", "### Elasticsearch の更新")
+    yield append_message(history, "assistant", "  - インデックスを削除します")
+
     es_client.options(ignore_status=[400, 404]).indices.delete(index=index_name)
-    history.append(
-        {"role": "assistant", "content": "  - インデックスとマッピングを作成"}
-    )
-    yield history
+    yield append_message(history, "assistant", "  - インデックスとマッピングを作成")
     es_client.options(ignore_status=[400]).indices.create(
         index=index_name, body=mapping
     )
-    history.append({"role": "assistant", "content": "  - インデックスにデータを追加"})
-    yield history
+    yield append_message(history, "assistant", "  - インデックスにデータを追加")
     actions = []
     for doc_index, doc in enumerate(sample_data):
         if "_index" not in doc:
@@ -314,13 +294,11 @@ async def init_elasticsearch_index(history):
         actions.append(doc)
     if actions:
         bulk(es_client, actions)
-    history.append(
-        {
-            "role": "assistant",
-            "content": f"  - {len(actions)} 件追加\n  - インデックスを再構築しました",
-        }
+    yield append_message(
+        history,
+        "assistant",
+        f"  - {len(actions)} 件追加\n  - インデックスを再構築しました",
     )
-    yield history
 
 
 async def format_query(query):
