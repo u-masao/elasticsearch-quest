@@ -34,14 +34,14 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
                     ["default.json", "part2.json"], interactive=True
                 )
 
-    # onload
+    # onload - using async action: load_quest from src/ui_async_actions
     demo.load(
         load_quest,
         inputs=[ui_quest_id],
         outputs=[ui_chat],
     )
 
-    # select quest
+    # select quest - using async action: json_check from src/ui_async_actions
     gr.on(
         [ui_user_query.change],
         fn=json_check,
@@ -49,7 +49,7 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
         outputs=[ui_json_validator],
     )
 
-    # load quest
+    # load quest - using async action: load_quest from src/ui_async_actions
     gr.on(
         [ui_quest_id.change],
         fn=load_quest,
@@ -57,7 +57,7 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
         outputs=[ui_chat],
     )
 
-    # submit query
+    # submit query - using async action: submit_answer from src/ui_async_actions
     gr.on(
         [ui_submit_button.click],
         fn=submit_answer,
@@ -65,7 +65,7 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
         outputs=[ui_chat, ui_submit_button],
     )
 
-    # execute query
+    # execute query - using async action: execute_query from src/ui_async_actions
     gr.on(
         [ui_execute_button.click],
         fn=execute_query,
@@ -73,7 +73,7 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
         outputs=[ui_chat],
     )
 
-    # format query
+    # format query - using async action: format_query from src/ui_async_actions
     gr.on(
         [ui_format_button.click],
         fn=format_query,
@@ -81,7 +81,7 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
         outputs=[ui_user_query],
     )
 
-    # get mapping
+    # get mapping - using async action: get_mapping from src/ui_async_actions
     gr.on(
         [ui_mapping_button.click],
         fn=get_mapping,
@@ -89,7 +89,7 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
         outputs=[ui_chat],
     )
 
-    # reset elasticsearch index
+    # reset elasticsearch index - using async action: init_elasticsearch_index from src/ui_async_actions
     gr.on(
         [ui_renew_index_button.click],
         fn=init_elasticsearch_index,
