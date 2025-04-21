@@ -278,6 +278,8 @@ from src.ui_async_actions import (
     execute_query,
     init_elasticsearch_index,
 )
+
+
 def json_check(query):
     # if query is None or query == "":
     # return JSON_CHECK_NG
