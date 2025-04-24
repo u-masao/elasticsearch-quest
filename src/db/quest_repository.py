@@ -1,26 +1,19 @@
 # src/db/quest_repository.py
+from pathlib import Path
 from typing import List, Optional
 
+from src.db.book_repository import BookRepository
 from src.models.quest import Quest
 
 
 class QuestRepository:
     """クエストテーブルを操作するためのリポジトリクラス"""
 
-    def __init__(self):
+    def __init__(self, book_json_path: Path):
         """
         リポジトリを初期化し、BookRepository を利用してクエストのリストを内部
         に保持します。
         """
-        from pathlib import Path
-
-        from src.db.book_repository import BookRepository
-
-        book_json_path = (
-            Path(__file__)
-            .parent.joinpath("..", "..", "fixtures", "tests", "book.json")
-            .resolve()
-        )
         self.book_repo = BookRepository(book_json_path)
         self.quests = self.book_repo.load_quests()
 

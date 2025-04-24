@@ -27,7 +27,7 @@ class BookRepository:
                 quest_dict["evaluation_data_raw"] = quest_dict.pop("evaluation_data")
             if "hints" in quest_dict:
                 quest_dict["hints_raw"] = quest_dict.pop("hints")
-            quest = Quest(**quest_dict)
+            quest = Quest.from_dict(quest_dict)
             # パース済みプロパティの評価を強制して、パースエラーを発生させる
             _ = quest.evaluation_data
             _ = quest.hints
