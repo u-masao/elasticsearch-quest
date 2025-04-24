@@ -19,7 +19,7 @@ async def initialize_database(config: AppConfig, view: QuestView) -> QuestReposi
     Returns:
         初期化されたQuestRepositoryインスタンス.
     """
-    return QuestRepository()
+    return QuestRepository(config.book_path)
 
 
 async def initialize_elasticsearch(config: AppConfig, view: QuestView) -> Elasticsearch:

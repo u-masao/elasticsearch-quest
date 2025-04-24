@@ -1,4 +1,5 @@
 # src/models/quest.py
+import dataclasses
 import json
 from dataclasses import dataclass
 from typing import Any, Dict, List, Literal, Optional
@@ -88,3 +89,13 @@ class Quest:
             # "evaluation_data_raw": self.evaluation_data_raw,
             # "hints_raw": self.hints_raw,
         }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Quest":
+        """
+        辞書からMyDataインスタンスを生成するクラスメソッド。
+        dataclassのフィールドにないキーは無視します。
+        """
+        field_names = {f.name for f in dataclasses.fields(cls)}
+        filtered_data = {k: v for k, v in data.items() if k in field_names}
+        return cls(**filtered_data)

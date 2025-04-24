@@ -93,6 +93,7 @@ async def cli(
     db_path: Path | None = None,
     index_name: str | None = None,
     skip_agent: bool = False,
+    book_path: Path | None = None,
 ):
     try:
         (
@@ -105,6 +106,7 @@ async def cli(
             view=view,
             db_path_override=db_path,
             index_name_override=index_name,
+            book_path_override=book_path,
         )
         await run_quest_flow(
             view=view,
@@ -173,14 +175,16 @@ def append_message(history, role, content):
     return history
 
 
-async def load_quest(quest_id):
+async def load_quest(quest_id, book_path):
+    if book_path is None:
+        return
     (
         config,
         quest_repo,
         es_client,
         quest_service,
         agent_service,
-    ) = await get_services()
+    ) = await get_services(book_path_override=Path(book_path))
     quest = quest_repo.get_quest_by_id(quest_id)
     if quest is None:
         return [
@@ -193,13 +197,20 @@ async def load_quest(quest_id):
     return [{"role": "assistant", "content": question}]
 
 
-async def submit_answer(quest_id, query, history):
+async def submit_answer(quest_id, query, history, book_path):
     yield (
         append_message(history, "user", f"これでどう？\n\n{query}"),
         gr.Button(SUBMIT_BUTTON_TEXT, interactive=False),
     )
     view = QueuedQuestView()
-    quest_task = asyncio.create_task(cli(quest_id=quest_id, view=view, query=query))
+    quest_task = asyncio.create_task(
+        cli(
+            quest_id=quest_id,
+            view=view,
+            query=query,
+            book_path=Path(book_path),
+        )
+    )
     async for message in view.receive_messages():
         yield (
             append_message(history, "assistant", message),
@@ -262,14 +273,14 @@ async def execute_query(query, history):
     yield append_message(history, "assistant", f"```\n{hits_string}\n```")
 
 
-async def init_elasticsearch_index(history):
+async def init_elasticsearch_index(history, book_path):
     (
         config,
         quest_repo,
         es_client,
         quest_service,
         agent_service,
-    ) = await get_services()
+    ) = await get_services(book_path_override=book_path)
     yield append_message(history, "user", "Elasticsearch のインデックスを初期化して")
     index_name = config.index_name
     yield append_message(history, "assistant", f"load: {config.book_path}")

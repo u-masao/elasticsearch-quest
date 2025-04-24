@@ -14,37 +14,38 @@ from src.ui_actions import (
 )
 from src.ui_asset import JSON_CHECK_OK, SUBMIT_BUTTON_TEXT
 
-with gr.Blocks(fill_width=True, fill_height=True) as demo:
+css = """
+.large_font textarea {font-size: 1.5em; !important}
+"""
+with gr.Blocks(fill_width=True, fill_height=True, css=css) as demo:
     with gr.Row(equal_height=True, scale=1):
         with gr.Column(scale=2):
             ui_chat = gr.Chatbot(type="messages")
         with gr.Column(scale=1):
             ui_user_query = gr.Textbox(
                 "{}",
-                lines=20,
+                lines=10,
                 label="JSON形式でクエリを書いて「採点」ボタンを押してください",
                 scale=5,
+                elem_classes="large_font",
             )
             with gr.Column():
                 ui_quest_id = gr.Number(1, label="クエストID選択")
                 ui_json_validator = gr.Markdown(JSON_CHECK_OK)
                 ui_execute_button = gr.Button("▶️  テスト実行 ▶️", variant="secondary")
                 ui_format_button = gr.Button("✨ 自動整形 ✨")
-                ui_mapping_button = gr.Button("マッピング取得")
                 ui_submit_button = gr.Button(SUBMIT_BUTTON_TEXT, variant="primary")
-                ui_renew_index_button = gr.Button("(インデックス再構築)")
+                ui_mapping_button = gr.Button("(マッピング取得)")
                 ui_book_select = gr.Dropdown(
-                    ["default.json", "part2.json"], interactive=True
+                    [
+                        ("default", "fixtures/books/default.json"),
+                        ("part2", "fixtures/books/part2.json"),
+                    ],
+                    interactive=True,
                 )
+                ui_renew_index_button = gr.Button("(インデックス再構築)")
 
-    # onload - using async action: load_quest from src/ui_async_actions
-    demo.load(
-        load_quest,
-        inputs=[ui_quest_id],
-        outputs=[ui_chat],
-    )
-
-    # select quest - using async action: json_check from src/ui_async_actions
+    # json_checker
     gr.on(
         [ui_user_query.change],
         fn=json_check,
@@ -52,11 +53,11 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
         outputs=[ui_json_validator],
     )
 
-    # load quest - using async action: load_quest from src/ui_async_actions
+    # load quest
     gr.on(
-        [ui_quest_id.change],
+        [demo.load, ui_quest_id.change, ui_book_select.change],
         fn=load_quest,
-        inputs=[ui_quest_id],
+        inputs=[ui_quest_id, ui_book_select],
         outputs=[ui_chat],
     )
 
@@ -64,7 +65,7 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
     gr.on(
         [ui_submit_button.click],
         fn=submit_answer,
-        inputs=[ui_quest_id, ui_user_query, ui_chat],
+        inputs=[ui_quest_id, ui_user_query, ui_chat, ui_book_select],
         outputs=[ui_chat, ui_submit_button],
     )
 
@@ -97,7 +98,7 @@ with gr.Blocks(fill_width=True, fill_height=True) as demo:
     gr.on(
         [ui_renew_index_button.click],
         fn=init_elasticsearch_index,
-        inputs=[ui_chat],
+        inputs=[ui_chat, ui_book_select],
         outputs=[ui_chat],
     )
 
