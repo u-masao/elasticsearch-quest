@@ -82,9 +82,9 @@ class AppContainer:
         return self._quest_repo
 
     @property
-    def es_client(self) -> Elasticsearch:
+    async def es_client(self) -> Elasticsearch:
         if self._es_client is None:
-            self._es_client = initialize_elasticsearch(self.config, self.view)
+            self._es_client = await initialize_elasticsearch(self.config, self.view)
         return self._es_client
 
     # 必要に応じて Service のインスタンスもここで生成・管理できる

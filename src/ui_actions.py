@@ -79,7 +79,7 @@ async def get_services(
     )
     container = AppContainer(config, view)
     quest_repo = await container.quest_repository
-    es_client = container.es_client
+    es_client = await container.es_client
     quest_service = QuestService(quest_repo, es_client, config.index_name)
     agent_service = AgentService(config, view)
     return config, quest_repo, es_client, quest_service, agent_service
@@ -218,7 +218,7 @@ async def get_mapping(history):
         agent_service,
     ) = await get_services()
     yield append_message(history, "user", "マッピングを取得して。")
-    result = es_client.indices.get_mapping(index=config.index_name)
+    result = await es_client.indices.get_mapping(index=config.index_name)
     formatted_mapping = json.dumps(result.body, indent=4, ensure_ascii=False)
     yield append_message(
         history,
