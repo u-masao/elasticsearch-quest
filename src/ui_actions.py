@@ -79,7 +79,7 @@ async def get_services(
     )
     container = AppContainer(config, view)
     quest_repo = await container.quest_repository
-    es_client = container.es_client
+    es_client = await container.es_client
     quest_service = QuestService(quest_repo, es_client, config.index_name)
     agent_service = AgentService(config, view)
     return config, quest_repo, es_client, quest_service, agent_service
@@ -275,15 +275,14 @@ async def init_elasticsearch_index(history):
     yield append_message(history, "assistant", f"load: {config.book_path}")
     with open(config.book_path, encoding="utf-8") as f:
         data = json.load(f)
-    mapping = data["mappings"]
+    mappings = data["mappings"]
     sample_data = data["sample_data"]
     yield append_message(history, "assistant", "### Elasticsearch の更新")
     yield append_message(history, "assistant", "  - インデックスを削除します")
-
     es_client.options(ignore_status=[400, 404]).indices.delete(index=index_name)
     yield append_message(history, "assistant", "  - インデックスとマッピングを作成")
     es_client.options(ignore_status=[400]).indices.create(
-        index=index_name, body=mapping
+        index=index_name, body={"mappings": mappings}
     )
     yield append_message(history, "assistant", "  - インデックスにデータを追加")
     actions = []
