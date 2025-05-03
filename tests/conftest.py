@@ -16,6 +16,7 @@ sys.path.insert(0, str(project_root))
 FIXTURES_DIR = project_root / "fixtures"
 SCHEMA_FILE = FIXTURES_DIR / "create_quests_table.sql"
 DATA_FILE = FIXTURES_DIR / "insert_quests.sql"
+BOOK_FILE = FIXTURES_DIR / "books" / "default.json"
 
 
 @pytest.fixture(scope="function")  # 各テスト関数ごとにDBを初期化
@@ -25,5 +26,5 @@ def quest_repository() -> QuestRepository:
     スキーマとサンプルデータをロードする。
     テスト終了後にDBファイルを削除する。
     """
-    repo = QuestRepository()
+    repo = QuestRepository(BOOK_FILE)
     yield repo
