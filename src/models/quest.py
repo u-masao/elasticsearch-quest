@@ -14,6 +14,7 @@ class Quest:
     description: str
     difficulty: int
     query_type_hint: Optional[str]
+    correct_query: Optional[str]
     evaluation_type: Literal[
         "result_count", "doc_ids_include", "doc_ids_in_order", "aggregation_result"
     ]
