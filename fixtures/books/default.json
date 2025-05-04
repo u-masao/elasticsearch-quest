@@ -395,7 +395,7 @@
       "difficulty": 2,
       "query_type_hint": "match_phrase",
       "evaluation_type": "result_count",
-      "evaluation_data": "4",
+      "evaluation_data": "8",
       "hints": "[\"単語が連続して出現するフレーズで検索するには `match_phrase` クエリを使います。\",\"構文: `query: { match_phrase: { field_name: \\\"search phrase\\\" } }`\"]",
       "correct_query": "{\n  \"query\": {\n    \"match_phrase\": {\n      \"name\": \"データ 分析\"\n    }\n  }\n}",
       "created_at": "2025-05-04 17:46:25",
@@ -410,7 +410,7 @@
       "evaluation_type": "result_count",
       "evaluation_data": "3",
       "hints": "[\"フィールドの値が指定した文字列で始まるドキュメントを検索するには `prefix` クエリを使います。\",\"`text` 型フィールドに対して `prefix` クエリを使うと、トークン化された単語に対して前方一致が適用されます。完全な文字列で前方一致させたい場合は `keyword` 型フィールドを使います。今回は書籍名全体ではなく、タイトル内の単語で始まるものを見つけるため `name` フィールドで検索します。\",\"構文: `query: { prefix: { field_name: \\\"start_string\\\" } }`\"]",
-      "correct_query": "{\n  \"query\": {\n    \"prefix\": {\n      \"name\": \"ゼロから作る\"\n    }\n  }\n}",
+      "correct_query": "{\n  \"query\": {\n    \"prefix\": {\n      \"name.keyword\": \"ゼロから作る\"\n    }\n  }\n}",
       "created_at": "2025-05-04 17:46:25",
       "updated_at": "2025-05-04 17:46:25"
     },
@@ -423,7 +423,7 @@
       "evaluation_type": "result_count",
       "evaluation_data": "3",
       "hints": "[\"`wildcard` クエリは `*` (任意の文字列) や `?` (任意の一文字) を使ってパターンマッチ検索を行います。\",\"パフォーマンスへの影響が大きいため、`wildcard` の使用は慎重に行うべきです。特に先頭に `*` を使うのは避けましょう。\",\"`text` フィールドに適用するとトークン単位で評価されます。著者名全体で評価したい場合は `author.keyword` を使います。\",\"構文: `query: { wildcard: { \\\"author.keyword\\\": \\\"斎藤*毅\\\" } }`\"]",
-      "correct_query": "{\n  \"query\": {\n    \"wildcard\": {\n      \"author.keyword\": \"斎藤*毅\"\n    }\n  }\n}",
+      "correct_query": "{\n  \"query\": {\n    \"wildcard\": {\n      \"author.keyword\": {\n    \"value\": \"斎藤*毅\"}\n    }\n  }\n}",
       "created_at": "2025-05-04 17:46:25",
       "updated_at": "2025-05-04 17:46:25"
     },
