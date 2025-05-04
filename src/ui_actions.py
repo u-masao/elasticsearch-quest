@@ -10,9 +10,15 @@ from src.bootstrap import AppContainer
 from src.config import load_config
 from src.exceptions import QuestCliError
 from src.services.agent_service import AgentService
-from src.services.core_logic import execute_query as core_logic_execute_query
+from src.services.core_logic import execute_query
 from src.services.quest_service import QuestService
-from src.ui_asset import JSON_CHECK_NG, JSON_CHECK_OK, SUBMIT_BUTTON_TEXT
+from src.ui_asset import (
+    FORMAT_QUERY_BUTTON_TEXT,
+    JSON_CHECK_NG,
+    JSON_CHECK_OK,
+    SUBMIT_BUTTON_TEXT,
+    TEST_RUN_BUTTON_TEXT,
+)
 
 # リファクタリングで分割・作成したモジュールをインポート
 from src.utils.query_loader import load_query_from_source
@@ -238,7 +244,7 @@ async def get_mapping(history):
     )
 
 
-async def execute_query(query, history):
+async def test_run_query(query, history):
     (
         config,
         quest_repo,
@@ -246,15 +252,20 @@ async def execute_query(query, history):
         quest_service,
         agent_service,
     ) = await get_services()
-    try:
-        formatted_query = await format_query(query)
-    except gr.Error:
+
+    # クエリがJSON形式になっているかチェック
+    valid_json, _, _, _ = await check_query_format(query)
+    if valid_json == JSON_CHECK_NG:
         yield append_message(
             history,
             "assistant",
             f"----\nクエリは JSON 形式にしてください:\n```\n{query}\n```",
         )
         return
+
+    # クエリをフォーマット
+    formatted_query = await format_query(query)
+
     yield append_message(
         history,
         "user",
@@ -265,7 +276,7 @@ async def execute_query(query, history):
         ```
         """,
     )
-    result = core_logic_execute_query(es_client, config.index_name, query)
+    result = execute_query(es_client, config.index_name, query)
     if len(result["hits"]["hits"]) > 0:
         hits_string = json.dumps(result["hits"]["hits"], indent=4, ensure_ascii=False)
     else:
@@ -319,14 +330,23 @@ async def format_query(query):
         query_dict = json.loads(query)
         return json.dumps(query_dict, indent=4, ensure_ascii=False)
     except json.JSONDecodeError:
-        raise gr.Error("クエリを整形できません。正しいJSON形式で書いてください。")
+        gr.Error("クエリを整形できません。正しいJSON形式で書いてください。")
+        return query
 
 
-async def json_check(query):
-    # if query is None or query == "":
-    # return JSON_CHECK_NG
+async def check_query_format(query):
+    valid_flag = False
+    check_result = JSON_CHECK_NG
     try:
         _ = json.loads(query)
-        return JSON_CHECK_OK
+        valid_flag = True
+        check_result = JSON_CHECK_OK
     except json.JSONDecodeError:
-        return JSON_CHECK_NG
+        pass
+
+    return (
+        check_result,
+        gr.Button(TEST_RUN_BUTTON_TEXT, variant="secondary", interactive=valid_flag),
+        gr.Button(SUBMIT_BUTTON_TEXT, variant="primary", interactive=valid_flag),
+        gr.Button(FORMAT_QUERY_BUTTON_TEXT, interactive=valid_flag),
+    )
