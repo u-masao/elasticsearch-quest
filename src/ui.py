@@ -4,15 +4,20 @@
 import gradio as gr
 
 from src.ui_actions import (
-    execute_query,
+    check_query_format,
     format_query,
     get_mapping,
     init_elasticsearch_index,
-    json_check,
     load_quest,
     submit_answer,
+    test_run_query,
 )
-from src.ui_asset import JSON_CHECK_OK, SUBMIT_BUTTON_TEXT
+from src.ui_asset import (
+    FORMAT_QUERY_BUTTON_TEXT,
+    JSON_CHECK_OK,
+    SUBMIT_BUTTON_TEXT,
+    TEST_RUN_BUTTON_TEXT,
+)
 
 css = """
 .large_font textarea {font-size: 1.5em; !important}
@@ -32,8 +37,10 @@ with gr.Blocks(fill_width=True, fill_height=True, css=css) as demo:
             with gr.Column():
                 ui_quest_id = gr.Number(1, label="クエストID選択")
                 ui_json_validator = gr.Markdown(JSON_CHECK_OK)
-                ui_execute_button = gr.Button("▶️  テスト実行 ▶️", variant="secondary")
-                ui_format_button = gr.Button("✨ 自動整形 ✨")
+                ui_format_button = gr.Button(FORMAT_QUERY_BUTTON_TEXT)
+                ui_test_run_button = gr.Button(
+                    TEST_RUN_BUTTON_TEXT, variant="secondary"
+                )
                 ui_submit_button = gr.Button(SUBMIT_BUTTON_TEXT, variant="primary")
                 ui_mapping_button = gr.Button("(マッピング取得)")
                 ui_book_select = gr.Dropdown(
@@ -48,9 +55,14 @@ with gr.Blocks(fill_width=True, fill_height=True, css=css) as demo:
     # json_checker
     gr.on(
         [ui_user_query.change],
-        fn=json_check,
+        fn=check_query_format,
         inputs=[ui_user_query],
-        outputs=[ui_json_validator],
+        outputs=[
+            ui_json_validator,
+            ui_test_run_button,
+            ui_submit_button,
+            ui_format_button,
+        ],
     )
 
     # load quest
@@ -69,10 +81,10 @@ with gr.Blocks(fill_width=True, fill_height=True, css=css) as demo:
         outputs=[ui_chat, ui_submit_button],
     )
 
-    # execute query - using async action: execute_query from src/ui_async_actions
+    # test_run query - using async action: test_run_query from src/ui_async_actions
     gr.on(
-        [ui_execute_button.click],
-        fn=execute_query,
+        [ui_test_run_button.click],
+        fn=test_run_query,
         inputs=[ui_user_query, ui_chat],
         outputs=[ui_chat],
     )
