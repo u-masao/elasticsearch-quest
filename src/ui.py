@@ -28,7 +28,7 @@ with gr.Blocks(fill_width=True, fill_height=True, css=css) as demo:
             ui_chat = gr.Chatbot(type="messages")
         with gr.Column(scale=1):
             ui_user_query = gr.Textbox(
-                "{}",
+                """{"query":{}}""",
                 lines=10,
                 label="JSON形式でクエリを書いて「採点」ボタンを押してください",
                 scale=5,
