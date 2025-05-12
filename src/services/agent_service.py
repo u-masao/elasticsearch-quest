@@ -87,13 +87,22 @@ class AgentService:
             アプローチ、考慮すべき点を具体的に指摘してください。
         4.  **形式**: 評価結果とフィードバックを分かりやすく記述してくださ
             い。
+        5.  **サポートバージョン**: Elasticsearch 8.17 の書式で評価して下
+            さい。knn の書き方が変わっているようです。
 
         # 入力情報
+
         ## 問題 (Quest)
         タイトル: {quest.title}
         難易度: {quest.difficulty}
         内容:
         {quest.description}
+
+        ## 正解例
+
+        ```json
+        {quest.correct_query}
+        ```
 
         ## ユーザーの回答 (Query)
         ```json
