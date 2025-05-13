@@ -15,6 +15,8 @@ from src.ui_actions import (
 from src.ui_asset import (
     FORMAT_QUERY_BUTTON_TEXT,
     JSON_CHECK_OK,
+    MAPPING_BUTTON_TEXT,
+    RENEW_INDEX_BUTTON_TEXT,
     SUBMIT_BUTTON_TEXT,
     TEST_RUN_BUTTON_TEXT,
 )
@@ -42,7 +44,7 @@ with gr.Blocks(fill_width=True, fill_height=True, css=css) as demo:
                     TEST_RUN_BUTTON_TEXT, variant="secondary"
                 )
                 ui_submit_button = gr.Button(SUBMIT_BUTTON_TEXT, variant="primary")
-                ui_mapping_button = gr.Button("(マッピング取得)")
+                ui_mapping_button = gr.Button(MAPPING_BUTTON_TEXT)
                 ui_book_select = gr.Dropdown(
                     [
                         ("default", "fixtures/books/default.json"),
@@ -50,20 +52,16 @@ with gr.Blocks(fill_width=True, fill_height=True, css=css) as demo:
                     ],
                     interactive=True,
                 )
-                ui_renew_index_button = gr.Button("(インデックス再構築)")
+                ui_renew_index_button = gr.Button(RENEW_INDEX_BUTTON_TEXT)
 
-    # json_checker
-    gr.on(
-        [ui_user_query.change],
-        fn=check_query_format,
-        inputs=[ui_user_query],
-        outputs=[
-            ui_json_validator,
-            ui_test_run_button,
-            ui_submit_button,
-            ui_format_button,
-        ],
-    )
+    # 一時的に無向にするボタン
+    ui_buttons = [
+        ui_format_button,
+        ui_test_run_button,
+        ui_submit_button,
+        ui_mapping_button,
+        ui_renew_index_button,
+    ]
 
     # load quest
     gr.on(
@@ -73,12 +71,20 @@ with gr.Blocks(fill_width=True, fill_height=True, css=css) as demo:
         outputs=[ui_chat],
     )
 
+    # json_checker
+    gr.on(
+        [ui_user_query.change],
+        fn=check_query_format,
+        inputs=[ui_user_query],
+        outputs=[ui_json_validator] + ui_buttons,
+    )
+
     # submit query - using async action: submit_answer from src/ui_async_actions
     gr.on(
         [ui_submit_button.click],
         fn=submit_answer,
         inputs=[ui_quest_id, ui_user_query, ui_chat, ui_book_select],
-        outputs=[ui_chat, ui_submit_button],
+        outputs=[ui_chat] + ui_buttons,
     )
 
     # test_run query - using async action: test_run_query from src/ui_async_actions
@@ -86,7 +92,7 @@ with gr.Blocks(fill_width=True, fill_height=True, css=css) as demo:
         [ui_test_run_button.click],
         fn=test_run_query,
         inputs=[ui_user_query, ui_chat],
-        outputs=[ui_chat],
+        outputs=[ui_chat] + ui_buttons,
     )
 
     # format query - using async action: format_query from src/ui_async_actions
@@ -94,7 +100,7 @@ with gr.Blocks(fill_width=True, fill_height=True, css=css) as demo:
         [ui_format_button.click],
         fn=format_query,
         inputs=[ui_user_query],
-        outputs=[ui_user_query],
+        outputs=[ui_user_query] + ui_buttons,
     )
 
     # get mapping - using async action: get_mapping from src/ui_async_actions
@@ -102,7 +108,7 @@ with gr.Blocks(fill_width=True, fill_height=True, css=css) as demo:
         [ui_mapping_button.click],
         fn=get_mapping,
         inputs=[ui_chat],
-        outputs=[ui_chat],
+        outputs=[ui_chat] + ui_buttons,
     )
 
     # reset elasticsearch index - using async action:
@@ -111,7 +117,7 @@ with gr.Blocks(fill_width=True, fill_height=True, css=css) as demo:
         [ui_renew_index_button.click],
         fn=init_elasticsearch_index,
         inputs=[ui_chat, ui_book_select],
-        outputs=[ui_chat],
+        outputs=[ui_chat] + ui_buttons,
     )
 
 if __name__ == "__main__":

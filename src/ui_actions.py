@@ -16,6 +16,8 @@ from src.ui_asset import (
     FORMAT_QUERY_BUTTON_TEXT,
     JSON_CHECK_NG,
     JSON_CHECK_OK,
+    MAPPING_BUTTON_TEXT,
+    RENEW_INDEX_BUTTON_TEXT,
     SUBMIT_BUTTON_TEXT,
     TEST_RUN_BUTTON_TEXT,
 )
@@ -181,6 +183,22 @@ def append_message(history, role, content):
     return history
 
 
+# make buttons
+
+
+def make_ui_buttons(enable_flag: bool = True):
+    return (
+        gr.Button(FORMAT_QUERY_BUTTON_TEXT, interactive=enable_flag),
+        gr.Button(TEST_RUN_BUTTON_TEXT, variant="secondary", interactive=enable_flag),
+        gr.Button(SUBMIT_BUTTON_TEXT, variant="primary", interactive=enable_flag),
+        gr.Button(MAPPING_BUTTON_TEXT, interactive=enable_flag),
+        gr.Button(RENEW_INDEX_BUTTON_TEXT, interactive=enable_flag),
+    )
+
+
+# callbacks
+
+
 async def load_quest(quest_id, book_path):
     if book_path is None:
         return
@@ -206,8 +224,7 @@ async def load_quest(quest_id, book_path):
 async def submit_answer(quest_id, query, history, book_path):
     yield (
         append_message(history, "user", f"これでどう？\n\n{query}"),
-        gr.Button(SUBMIT_BUTTON_TEXT, interactive=False),
-    )
+    ) + make_ui_buttons(False)
     view = QueuedQuestView()
     quest_task = asyncio.create_task(
         cli(
@@ -218,12 +235,9 @@ async def submit_answer(quest_id, query, history, book_path):
         )
     )
     async for message in view.receive_messages():
-        yield (
-            append_message(history, "assistant", message),
-            gr.Button(SUBMIT_BUTTON_TEXT, interactive=False),
-        )
+        yield (append_message(history, "assistant", message),) + make_ui_buttons(False)
     await quest_task
-    yield history, gr.Button(SUBMIT_BUTTON_TEXT, interactive=True, variant="primary")
+    yield (history,) + make_ui_buttons(True)
 
 
 async def get_mapping(history):
@@ -234,14 +248,18 @@ async def get_mapping(history):
         quest_service,
         agent_service,
     ) = await get_services()
-    yield append_message(history, "user", "マッピングを取得して。")
+    yield (
+        append_message(history, "user", "マッピングを取得して。"),
+    ) + make_ui_buttons(False)
     result = es_client.indices.get_mapping(index=config.index_name)
     formatted_mapping = json.dumps(result.body, indent=4, ensure_ascii=False)
-    yield append_message(
-        history,
-        "assistant",
-        f"マッピングは以下のとおりです。\n```json\n{formatted_mapping}\n```",
-    )
+    yield (
+        append_message(
+            history,
+            "assistant",
+            f"マッピングは以下のとおりです。\n```json\n{formatted_mapping}\n```",
+        ),
+    ) + make_ui_buttons(True)
 
 
 async def test_run_query(query, history):
@@ -254,34 +272,50 @@ async def test_run_query(query, history):
     ) = await get_services()
 
     # クエリがJSON形式になっているかチェック
-    valid_json, _, _, _ = await check_query_format(query)
-    if valid_json == JSON_CHECK_NG:
-        yield append_message(
-            history,
-            "assistant",
-            f"----\nクエリは JSON 形式にしてください:\n```\n{query}\n```",
-        )
+    if not _check_query_format(query):
+        yield (
+            append_message(
+                history,
+                "assistant",
+                f"----\nクエリは JSON 形式にしてください:\n```\n{query}\n```",
+            ),
+        ) + make_ui_buttons(False)
         return
 
     # クエリをフォーマット
-    formatted_query = await format_query(query)
+    formatted_query = _format_query(query)
 
-    yield append_message(
-        history,
-        "user",
-        f"""
+    yield (
+        append_message(
+            history,
+            "user",
+            f"""
         Elasticsearch に直接クエリを投げます。
         ```
         {formatted_query}
         ```
         """,
-    )
-    result = execute_query(es_client, config.index_name, query)
+        ),
+    ) + make_ui_buttons(False)
+    try:
+        result = execute_query(es_client, config.index_name, query)
+    except Exception as e:
+        yield (
+            append_message(
+                history,
+                "assistant",
+                f"エラーが発生しました。クエリを実行できません\n\n```\n{e}\n```",
+            ),
+        ) + make_ui_buttons(True)
+        return
+
     if len(result["hits"]["hits"]) > 0:
         hits_string = json.dumps(result["hits"]["hits"], indent=4, ensure_ascii=False)
     else:
         hits_string = "ヒット 0 件"
-    yield append_message(history, "assistant", f"```\n{hits_string}\n```")
+    yield (
+        append_message(history, "assistant", f"```\n{hits_string}\n```"),
+    ) + make_ui_buttons(True)
 
 
 async def init_elasticsearch_index(history, book_path):
@@ -292,21 +326,33 @@ async def init_elasticsearch_index(history, book_path):
         quest_service,
         agent_service,
     ) = await get_services(book_path_override=book_path)
-    yield append_message(history, "user", "Elasticsearch のインデックスを初期化して")
+    yield (
+        append_message(history, "user", "Elasticsearch のインデックスを初期化して"),
+    ) + make_ui_buttons(False)
     index_name = config.index_name
-    yield append_message(history, "assistant", f"load: {config.book_path}")
+    yield (
+        append_message(history, "assistant", f"load: {config.book_path}"),
+    ) + make_ui_buttons(False)
     with open(config.book_path, encoding="utf-8") as f:
         data = json.load(f)
     mappings = data["mappings"]
     sample_data = data["sample_data"]
-    yield append_message(history, "assistant", "### Elasticsearch の更新")
-    yield append_message(history, "assistant", "  - インデックスを削除します")
+    yield (
+        append_message(history, "assistant", "### Elasticsearch の更新"),
+    ) + make_ui_buttons(False)
+    yield (
+        append_message(history, "assistant", "  - インデックスを削除します"),
+    ) + make_ui_buttons(False)
     es_client.options(ignore_status=[400, 404]).indices.delete(index=index_name)
-    yield append_message(history, "assistant", "  - インデックスとマッピングを作成")
+    yield (
+        append_message(history, "assistant", "  - インデックスとマッピングを作成"),
+    ) + make_ui_buttons(False)
     es_client.options(ignore_status=[400]).indices.create(
         index=index_name, body={"mappings": mappings}
     )
-    yield append_message(history, "assistant", "  - インデックスにデータを追加")
+    yield (
+        append_message(history, "assistant", "  - インデックスにデータを追加"),
+    ) + make_ui_buttons(False)
     actions = []
     for doc_index, doc in enumerate(sample_data):
         if "_index" not in doc:
@@ -315,17 +361,16 @@ async def init_elasticsearch_index(history, book_path):
         actions.append(doc)
     if actions:
         bulk(es_client, actions)
-    yield append_message(
-        history,
-        "assistant",
-        f"  - {len(actions)} 件追加\n  - インデックスを再構築しました",
-    )
+    yield (
+        append_message(
+            history,
+            "assistant",
+            f"  - {len(actions)} 件追加\n  - インデックスを再構築しました",
+        ),
+    ) + make_ui_buttons(True)
 
 
-async def format_query(query):
-    """
-    クエリを整形する
-    """
+def _format_query(query):
     try:
         query_dict = json.loads(query)
         return json.dumps(query_dict, indent=4, ensure_ascii=False)
@@ -334,19 +379,28 @@ async def format_query(query):
         return query
 
 
-async def check_query_format(query):
+async def format_query(query):
+    """
+    クエリを整形する
+    """
+    return (_format_query(query),) + make_ui_buttons(True)
+
+
+def _check_query_format(query):
     valid_flag = False
-    check_result = JSON_CHECK_NG
     try:
         _ = json.loads(query)
         valid_flag = True
-        check_result = JSON_CHECK_OK
     except json.JSONDecodeError:
         pass
 
-    return (
-        check_result,
-        gr.Button(TEST_RUN_BUTTON_TEXT, variant="secondary", interactive=valid_flag),
-        gr.Button(SUBMIT_BUTTON_TEXT, variant="primary", interactive=valid_flag),
-        gr.Button(FORMAT_QUERY_BUTTON_TEXT, interactive=valid_flag),
-    )
+    return valid_flag
+
+
+async def check_query_format(query):
+    valid_flag = _check_query_format(query)
+    if valid_flag:
+        check_result = JSON_CHECK_OK
+    else:
+        check_result = JSON_CHECK_NG
+    return (check_result,) + make_ui_buttons(valid_flag)
