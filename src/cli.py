@@ -114,7 +114,7 @@ async def main_wrapper(
     container = None  # エラーハンドリング用に初期化
     try:
         # --- DIコンテナの初期化 ---
-        container = AppContainer(config, view)
+        container = AppContainer(config)
 
         # --- 非同期な依存関係の取得 ---
         # 【重要】AppContainerの実装に合わせて await の形式を確認・修正してください

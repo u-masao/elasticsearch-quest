@@ -1,6 +1,7 @@
 import asyncio
 import json
 from pathlib import Path
+from textwrap import dedent
 from typing import Any, Dict, Tuple
 
 import gradio as gr
@@ -85,7 +86,7 @@ async def get_services(
         index_name_override=index_name_override,
         book_path_override=book_path_override,
     )
-    container = AppContainer(config, view)
+    container = AppContainer(config)
     quest_repo = await container.quest_repository
     es_client = await container.es_client
     quest_service = QuestService(quest_repo, es_client, config.index_name)
@@ -148,8 +149,8 @@ async def run_quest_flow(
         query_str=query_str_arg,
         query_file=query_file_arg,
     )
-    await view.display_info("\n--- 提出されたクエリ ---")
-    await view.display_info(user_query_str)
+    await view.display_info("## 提出されたクエリ")
+    await view.display_info(f"```json\n{user_query_str}\n```")
     (
         is_correct,
         rule_eval_message,
@@ -179,7 +180,7 @@ async def run_quest_flow(
 
 
 def append_message(history, role, content):
-    history.append({"role": role, "content": content})
+    history.append({"role": role, "content": dedent(content).strip()})
     return history
 
 
@@ -222,15 +223,20 @@ async def load_quest(quest_id, book_path):
 
 
 async def submit_answer(quest_id, query, history, book_path):
+    formatted_query = _format_query(query)
     yield (
-        append_message(history, "user", f"これでどう？\n\n{query}"),
+        append_message(
+            history,
+            "user",
+            f"クエリを提出するので評価して\n\n```json\n{formatted_query}\n```",
+        ),
     ) + make_ui_buttons(False)
     view = QueuedQuestView()
     quest_task = asyncio.create_task(
         cli(
             quest_id=quest_id,
             view=view,
-            query=query,
+            query=formatted_query,
             book_path=Path(book_path),
         )
     )
@@ -257,7 +263,7 @@ async def get_mapping(history):
         append_message(
             history,
             "assistant",
-            f"マッピングは以下のとおりです。\n```json\n{formatted_mapping}\n```",
+            f"マッピングは以下のとおりです。\n\n```json\n{formatted_mapping}\n```",
         ),
     ) + make_ui_buttons(True)
 
@@ -277,7 +283,7 @@ async def test_run_query(query, history):
             append_message(
                 history,
                 "assistant",
-                f"----\nクエリは JSON 形式にしてください:\n```\n{query}\n```",
+                f"クエリは JSON 形式にしてください:\n\n```json\n{query}\n```",
             ),
         ) + make_ui_buttons(False)
         return
@@ -289,12 +295,8 @@ async def test_run_query(query, history):
         append_message(
             history,
             "user",
-            f"""
-        Elasticsearch に直接クエリを投げます。
-        ```
-        {formatted_query}
-        ```
-        """,
+            "Elasticsearch に直接クエリを投げます。\n\n"
+            f"```json\n{formatted_query}\n```",
         ),
     ) + make_ui_buttons(False)
     try:
