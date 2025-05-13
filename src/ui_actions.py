@@ -86,7 +86,7 @@ async def get_services(
         index_name_override=index_name_override,
         book_path_override=book_path_override,
     )
-    container = AppContainer(config, view)
+    container = AppContainer(config)
     quest_repo = await container.quest_repository
     es_client = await container.es_client
     quest_service = QuestService(quest_repo, es_client, config.index_name)
@@ -149,8 +149,8 @@ async def run_quest_flow(
         query_str=query_str_arg,
         query_file=query_file_arg,
     )
-    await view.display_info("\n--- 提出されたクエリ ---")
-    await view.display_info(user_query_str)
+    await view.display_info("## 提出されたクエリ")
+    await view.display_info(f"```json\n{user_query_str}\n```")
     (
         is_correct,
         rule_eval_message,
@@ -236,7 +236,7 @@ async def submit_answer(quest_id, query, history, book_path):
         cli(
             quest_id=quest_id,
             view=view,
-            query=query,
+            query=formatted_query,
             book_path=Path(book_path),
         )
     )
