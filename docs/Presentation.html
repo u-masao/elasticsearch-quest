@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>アプリ開発計画：Elasticsearch Quest</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/sky.css" id="theme">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Basic styling for slides */
+        body {
+            font-family: 'Noto Sans JP', 'Inter', sans-serif;
+        }
+        .reveal .slides section {
+            text-align: left;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3 {
+            font-family: 'Noto Sans JP', 'Inter', sans-serif;
+            text-align: center;
+            color: #333;
+        }
+
+        .reveal h1 { font-size: 2.0em; }
+        .reveal h2 { font-size: 1.28em; } /* Slide titles */
+        .reveal h3 { font-size: 1.04em; }
+
+        .reveal p, .reveal li {
+            color: #555;
+            line-height: 1.6;
+            font-size: 0.72em;
+        }
+        .reveal strong {
+            color: #007bff; /* Highlight strong text */
+        }
+        .reveal ul {
+            list-style-type: "✨"; /* Use emoji for unordered lists */
+            margin-left: 40px;
+            padding-left: 1em; /* Add padding for emoji bullet */
+        }
+        .reveal ul ul { /* Nested lists */
+            list-style-type: "➡️";
+             margin-left: 20px; /* Indent nested lists further */
+        }
+        .reveal ul ul li::before { /* More quest-like bullet for sub-items */
+            /* content: "📜 "; */ /* Example: Scroll emoji */
+            /* Or keep "➡️" if preferred */
+        }
+
+
+        .reveal .slide-title-main { /* Title on the very first slide */
+            font-size: 2.0em;
+            margin-bottom: 20px;
+        }
+        .reveal .slide-subtitle { /* Subtitle on the very first slide */
+            font-size: 0.96em;
+            color: #777;
+            margin-bottom: 50px;
+        }
+        .reveal .slide-content {
+            margin-top: 30px;
+        }
+        .reveal .center-image {
+            display: block;
+            margin: 20px auto;
+            max-width: 80%;
+            border-radius: 8px;
+        }
+        .reveal .notes {
+            font-size: 0.64em;
+            color: #666;
+            margin-top: 20px;
+        }
+
+        .reveal .slides {
+            background-color: #f0f8ff;
+        }
+        .reveal .slides section {
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        /* Titles H1 and H2 color */
+        .reveal h1, .reveal h2 {
+            color: #00509e;
+        }
+        .reveal a {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <section>
+                <h1 class="slide-title-main">🚀 アプリ開発計画：Elasticsearch Quest 🗺️</h1>
+                <p class="slide-subtitle">〜データ検索の秘宝💎を見つける、君だけの冒険の書 📖〜</p>
+            </section>
+
+            <section>
+                <h2>🤔 背景：冒険の始まり 🤔</h2>
+                <div class="slide-content">
+                    <ul>
+                        <li><strong>世の中は広大なデータの大海原…</strong> 🌊🤯
+                            <ul>
+                                <li>たくさんの情報の中から、本当に欲しい「お宝」💎を見つけるのって大変ですよね？</li>
+                                </ul>
+                        </li>
+                        <li><strong>「Elasticsearch」という魔法の羅針盤🧭を使いこなしたい！</strong> 💪
+                            <ul>
+                                <li>これを使いこなせると、欲しい情報がピンポイントで見つかるようになります。</li>
+                            </ul>
+                        </li>
+                        <li><strong>でも、最初のうちは呪文が難しい…</strong> 📜😥
+                            <ul>
+                                <li>高機能な分、最初はとっつきにくいのが玉ねぎの皮。</li>
+                                <li>「もっと気軽に、楽しく学べる方法はないかな？」と考えました。そうだ、冒険に出よう！⚔️</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>💡 冒険の鍵：Elasticsearchって何？ 💡</h2>
+                <div class="slide-content">
+                    <ul>
+                        <li><strong>超強力な「探索」と「分析」の魔法エンジンです！</strong> ⚡️
+                            <ul>
+                                <li>たくさんのデータの中から、欲しい情報を「爆速で」「賢く」見つけ出してくれます。</li>
+                                <li>例えるなら、どんな謎も解き明かす賢者の石🔮や、伝説の武器🛡️のようなもの。</li>
+                            </ul>
+                        </li>
+                        <li><strong>どんな冒険で役立つの？</strong> 🧐
+                            <ul>
+                                <li>ウェブサイトの古代遺跡探索 (ブログ記事 📜、商品 🏺 など)</li>
+                                <li>大量のモンスター討伐記録の分析 (システム障害の原因調査 🐉 など)</li>
+                                <li>隠された宝の地図の可視化 (グラフにして傾向を見る 🗺️)</li>
+                                <li>その他、アイデア次第で様々なクエストに！ ✨</li>
+                            </ul>
+                        </li>
+                        <li><strong>なぜこのアプリ「Elasticsearch Quest」で学ぶの？</strong> 🤔
+                            <ul>
+                                <li>非常に高機能ですが、使いこなすには少し「勇気」と「知恵」が必要です。</li>
+                                <li>このアプリで、その「秘伝の技」を楽しく学びましょう！🎮</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>🎉 アプリ概要：Elasticsearch Quest へようこそ！ 🎉</h2>
+                <div class="slide-content">
+                    <ul>
+                        <li><strong>一言でいうと…</strong> 🗣️
+                            <ul>
+                                <li>Elasticsearchの探索テクニックを、<strong>壮大な冒険ゲーム🏹みたいに楽しく学べるアプリ</strong>です！ RPG風 🛡️⚔️</li>
+                            </ul>
+                        </li>
+                        <li><strong>どんな冒険が待っている？</strong> 🤩
+                            <ul>
+                                <li><strong>クエストに挑戦！📜➡️🏆:</strong> 用意された試練（クエスト）をクリアしながら、自然と探索スキルが身につきます。</li>
+                                <li><strong>賢者AIが導いてくれる！🧙‍♂️:</strong> あなたの解答をAIがチェック。ヒントやアドバイスをくれるので、一人でも安心。</li>
+                                <li><strong>「冒険の証」をゲット！🏅:</strong> ポイントを貯めたり、特別なアイテム（アチーブメント）を集めたり、クリアすると褒めてくれる「祝福の絵」も！🖼️</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p class="notes"><em>（ここにゲーム画面のイメージイラストを挿入 ⚔️🛡️）</em></p>
+                </div>
+            </section>
+
+            <section>
+                <h2>🎯 冒険者求む！ 🎯</h2>
+                <div class="slide-content">
+                    <ul>
+                        <li><strong>「データ探索の勇者になりたいけど、何から始めれば…」と思っているあなた</strong> 🙋‍♀️🙋‍♂️
+                            <ul>
+                                <li>魔法や剣術の経験は問いません！👍</li>
+                                <li>「Elasticsearchって聞いたことあるけど、よく分からない」という見習い冒険者🔰の方。</li>
+                                <li>「基本的な探索はできるけど、もっと奥義を極めたい」というベテラン冒険者📈の方。</li>
+                            </ul>
+                        </li>
+                        <li><strong>このアプリ「Elasticsearch Quest」で、あなたは…</strong> 🌟
+                            <ul>
+                                <li>まるで伝説の探偵🕵️ のように、必要な情報（秘宝）を見つけ出すコツを掴めます。</li>
+                                <li>「データを使って世界を救いたい！」という壮大な夢 💡 を実現する力が身につきます。</li>
+                                <li>難しいと思っていた専門スキル（魔法）を、楽しく習得できます！😊</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>💪 アプリの秘伝：Elasticsearch Quest の強み 💪</h2>
+                <div class="slide-content">
+                    <ul>
+                        <li><strong>ポイント１：超実践的な試練！</strong> 🛠️
+                            <ul>
+                                <li>実際に手を動かして探索の呪文（クエリ）を唱えるから、本当に使えるスキルが身につきます。</li>
+                                <li>「なるほど、こうやって探索するのか！」という天啓 💡 の連続です。</li>
+                            </ul>
+                        </li>
+                        <li><strong>ポイント２：賢者AIがあなたの専属ガイド！</strong> 🧑‍🏫
+                            <ul>
+                                <li>間違えても大丈夫 👌。AIが「なぜその呪文は効かなかったか」「どうすればもっと強力になるか」を優しく教えてくれます。</li>
+                                <li>まるで隣に大賢者がいるような安心感！😌</li>
+                            </ul>
+                        </li>
+                        <li><strong>ポイント３：冒険を飽きさせない仕掛けがいっぱい！</strong> 🎁
+                            <ul>
+                                <li>クエストクリアで経験値（ポイント）ゲット！💰</li>
+                                <li>特定条件クリアで「伝説の称号」ゲット！🎖️</li>
+                                <li>頑張りを褒めてくれる「勝利の宴の絵」でモチベーションアップ！🎉</li>
+                            </ul>
+                        </li>
+                    </ul>
+                     <p class="notes"><em>（ここにポイント獲得やアチーブメント獲得のポップアップ画面イメージを挿入 🌟🏆）</em></p>
+                </div>
+            </section>
+
+            <section>
+                <h2>🗺️ 冒険の地図：開発ステップ 🗺️</h2>
+                <div class="slide-content">
+                    <ul>
+                        <li><strong>無理なく、一歩ずつ伝説へ！</strong> 🐢➡️🐇💨
+                            <ol style="list-style-type: decimal; margin-left: 20px;">
+                                <li><strong>まずは小さな洞窟から (フェーズ1：最初のダンジョンMVP)</strong> 🏗️
+                                    <ul>
+                                        <li>クエストに挑戦 → 探索 → 結果を見る → 簡単なヒント、という冒険の基本サイクルを作ります。</li>
+                                    </ul>
+                                </li>
+                                <li><strong>より手強い敵、より豪華な報酬！ (フェーズ2：評価・ゲーム性向上)</strong> 🧠🎮
+                                    <ul>
+                                        <li>賢者AIの評価を詳しくしたり、経験値や称号システムを本格的に動かします。</li>
+                                    </ul>
+                                </li>
+                                <li><strong>未知なる大陸へ！ (フェーズ3：将来検討)</strong> 🚀🌌
+                                    <ul>
+                                        <li>AIが新しいクエストを自動生成するかも？なんてことも考えています。</li>
+                                    </ul>
+                                </li>
+                                <li><strong>伝説の装備を身にまとえ！ (フェーズ4：演出強化)</strong> ✨🎨
+                                    <ul>
+                                        <li>クリアした時の「やったー！」という気持ちを盛り上げる豪華な絵などを追加します。</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </li>
+                    </ul>
+                    <p><strong>ご安心ください！</strong> 段階を踏んで、少しずつ伝説のアプリを完成させていきます。👍</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>🤝 さあ、冒険の始まりだ！ 🤝</h2>
+                <div class="slide-content">
+                    <ul>
+                        <li><strong>「Elasticsearch Quest」は、あなたの「冒険心」を全力で応援するアプリです。</strong> 📣
+                            <ul>
+                                <li>難しい専門知識（古代魔法）も、ゲーム感覚で楽しく習得！🥳</li>
+                                <li>賢者AIがあなたの旅をしっかりサポート！👨‍🏫</li>
+                                <li>「データ探索の伝説の勇者」への第一歩を、このアプリで踏み出しましょう！🚶‍♀️🚶‍♂️</li>
+                            </ul>
+                        </li>
+                        <li><strong>ギルドマスター（あなた）にお願いしたいこと</strong> 🙏
+                            <ul>
+                                <li>「こんな魔法があったら嬉しいな」「このダンジョンは難しすぎるかも」など、<strong>ギルドの仲間としての意見を聞かせてください！</strong> 📝</li>
+                                <li>完成したら、<strong>ぜひ最初の冒険者として旅立ってください！</strong> ▶️</li>
+                                <li>そして、このアプリ「Elasticsearch Quest」の面白さを他の冒険者にも広めてくれたら嬉しいです！💖</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p class="notes"><em>（ここにアプリ「Elasticsearch Quest」のタイトルロゴと「Coming Soon!」の文字を挿入 ✨🗺️）</em></p>
+                    <p style="text-align:center; margin-top:30px;"><strong>ご清聴ありがとうございました！いざ、冒険へ！</strong> 😊⚔️</p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/markdown/markdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/highlight/highlight.min.js"></script>
+    <script>
+        // Initialize Reveal.js
+        Reveal.initialize({
+            hash: true,
+            plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ],
+            slideNumber: 'c/t',
+            controls: true,
+            progress: true,
+            center: true,
+            width: "90%",
+            height: "100%",
+            margin: 0.04,
+            minScale: 0.2,
+            maxScale: 2.0
+        });
+    </script>
+</body>
+</html>
