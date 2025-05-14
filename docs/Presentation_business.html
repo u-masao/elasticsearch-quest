@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>戦略的DX推進: Elasticsearch活用人材育成プログラム「elasticsearch quest」のご提案</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/white.css" id="theme"> {/* Changed theme to white for a professional look */}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> {/* Font Awesome for icons */}
+
+
+    <style>
+        /* --- Global Styles --- */
+        :root {
+            --r-main-font: 'Noto Sans JP', sans-serif;
+            --r-heading-font: 'Noto Sans JP', sans-serif;
+            --r-main-font-size: 22px; /* Original: 28px -> 22.4px, rounded to 22px */
+            --r-heading-text-transform: none;
+            --r-heading-font-weight: 600;
+            --r-heading-color: #1A237E;
+            --r-main-color: #333333;
+            --r-link-color: #0D47A1;
+            --r-link-color-hover: #1565C0;
+            --r-background-color: #f8f9fa;
+
+            --color-primary: #1A237E;
+            --color-secondary: #0D47A1;
+            --color-accent: #FFAB00;
+            --color-text-light: #FFFFFF;
+            --color-text-dark: #212121;
+            --color-text-medium: #424242;
+            --color-border: #E0E0E0;
+        }
+
+        body {
+            background-color: var(--r-background-color);
+        }
+
+        .reveal {
+            font-family: var(--r-main-font);
+            font-size: var(--r-main-font-size);
+            color: var(--r-main-color);
+        }
+
+        .reveal .slides section {
+            text-align: left;
+            padding: 40px 60px;
+            box-sizing: border-box;
+            background-color: #FFFFFF;
+            border-top: 5px solid var(--color-primary);
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .reveal .slides section:not(:first-child) {
+            margin-top: 20px;
+        }
+
+
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
+            font-family: var(--r-heading-font);
+            color: var(--r-heading-color);
+            text-align: left;
+            margin-bottom: 30px;
+            font-weight: var(--r-heading-font-weight);
+        }
+
+        .reveal h1 { font-size: 1.92em; margin-bottom: 40px; } /* Original: 2.4em -> 1.92em, mb 50->40 */
+        .reveal h2 { /* Slide titles */
+            font-size: 1.44em; /* Original: 1.8em -> 1.44em */
+            border-bottom: 2px solid var(--color-accent);
+            padding-bottom: 8px; /* Original: 10px -> 8px */
+            display: flex;
+            align-items: center;
+        }
+        .reveal h2 .fas { /* Icon styling within H2 */
+             color: var(--color-accent);
+             margin-right: 12px; /* Original: 15px -> 12px */
+             font-size: 0.72em; /* Original: 0.9em -> 0.72em */
+        }
+        .reveal h3 { font-size: 1.12em; color: var(--color-secondary); margin-top: 20px; margin-bottom: 12px;} /* Original: 1.4em -> 1.12em, mt 25->20, mb 15->12 */
+
+        .reveal p, .reveal li {
+            font-size: 0.72em; /* Original: 0.9em -> 0.72em */
+            line-height: 1.6; /* Original: 1.7 -> 1.6 (adjust for smaller font) */
+            color: var(--color-text-medium);
+            margin-bottom: 12px; /* Original: 15px -> 12px */
+        }
+
+        .reveal ul, .reveal ol {
+            margin-left: 0;
+            padding-left: 0;
+            margin-bottom: 16px; /* Original: 20px -> 16px */
+        }
+
+        .reveal ul li {
+            list-style-type: none;
+            padding-left: 1.8em; /* Original: 2.2em -> 1.76em, rounded */
+            position: relative;
+            margin-bottom: 8px; /* Original: 10px -> 8px */
+        }
+        .reveal ul li::before {
+            content: "\f00c";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: var(--color-accent);
+            position: absolute;
+            left: 0;
+            top: 4px; /* Original: 5px -> 4px (adjust for smaller font) */
+            font-size: 0.72em; /* Original: 0.9em -> 0.72em */
+        }
+
+        .reveal ol {
+            counter-reset: list-counter;
+        }
+        .reveal ol li {
+            list-style-type: none;
+            padding-left: 2em; /* Original: 2.5em -> 2em */
+            position: relative;
+            margin-bottom: 8px; /* Original: 10px -> 8px */
+        }
+        .reveal ol li::before {
+            counter-increment: list-counter;
+            content: counter(list-counter) ".";
+            font-weight: bold;
+            color: var(--color-primary);
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 0.72em; /* Original: 0.9em -> 0.72em */
+        }
+
+        .reveal strong {
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        /* --- Title Slide Specific Styles --- */
+        .reveal .slides section.title-slide {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: var(--color-text-light);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-top: none;
+            border-radius: 8px;
+            padding: 50px; /* Original: 60px -> 50px */
+        }
+        .reveal .slides section.title-slide h1 {
+            color: var(--color-text-light);
+            font-size: 2.24em; /* Original: 2.8em -> 2.24em */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            border-bottom: none;
+            margin-bottom: 16px; /* Original: 20px -> 16px */
+        }
+        .reveal .slides section.title-slide .subtitle {
+            font-size: 1.04em; /* Original: 1.3em -> 1.04em */
+            color: rgba(255,255,255,0.85);
+            font-weight: 300;
+            margin-bottom: 32px; /* Original: 40px -> 32px */
+            max-width: 800px;
+        }
+
+        .reveal .slides section.title-slide .date,
+        .reveal .slides section.title-slide .company-name {
+            font-size: 0.64em; /* Original: 0.8em -> 0.64em */
+            color: rgba(255,255,255,0.7);
+        }
+        .reveal .slides section.title-slide .company-name {
+            margin-top: 4px; /* Original: 5px -> 4px */
+        }
+
+        /* --- Section Specific Styles --- */
+        .reveal .slides section.executive-summary ul li::before { content: "\f0da"; }
+
+        .reveal .slides section.roadmap .phase-title {
+            font-weight: bold;
+            color: var(--color-primary);
+            margin-top: 16px; /* Original: 20px -> 16px */
+            margin-bottom: 4px; /* Original: 5px -> 4px */
+            display: block;
+            font-size: 0.88em; /* Original: 1.1em -> 0.88em */
+        }
+        .reveal .slides section.roadmap ul {
+            font-size:0.68em; /* Original: 0.85em -> 0.68em */
+            margin-left: 0.8em; /* Original: 1em -> 0.8em */
+        }
+        .reveal .slides section.roadmap ul li::before {
+            content: "\f111";
+            font-size: 0.48em; /* Original: 0.6em -> 0.48em */
+            top: 6px; /* Original: 8px -> 6px (adjust for smaller font) */
+        }
+
+
+        /* --- Footer --- */
+        .reveal .slide-footer {
+            position: absolute;
+            bottom: 16px; /* Original: 20px -> 16px */
+            left: 60px;
+            right: 60px;
+            font-size: 0.48em; /* Original: 0.6em -> 0.48em */
+            color: #757575;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid var(--color-border);
+            padding-top: 8px; /* Original: 10px -> 8px */
+        }
+         .reveal .slide-footer .footer-project-name {
+            font-weight: bold;
+            color: var(--color-primary);
+        }
+
+        /* --- Utility Classes --- */
+        .text-center { text-align: center !important; }
+        .mt-large { margin-top: 32px !important; } /* Original: 40px -> 32px */
+        .mb-large { margin-bottom: 32px !important; } /* Original: 40px -> 32px */
+
+        .highlight-box {
+            background-color: #E3F2FD;
+            border-left: 4px solid var(--color-secondary);
+            padding: 16px; /* Original: 20px -> 16px */
+            margin: 20px 0; /* Original: 25px -> 20px */
+            border-radius: 4px;
+        }
+        .highlight-box p {
+            margin-bottom: 0;
+            color: var(--color-text-dark);
+            font-size: 0.68em; /* Original: 0.85em -> 0.68em */
+        }
+        .highlight-box .fas {
+            color: var(--color-secondary);
+            margin-right: 8px; /* Original: 10px -> 8px */
+        }
+
+        /* Three column layout for features */
+        .three-column-layout {
+            display: flex;
+            gap: 24px; /* Original: 30px -> 24px */
+            margin-top: 20px; /* Original: 25px -> 20px */
+            margin-bottom: 20px; /* Original: 25px -> 20px */
+        }
+        .three-column-layout > div {
+            flex: 1;
+            background-color: #f0f4f8;
+            padding: 16px; /* Original: 20px -> 16px */
+            border-radius: 6px;
+            border: 1px solid #dfe6ec;
+        }
+        .three-column-layout h3 {
+            font-size: 0.96em !important; /* Original: 1.2em -> 0.96em */
+            margin-bottom:8px !important; /* Original: 10px -> 8px */
+            color: var(--color-primary) !important;
+            border-bottom: none !important;
+            padding-bottom: 0 !important;
+            display: flex;
+            align-items: center;
+        }
+         .three-column-layout h3 .fas {
+            color: var(--color-primary) !important;
+            margin-right: 6px !important; /* Original: 8px -> 6px */
+            font-size: 0.8em !important; /* Original: 1em -> 0.8em */
+        }
+        .three-column-layout p {
+            font-size:0.68em !important; /* Original: 0.85em -> 0.68em */
+            line-height: 1.5 !important; /* Original: 1.6 -> 1.5 */
+            margin-bottom: 0 !important;
+        }
+
+
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 768px) {
+            .reveal { font-size: 19px; } /* Original: 24px -> 19.2px, rounded to 19px */
+            .reveal .slides section { padding: 24px 32px; min-height: auto; } /* Original: 30px 40px -> 24px 32px */
+            .reveal h1 { font-size: 1.6em; } /* Original: 2.0em -> 1.6em */
+            .reveal h2 { font-size: 1.2em; } /* Original: 1.5em -> 1.2em */
+            .reveal .slides section.title-slide h1 { font-size: 1.76em; } /* Original: 2.2em -> 1.76em */
+            .reveal .slides section.title-slide .subtitle { font-size: 0.88em; } /* Original: 1.1em -> 0.88em */
+            .reveal .slide-footer { left: 32px; right: 32px; font-size: 0.4em;} /* Original: 40px -> 32px, 0.5em -> 0.4em */
+            .three-column-layout { flex-direction: column; }
+        }
+
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <section class="title-slide" data-footer-text="株式会社NextGen Solutions">
+                <h1>戦略的DX推進: Elasticsearch活用人材育成プログラム<br>「elasticsearch quest」のご提案</h1>
+                <p class="subtitle">データ駆動型組織への変革を加速する、実践的スキル習得ソリューション</p>
+                <p class="date">2025年5月15日</p>
+                <p class="company-name">株式会社NextGen Solutions (架空)</p>
+            </section>
+
+            <section data-footer-text="株式会社NextGen Solutions | エグゼクティブサマリー">
+                <h2><i class="fas fa-rocket"></i>エグゼクティブサマリー</h2>
+                <p>本提案は、貴社におけるデータ活用能力の向上、特にElasticsearchを効果的に扱える人材の育成を目的とした、インタラクティブ学習アプリケーション「elasticsearch quest」の開発計画です。</p>
+                <ul>
+                    <li><strong>課題認識：</strong>Elasticsearchの高度な機能習得には、実践的な学習機会と個別最適化されたフィードバックが不可欠です。</li>
+                    <li><strong>提案ソリューション：</strong>「elasticsearch quest」は、AIアシスタントとゲーミフィケーションを活用し、楽しく効果的なスキル習得を実現します。</li>
+                    <li><strong>期待効果：</strong>開発者のスキル向上、データ分析の質の向上、学習意欲の向上、そして最終的にはデータ駆動型組織文化の醸成に貢献します。</li>
+                </ul>
+                <p class="mt-large">本プログラムを通じて、貴社のデジタルトランスフォーメーション(DX)を人材育成の側面から強力にサポートいたします。</p>
+            </section>
+
+            <section data-footer-text="株式会社NextGen Solutions | 現状の課題と機会">
+                <h2><i class="fas fa-puzzle-piece"></i>現状の課題と機会</h2>
+                <h3>Elasticsearch学習における障壁と、克服による価値</h3>
+                <p>Elasticsearchは強力な検索・分析エンジンですが、そのポテンシャルを最大限に引き出すには専門知識が求められます。従来の学習方法では以下の課題が顕在化しています。</p>
+                <ul>
+                    <li><strong>理論偏重と実践不足：</strong>ドキュメント読解だけでは、複雑なクエリ作成スキルは身につきにくい。</li>
+                    <li><strong>フィードバックの欠如：</strong>疑問点の即時解決や、質の高い改善指導を受けられる環境が限定的。</li>
+                    <li><strong>モチベーション維持の困難：</strong>単調な学習は継続が難しく、挫折しやすい。</li>
+                </ul>
+                <div class="highlight-box mt-large">
+                    <p><i class="fas fa-exclamation-triangle"></i>これらの課題は、データ活用プロジェクトの遅延や、投資対効果の低下に繋がる可能性があります。</p>
+                </div>
+                <p><strong>機会：</strong>これらの課題を克服することで、データからの洞察獲得を加速し、ビジネス価値創出のスピードと質を飛躍的に向上させる機会が生まれます。</p>
+            </section>
+
+            <section data-footer-text="株式会社NextGen Solutions | 提案ソリューション">
+                <h2><i class="fas fa-cogs"></i>提案ソリューション: elasticsearch quest</h2>
+                <h3>対話型AIとゲーミフィケーションによる次世代型学習プラットフォーム</h3>
+                <p>「elasticsearch quest」は、これらの課題を解決するために設計された、革新的な学習アプリケーションです。</p>
+                <div class="three-column-layout">
+                    <div>
+                        <h3><i class="fas fa-tasks"></i>インタラクティブクエスト</h3>
+                        <p>実践的なシナリオベースの課題を通じて、手を動かしながらクエリ作成スキルを習得します。</p>
+                    </div>
+                    <div>
+                        <h3><i class="fas fa-robot"></i>AIによる個別サポート</h3>
+                        <p>AIアシスタントがリアルタイムでヒントを提供し、解答を評価、具体的な改善点を提案します。</p>
+                    </div>
+                    <div>
+                        <h3><i class="fas fa-trophy"></i>ゲーミフィケーション</h3>
+                        <p>ポイント、バッジ、ランキングなどの要素で学習意欲を刺激し、継続を促進します。</p>
+                    </div>
+                </div>
+                <p class="mt-large"><strong>提供価値：</strong>「分かる」から「使える」へ。Elasticsearchを自在に操る人材を育成し、データ活用の内製化と高度化を支援します。</p>
+            </section>
+
+            <section data-footer-text="株式会社NextGen Solutions | 期待される効果とベネフィット">
+                <h2><i class="fas fa-chart-pie"></i>期待される効果とベネフィット</h2>
+                <h3>「elasticsearch quest」導入による多面的な価値創出</h3>
+                <p>本ソリューションの導入により、貴社は以下の具体的な効果を期待できます。</p>
+                <ul>
+                    <li><strong>学習効率の大幅向上：</strong>従来の学習手法と比較し、短期間でのスキル習得が可能に。</li>
+                    <li><strong>実践的スキルセットの獲得：</strong>実務に直結するクエリ作成能力・問題解決能力の向上。</li>
+                    <li><strong>エンジニアのエンゲージメント向上：</strong>楽しく学べる環境提供による、学習意欲と定着率の向上。</li>
+                    <li><strong>データ分析・活用の質の向上：</strong>Elasticsearchの高度な機能を活用した、より深い洞察の獲得。</li>
+                    <li><strong>開発サイクルの短縮：</strong>Elasticsearch関連タスクの効率化による、プロジェクト推進力の強化。</li>
+                    <li><strong>データ駆動型文化の醸成：</strong>組織全体のデータリテラシー向上への貢献。</li>
+                </ul>
+                <p class="mt-large">これらの効果は、貴社の競争力強化と持続的な成長に不可欠な要素です。</p>
+            </section>
+
+            <section class="roadmap" data-footer-text="株式会社NextGen Solutions | 開発ロードマップと投資">
+                <h2><i class="fas fa-road"></i>開発ロードマップと投資</h2>
+                <h3>段階的アプローチによる確実な価値提供</h3>
+                <p>本プロジェクトは、以下のフェーズに分けて開発を推進し、早期の価値提供を目指します。</p>
+                <div>
+                    <span class="phase-title">フェーズ1: MVP (Minimum Viable Product) 開発 (期間: 約3ヶ月)</span>
+                    <ul>
+                        <li>コア学習サイクル（クエスト提示、クエリ実行、基本評価・ヒント）の実装</li>
+                        <li>主要なクエストセットとサンプルデータの準備</li>
+                        <li>基本的なUI/UXの構築</li>
+                    </ul>
+                    <span class="phase-title">フェーズ2: 機能拡張と評価向上 (期間: 約2ヶ月)</span>
+                    <ul>
+                        <li>LLMによる高度な評価機能（品質、効率性）の導入</li>
+                        <li>ポイントシステム、アチーブメントシステムの本格導入</li>
+                        <li>UI/UXの改善とフィードバック反映</li>
+                    </ul>
+                    <span class="phase-title">フェーズ3: 運用と継続的改善 (期間: 継続)</span>
+                    <ul>
+                        <li>応援画像生成などエンタメ要素の追加</li>
+                        <li>クエストコンテンツの拡充と難易度調整</li>
+                        <li>利用状況分析と機能改善のイテレーション</li>
+                    </ul>
+                </div>
+                <h3 class="mt-large">投資について</h3>
+                <p>本プロジェクトの実現には、専門チームによる開発リソースが必要です。詳細な御見積につきましては、別途ご提示させていただきます。初期投資により、中長期的な人材育成コストの削減と生産性向上に貢献いたします。</p>
+            </section>
+
+            <section data-footer-text="株式会社NextGen Solutions | ネクストステップと質疑応答">
+                <h2><i class="fas fa-arrow-right"></i>ネクストステップと質疑応答</h2>
+                <h3>共に、データ活用の未来を創造するために</h3>
+                <p>本提案にご関心をお持ちいただけましたら、次のステップとして以下を提案させていただきます。</p>
+                <ol>
+                    <li><strong>詳細ヒアリングセッション：</strong>貴社の具体的なニーズや課題、期待について深くお伺いします。</li>
+                    <li><strong>カスタマイズ提案：</strong>ヒアリング内容に基づき、本プログラムを貴社向けに最適化した詳細提案を作成します。</li>
+                    <li><strong>PoC (Proof of Concept) の実施検討：</strong>小規模なトライアルを通じて、本ソリューションの効果を具体的にご体感いただきます。</li>
+                </ol>
+                <div class="highlight-box mt-large">
+                    <p><i class="fas fa-handshake"></i>私たちは、貴社のデータ戦略パートナーとして、Elasticsearch人材育成の成功を全力でサポートいたします。</p>
+                </div>
+
+                <h3 class="mt-large text-center">ご清聴ありがとうございました。</h3>
+                <p class="text-center">ご質問、ご意見などございましたら、どうぞお気軽にお寄せください。</p>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/zoom/zoom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/search/search.min.js"></script>
+
+    <script>
+        Reveal.initialize({
+            hash: true,
+            progress: true,
+            slideNumber: false,
+            center: false,
+            width: "100%",
+            height: "100%",
+            margin: 0.05,
+            controls: true,
+            history: true,
+            transition: 'slide',
+            backgroundTransition: 'fade',
+            dependencies: [
+                { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/markdown/markdown.min.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/highlight/highlight.min.js', async: true }
+            ],
+            plugins: [ RevealNotes, RevealZoom, RevealSearch ]
+        });
+
+        Reveal.on('slidechanged', event => {
+            let footer = document.querySelector('.slide-footer');
+            if (!footer) {
+                footer = document.createElement('div');
+                footer.classList.add('slide-footer');
+                document.querySelector('.reveal').appendChild(footer);
+            }
+
+            const currentSlide = event.currentSlide;
+            const footerTextAttribute = currentSlide.getAttribute('data-footer-text');
+            const defaultProjectName = "elasticsearch quest 開発提案";
+
+            if (footerTextAttribute) {
+                const parts = footerTextAttribute.split('|');
+                const companyOrContext = parts[0].trim();
+                const slideSpecific = parts.length > 1 ? parts[1].trim() : "";
+
+                footer.innerHTML = `
+                    <span class="footer-project-name">${defaultProjectName}</span>
+                    <span>${companyOrContext}${slideSpecific ? ' - ' + slideSpecific : ''}</span>
+                `;
+            } else if (currentSlide.classList.contains('title-slide')) {
+                 footer.innerHTML = `
+                    <span class="footer-project-name">${defaultProjectName}</span>
+                    <span>株式会社NextGen Solutions (架空)</span>
+                `;
+            }
+            else {
+                footer.innerHTML = `<span class="footer-project-name">${defaultProjectName}</span>`;
+            }
+        });
+
+        Reveal.on('ready', event => {
+            Reveal.dispatchEvent(new CustomEvent('slidechanged', { detail: { currentSlide: Reveal.getCurrentSlide() } }));
+        });
+    </script>
+</body>
+</html>
