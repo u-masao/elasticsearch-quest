@@ -13,6 +13,7 @@ from src.ui_actions import (
     test_run_query,
 )
 from src.ui_asset import (
+    APP_TITLE,
     FORMAT_QUERY_BUTTON_TEXT,
     JSON_CHECK_OK,
     MAPPING_BUTTON_TEXT,
@@ -25,20 +26,22 @@ css = """
 .large_font textarea {font-size: 1.5em; !important}
 """
 with gr.Blocks(fill_width=True, fill_height=True, css=css) as demo:
+    gr.Markdown(f"# {APP_TITLE}", max_height=30)
     with gr.Row(equal_height=True, scale=1):
         with gr.Column(scale=2):
-            ui_chat = gr.Chatbot(type="messages")
+            ui_chat = gr.Chatbot(type="messages", show_label=False)
         with gr.Column(scale=1):
+            ui_quest_id = gr.Number(1, label="クエストID選択")
             ui_user_query = gr.Textbox(
-                """{"query":{}}""",
+                """{}""",
                 lines=10,
-                label="JSON形式でクエリを書いて「採点」ボタンを押してください",
+                label="JSON 形式でクエリを書いて"
+                f"「{SUBMIT_BUTTON_TEXT}」ボタンを押してください",
                 scale=5,
                 elem_classes="large_font",
             )
+            ui_json_validator = gr.Markdown(JSON_CHECK_OK)
             with gr.Column():
-                ui_quest_id = gr.Number(1, label="クエストID選択")
-                ui_json_validator = gr.Markdown(JSON_CHECK_OK)
                 ui_format_button = gr.Button(FORMAT_QUERY_BUTTON_TEXT)
                 ui_test_run_button = gr.Button(
                     TEST_RUN_BUTTON_TEXT, variant="secondary"
@@ -51,6 +54,7 @@ with gr.Blocks(fill_width=True, fill_height=True, css=css) as demo:
                         ("part2", "fixtures/books/part2.json"),
                     ],
                     interactive=True,
+                    label="ブック選択(インデックス再構築で反映)",
                 )
                 ui_renew_index_button = gr.Button(RENEW_INDEX_BUTTON_TEXT)
 
