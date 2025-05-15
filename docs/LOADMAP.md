@@ -1,4 +1,4 @@
-# elasticsearch quest 機能追加ロードマップ (フェーズ2以降)
+# Elasticsearch Quest 🗺️✨ 機能追加ロードマップ (フェーズ2以降)
 
 ## フェーズ2: 評価・ゲーム性向上
 
