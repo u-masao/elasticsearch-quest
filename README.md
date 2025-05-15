@@ -1,16 +1,17 @@
-# Elasticsearch Quest
+# Elasticsearch Quest 🗺️✨
 
-Elasticsearch Questは、Elasticsearchを用いたクエスト形式の学習プラットフォームです。ユーザーはクエストに挑戦し、Elasticsearchのクエリやデータ操作のスキルを磨くことができます。
+Elasticsearch Quest 🗺️✨ は、Elasticsearch を用いたクエスト形式の学習プラットフォームです。ユーザーはクエストに挑戦し、Elasticsearch のクエリやデータ操作のスキルを磨くことができます。
 
 ## 特徴
 
-- **クエスト形式の学習**: 各クエストは特定のElasticsearchの機能やクエリに焦点を当てており、実践的なスキルを身につけることができます。
+- **クエスト形式の学習**: 各クエストは特定の Elasticsearch の機能やクエリに焦点を当てており、実践的なスキルを身につけることができます。
 - **フィードバックシステム**: クエストの結果に基づいて、詳細なフィードバックが提供され、学習をサポートします。
 - **非同期処理**: 非同期処理を活用し、スムーズなユーザー体験を提供します。
 
 ## インストール
 
 1. リポジトリをクローンし、サブモジュールを初期化します。
+
    ```bash
    git clone https://github.com/yourusername/elasticsearch-quest.git
    cd elasticsearch-quest
@@ -18,11 +19,13 @@ Elasticsearch Questは、Elasticsearchを用いたクエスト形式の学習プ
    ```
 
 2. 必要なパッケージをインストールします。
+
    ```bash
-   pip install -r requirements.txt
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   uv sync
    ```
 
-3. Elasticsearchを設定し、必要なインデックスを作成します。
+3. Elasticsearch を設定し、必要なインデックスを作成します。
 
 ## 使い方
 
@@ -32,8 +35,8 @@ Elasticsearch Questは、Elasticsearchを用いたクエスト形式の学習プ
 
 ## 貢献
 
-貢献を歓迎します。バグ報告や機能提案は、GitHubのIssueトラッカーを通じて行ってください。
+貢献を歓迎します。バグ報告や機能提案は、GitHub の Issue トラッカーを通じて行ってください。
 
 ## ライセンス
 
-このプロジェクトはMITライセンスの下でライセンスされています。詳細はLICENSEファイルを参照してください。
+このプロジェクトは MIT ライセンスの下でライセンスされています。詳細は LICENSE ファイルを参照してください。
