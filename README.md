@@ -48,4 +48,4 @@ Elasticsearch Quest 🗺️✨ は、Elasticsearch を用いたクエスト形�
 * **[Elasticsearch/OpenSearch MCP Server]** (v2.0.4 - 2025-04-22)
     * オリジナルリポジトリ: https://github.com/cr7258/elasticsearch-mcp-server
     * ライセンス: Apache License 2.0
-    * ライセンス条文: [mcp/elasticsearch-mcp-server/LICENSE]
+    * ライセンス条文: [mcp/elasticsearch-mcp-server/LICENSE](mcp/elasticsearch-mcp-server/LICENSE)
