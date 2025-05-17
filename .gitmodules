@@ -1,3 +1,0 @@
-[submodule "mcp/elasticsearch-mcp-server"]
-	path = mcp/elasticsearch-mcp-server
-	url = https://github.com/cr7258/elasticsearch-mcp-server.git
