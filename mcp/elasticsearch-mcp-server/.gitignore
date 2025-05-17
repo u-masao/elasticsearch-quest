@@ -1,0 +1,16 @@
+# IDE
+.idea
+.vscode
+
+# Python
+.venv
+dist
+__pycache__
+*.egg-info
+
+# Configuration and Credentials
+.env
+
+# Spring AI
+.gradle/
+build

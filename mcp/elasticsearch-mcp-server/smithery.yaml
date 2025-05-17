@@ -1,0 +1,25 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - elasticsearchHost
+      - elasticsearchUsername
+      - elasticsearchPassword
+    properties:
+      elasticsearchHost:
+        type: string
+        description: The host URL of the Elasticsearch cluster.
+      elasticsearchUsername:
+        type: string
+        description: The username for Elasticsearch authentication.
+      elasticsearchPassword:
+        type: string
+        description: The password for Elasticsearch authentication.
+  commandFunction:
+    # A function that produces the CLI command to start the MCP on stdio.
+    |-
+    (config) => ({ command: 'elasticsearch-mcp-server', env: { ELASTICSEARCH_HOST: config.elasticsearchHost, ELASTICSEARCH_USERNAME: config.elasticsearchUsername, ELASTICSEARCH_PASSWORD: config.elasticsearchPassword } })
