@@ -10,22 +10,21 @@ Elasticsearch Quest 🗺️✨ は、Elasticsearch を用いたクエスト形�
 
 ## インストール
 
-1. リポジトリをクローンし、サブモジュールを初期化します。
+以下のコマンドを実行します。
 
-   ```bash
-   git clone https://github.com/yourusername/elasticsearch-quest.git
-   cd elasticsearch-quest
-   git submodule update --init --recursive
-   ```
+1. リポジトリのクローン
+2. uv のインストール
+3. 仮想環境の構築
+4. バックエンドの実行
+5. フロントエンドの実行
 
-2. 必要なパッケージをインストールします。
-
-   ```bash
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-   uv sync
-   ```
-
-3. Elasticsearch を設定し、必要なインデックスを作成します。
+```bash
+git clone https://github.com/yourusername/elasticsearch-quest.git
+cd elasticsearch-quest
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv sync
+make setup
+```
 
 ## 使い方
 
