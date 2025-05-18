@@ -21,6 +21,7 @@ def create_edge_case_quest(**kwargs) -> Quest:
         "description": "Testing edge cases",
         "difficulty": 1,
         "query_type_hint": "test",
+        "correct_query": "{}",
         "evaluation_type": "result_count",
         "evaluation_data_raw": "1",
         "hints_raw": '["Edge Hint"]',
@@ -75,7 +76,7 @@ evaluate_params = [
     ),
     # --- doc_ids_in_order ---
     pytest.param(
-        6,
+        17,
         {
             "hits": {
                 "hits": [
@@ -87,29 +88,29 @@ evaluate_params = [
         },
         True,
         "正解！上位3件",
-        id="q6_doc_ids_order_correct",
+        id="q17_doc_ids_order_correct",
     ),
     pytest.param(
-        6,
+        17,
         {
             "hits": {
                 "hits": [
-                    {"_id": "978-4297131883"},
-                    {"_id": "978-4802613353"},
-                    {"_id": "978-4297130350"},
+                    {"_id": "18"},
+                    {"_id": "11"},
+                    {"_id": "10"},
                 ]
             }
         },
         False,
         "不正解... 上位3件のドキュメントIDが異なります",
-        id="q6_doc_ids_order_wrong_order",
+        id="q17_doc_ids_order_wrong_order",
     ),
     pytest.param(
-        6,
-        {"hits": {"hits": [{"_id": "978-4802613353"}]}},
+        17,
+        {"hits": {"hits": [{"_id": "1"}]}},
         False,
         "不正解... 上位3件のドキュメントIDが異なります",
-        id="q6_doc_ids_order_too_few",
+        id="q17_doc_ids_order_too_few",
     ),
     # --- aggregation_result (単純な値比較の例) ---
     # Questにaggregation評価のものが無いので、これはエッジケーステストでカバーする
@@ -208,12 +209,12 @@ feedback_params = [
     pytest.param(
         1, False, 3, "(これが最後のヒントです)", id="q1_wrong_attempt3_last_hint"
     ),
-    pytest.param(6, False, 1, "ヒント 1: `knn` 検索は", id="q6_wrong_attempt1"),
+    pytest.param(17, False, 1, "ヒント 1: `knn` 検索は", id="q17_wrong_attempt1"),
     pytest.param(
-        6, False, 3, "ヒント 3: `query_vector` に `[9, 1]`", id="q6_wrong_attempt3"
+        17, False, 3, "ヒント 3: `query_vector` に `[9, 1]`", id="q17_wrong_attempt3"
     ),
     pytest.param(
-        6, False, 4, "(これが最後のヒントです)", id="q6_wrong_attempt4_last_hint"
+        17, False, 4, "(これが最後のヒントです)", id="q17_wrong_attempt4_last_hint"
     ),
 ]
 
