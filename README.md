@@ -15,15 +15,14 @@ Elasticsearch Quest 🗺️✨ は、Elasticsearch を用いたクエスト形�
 1. リポジトリのクローン
 2. uv のインストール
 3. 仮想環境の構築
-4. バックエンドの実行
-5. フロントエンドの実行
+4. バックエンドの初期化とフロントエンドの実行
 
 ```bash
 git clone https://github.com/yourusername/elasticsearch-quest.git
 cd elasticsearch-quest
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv sync
-make setup
+make run
 ```
 
 ## 使い方
@@ -44,7 +43,7 @@ make setup
 
 本プロジェクトでは、以下の外部ライブラリを利用しています。
 
-* **[Elasticsearch/OpenSearch MCP Server]** (v2.0.4 - 2025-04-22)
+* **Elasticsearch/OpenSearch MCP Server** (v2.0.4 - 2025-04-22)
     * オリジナルリポジトリ: https://github.com/cr7258/elasticsearch-mcp-server
     * ライセンス: Apache License 2.0
     * ライセンス条文: [mcp/elasticsearch-mcp-server/LICENSE](mcp/elasticsearch-mcp-server/LICENSE)
