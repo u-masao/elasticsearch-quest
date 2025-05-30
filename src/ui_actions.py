@@ -359,7 +359,8 @@ async def init_elasticsearch_index(history, book_path):
     for doc_index, doc in enumerate(sample_data):
         if "_index" not in doc:
             doc["_index"] = index_name
-            doc["_id"] = doc_index + 1
+            if "_id" not in doc:
+                doc["_id"] = doc_index + 1
         actions.append(doc)
     if actions:
         bulk(es_client, actions)

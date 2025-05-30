@@ -99,6 +99,7 @@
       "author": "東京大学教養学部統計学教室 (編)",
       "publisher": "東京大学出版会",
       "isbn": "978-4130420655",
+      "_id": "978-4130420655",
       "pages": 304,
       "metric_vector": [
         3,
@@ -111,6 +112,7 @@
       "author": "安井 翔太, 株式会社ホクソエム",
       "publisher": "技術評論社",
       "isbn": "978-4297108328",
+      "_id": "978-4297108328",
       "pages": 312,
       "metric_vector": [
         6,
@@ -123,6 +125,7 @@
       "author": "寺田 学, 辻 真吾, 鈴木 たかのり, 福島 真太朗",
       "publisher": "翔泳社",
       "isbn": "978-4798169307",
+      "_id": "978-4798169307",
       "pages": 432,
       "metric_vector": [
         8,
@@ -135,6 +138,7 @@
       "author": "Peter Bruce, Andrew Bruce, Peter Gedeck (著), 黒川 利明 (訳)",
       "publisher": "オライリー・ジャパン",
       "isbn": "978-4873119208",
+      "_id": "978-4873119208",
       "pages": 424,
       "metric_vector": [
         6,
@@ -147,6 +151,7 @@
       "author": "Andreas C. Müller, Sarah Guido (著), 中田 秀基 (訳)",
       "publisher": "オライリー・ジャパン",
       "isbn": "978-4873117983",
+      "_id": "978-4873117983",
       "pages": 400,
       "metric_vector": [
         8,
@@ -159,6 +164,7 @@
       "author": "斎藤 康毅",
       "publisher": "オライリー・ジャパン",
       "isbn": "978-4873117587",
+      "_id": "978-4873117587",
       "pages": 304,
       "metric_vector": [
         8,
@@ -171,6 +177,7 @@
       "author": "斎藤 康毅",
       "publisher": "オライリー・ジャパン",
       "isbn": "978-4873118362",
+      "_id": "978-4873118362",
       "pages": 432,
       "metric_vector": [
         8,
@@ -183,6 +190,7 @@
       "author": "斎藤 康毅",
       "publisher": "オライリー・ジャパン",
       "isbn": "978-4873119062",
+      "_id": "978-4873119062",
       "pages": 600,
       "metric_vector": [
         9,
@@ -195,6 +203,7 @@
       "author": "有賀 友紀, 中山 心太, 西田 貴紀, 他",
       "publisher": "オライリー・ジャパン",
       "isbn": "978-4873118218",
+      "_id": "978-4873118218",
       "pages": 272,
       "metric_vector": [
         7,
@@ -207,6 +216,7 @@
       "author": "本橋 智光",
       "publisher": "技術評論社",
       "isbn": "978-4297130350",
+      "_id": "978-4297130350",
       "pages": 704,
       "metric_vector": [
         9,
@@ -219,6 +229,7 @@
       "author": "NTTコム オンライン・マーケティング・ソリューション株式会社",
       "publisher": "ソシム",
       "isbn": "978-4802613353",
+      "_id": "978-4802613353",
       "pages": 256,
       "metric_vector": [
         9,
@@ -231,6 +242,7 @@
       "author": "加藤 公一",
       "publisher": "SBクリエイティブ",
       "isbn": "978-4797398236",
+      "_id": "978-4797398236",
       "pages": 352,
       "metric_vector": [
         7,
@@ -243,6 +255,7 @@
       "author": "Sebastian Raschka, Vahid Mirjalili (著), 株式会社クイープ (訳)",
       "publisher": "インプレス",
       "isbn": "978-4295015241",
+      "_id": "978-4295015241",
       "pages": 768,
       "metric_vector": [
         8,
@@ -255,6 +268,7 @@
       "author": "Trevor Hastie, Robert Tibshirani, Jerome Friedman (著), 杉山 将, 井手 剛, 神嶌 敏弘, 栗田 多喜夫, 前田 英作, 井尻 善久, 岩田 具治, 金森 敬文, 兼村 厚範, 烏山 昌幸, 小西 嘉一郎, 酒井 昭宏, 清水 伸幸, 瀬々 潤, 竹内 一郎, 竹内 純一, 田中 譲, 出口 大輔, 中島 伸夫, 林 浩平, 藤巻 遼平, 前田 新一, 持橋 大地, 森長 誠, 山田 誠二, 吉田 亮 (訳)",
       "publisher": "共立出版",
       "isbn": "978-4320123625",
+      "_id": "978-4320123625",
       "pages": 788,
       "metric_vector": [
         5,
@@ -267,6 +281,7 @@
       "author": "C.M. ビショップ (著), 元田 浩, 栗田 多喜夫, 樋口 知之, 松本 裕治, 村田 昇 (監訳)",
       "publisher": "丸善出版",
       "isbn": "978-4621083300",
+      "_id": "978-4621083300",
       "pages": 400,
       "metric_vector": [
         4,
@@ -279,6 +294,7 @@
       "author": "C.M. ビショップ (著), 元田 浩, 栗田 多喜夫, 樋口 知之, 松本 裕治, 村田 昇 (監訳)",
       "publisher": "丸善出版",
       "isbn": "978-4621083317",
+      "_id": "978-4621083317",
       "pages": 430,
       "metric_vector": [
         4,
@@ -291,6 +307,7 @@
       "author": "門脇 大輔, 阪田 隆司, 保坂 桂佑, 平松 雄司",
       "publisher": "技術評論社",
       "isbn": "978-4297108434",
+      "_id": "978-4297108434",
       "pages": 512,
       "metric_vector": [
         9,
@@ -303,6 +320,7 @@
       "author": "ゆずたそ, 伊藤 徹郎, wataru.oyama",
       "publisher": "技術評論社",
       "isbn": "978-4297131883",
+      "_id": "978-4297131883",
       "pages": 464,
       "metric_vector": [
         8,
@@ -315,6 +333,7 @@
       "author": "巣籠 悠輔",
       "publisher": "技術評論社",
       "isbn": "978-4297130787",
+      "_id": "978-4297130787",
       "pages": 352,
       "metric_vector": [
         6,
@@ -327,6 +346,7 @@
       "author": "株式会社データミックス",
       "publisher": "翔泳社",
       "isbn": "978-4798169079",
+      "_id": "978-4798169079",
       "pages": 304,
       "metric_vector": [
         7,
@@ -551,7 +571,7 @@
       "difficulty": 3,
       "query_type_hint": "knn",
       "evaluation_type": "doc_ids_in_order",
-      "evaluation_data": "[\"10\",\"11\",\"18\"]",
+      "evaluation_data": "[\"978-4297130350\",\"978-4802613353\",\"978-4297131883\"]",
       "hints": "[\"`knn` 検索は、クエリベクトルに最も近いベクトルを持つドキュメントを効率的に検索します。マッピングで `dense_vector` フィールドの `index: true` が必要です。\",\"クエリのトップレベルに `knn` オプションを指定します。`field`, `query_vector`, `k`, `num_candidates` が主要なパラメータです。\",\"`query_vector` に `[9, 1]` を、`k` に取得したい件数(3)、`num_candidates` に `k` より大きい値(例: 10)を指定します。\"]",
       "correct_query": "{\n  \"knn\": {\n    \"field\": \"metric_vector\",\n    \"query_vector\": [\n      9,\n      1\n    ],\n    \"k\": 3,\n    \"num_candidates\": 10\n  }\n}",
       "created_at": "2025-05-04 17:46:25",
@@ -564,7 +584,7 @@
       "difficulty": 4,
       "query_type_hint": "knn, filter, range",
       "evaluation_type": "doc_ids_in_order",
-      "evaluation_data": "[\"4\", \"2\", \"19\"]",
+      "evaluation_data": "[\"978-4873119208\", \"978-4297108328\", \"978-4297130787\"]",
       "hints": "[\"`knn` 検索とフィルター条件を組み合わせることで、ハイブリッド検索が可能です。\",\"`knn` オプション内に `filter` 句を追加し、その中に通常のクエリ（この場合は `range` クエリ）を記述します。\",\"`filter` は kNN 検索が実行される *前* に適用され、検索対象を絞り込みます。\",\"`knn` オプションと `filter` を正しくネストさせましょう。\"]",
       "correct_query": "{\n  \"knn\": {\n    \"field\": \"metric_vector\",\n    \"query_vector\": [\n      5,\n      5\n    ],\n    \"k\": 3,\n    \"num_candidates\": 10,\n    \"filter\": {\n      \"range\": {\n        \"publication_date\": {\n          \"gte\": \"2019-01-01\"\n        }\n      }\n    }\n  }\n}",
       "created_at": "2025-05-04 17:46:25",
@@ -577,7 +597,7 @@
       "difficulty": 4,
       "query_type_hint": "knn, filter, term",
       "evaluation_type": "doc_ids_in_order",
-      "evaluation_data": "[\"7\", \"8\", \"6\"]",
+      "evaluation_data": "[\"978-4873118362\", \"978-4873119062\", \"978-4873117587\"]",
       "hints": "[\"前のクエストと同様に `knn` 検索とフィルタリングを組み合わせます。\",\"`knn` オプション内の `filter` 句に、出版社を特定するための `term` クエリを記述します。\",\"`filter` により、まず 'オライリー・ジャパン' の本に絞り込み、その中でベクトルが `[8, 8]` に最も近いものが検索されます。\"]",
       "correct_query": "{\n  \"knn\": {\n    \"field\": \"metric_vector\",\n    \"query_vector\": [\n      8,\n      8\n    ],\n    \"k\": 3,\n    \"num_candidates\": 10,\n    \"filter\": {\n      \"term\": {\n        \"publisher.keyword\": \"オライリー・ジャパン\"\n      }\n    }\n  }\n}",
       "created_at": "2025-05-04 17:46:25",
@@ -590,7 +610,7 @@
       "difficulty": 5,
       "query_type_hint": "query, knn, bool, match, range",
       "evaluation_type": "doc_ids_in_order",
-      "evaluation_data": "[\"12\", \"13\", \"9\"]",
+      "evaluation_data": "[\"978-4797398236\", \"978-4295015241\", \"978-4873118218\"]",
       "hints": "[\"テキスト検索 (`match`) と kNN検索 (`knn`) を組み合わせる場合、`bool` クエリで両方を記述します。Elasticsearchは両方のスコアを組み合わせて最終的なランキングを決定します（Reciprocal Rank Fusion）。\",\"`query` 部分には `bool` クエリを使い、`must` 句に `match` クエリ（'機械学習'）を指定します。\",\"`knn` 部分は通常通り `field`, `query_vector`, `k`, `num_candidates`, `filter` を指定します。この `k` は kNN として考慮される上位件数であり、最終結果の件数とは異なります。十分な数を指定しましょう。`filter` 句には `range` クエリ（出版日）を指定します。`knn` 部分に設定することで Pre-Filter 扱いとなるため、`match` でフィルタリングされる割合が下がります。\",\"`size` パラメータで最終的に取得するドキュメント数を指定します (例: 3)。\"]",
       "correct_query": "{\n  \"query\": {\n    \"bool\": {\n      \"must\": [\n        {\n          \"match\": {\n            \"name\": {\n              \"query\": \"機械学習\",\n              \"boost\": 0.5\n            }\n          }\n        },\n        {\n          \"knn\": {\n            \"field\": \"metric_vector\",\n            \"query_vector\": [\n              7,\n              7\n            ],\n            \"k\": 10,\n            \"boost\": 2.0,\n            \"filter\": {\n              \"range\": {\n                \"publication_date\": {\n                  \"gte\": \"2018-01-01\"\n                }\n              }\n            }\n          }\n        }\n      ]\n    }\n  },\n  \"size\": 3\n}",
       "created_at": "2025-05-04 17:46:25",
